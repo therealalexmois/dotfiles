@@ -182,6 +182,12 @@ This should be all you need to install rust.
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+  
+### Lua
+```sh
+brew install lua
+brew install stylua
+```
 
 ### Go
 ```sh
