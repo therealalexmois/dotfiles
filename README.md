@@ -44,6 +44,15 @@ npm install -g pyright
 brew install lazygit
 ```
 
+```sh
+brew install -f gdu
+brew link --overwrite gdu  # if you have coreutils installed as well
+```
+
+```sh
+brew install bottom
+```
+
 Next we need to install python support (node is optional)
 
 - Neovim python support
