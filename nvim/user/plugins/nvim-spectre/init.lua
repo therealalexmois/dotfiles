@@ -4,7 +4,7 @@ return {
     "nvim-pack/nvim-spectre",
     cmd = "Spectre",
     keys = {
-      { prefix,        desc = "Search / Replace",                  mode = { "n", "x" } },
+      { prefix, desc = "Search / Replace", mode = { "n", "x" } },
       { prefix .. "s", function() require("spectre").toggle() end, desc = "Toggle Spectre" },
       {
         prefix .. "w",
@@ -14,7 +14,6 @@ return {
       },
       { prefix .. "f", function() require("spectre").open_file_search() end, desc = "Spectre (current file)" },
     },
-
     opts = function()
       return {
         mapping = {

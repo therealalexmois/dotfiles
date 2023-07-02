@@ -6,5 +6,5 @@ return {
     GitAdd = "",
     GitChange = "",
     GitDelete = "",
-  }
+  },
 }
