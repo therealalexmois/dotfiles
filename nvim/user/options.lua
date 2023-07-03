@@ -1,6 +1,6 @@
 return {
   opt = {
-    relativenumber = false,
+    relativenumber = true,
     laststatus = 3,
     cmdheight = 1,
   },
