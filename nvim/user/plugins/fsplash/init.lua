@@ -1,8 +1,5 @@
 return {
-  {
-    "goolord/alpha-nvim",
-    enabled = false
-  },
+  { "goolord/alpha-nvim", enabled = false },
   {
     "jovanlanik/fsplash.nvim",
     init = function()

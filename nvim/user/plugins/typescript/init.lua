@@ -86,15 +86,9 @@ return {
 
       opts.handlers.eslint_d = function()
         local null_ls = require "null-ls"
-        null_ls.register(
-          null_ls.builtins.diagnostics.eslint_d.with { condition = has_eslint, extra_filetypes = "astro" }
-        )
-        null_ls.register(
-          null_ls.builtins.formatting.eslint_d.with { condition = has_eslint, extra_filetypes = "astro" }
-        )
-        null_ls.register(
-          null_ls.builtins.code_actions.eslint_d.with { condition = has_eslint, extra_filetypes = "astro" }
-        )
+        null_ls.register(null_ls.builtins.diagnostics.eslint_d.with { condition = has_eslint })
+        null_ls.register(null_ls.builtins.formatting.eslint_d.with { condition = has_eslint })
+        null_ls.register(null_ls.builtins.code_actions.eslint_d.with { condition = has_eslint })
       end
     end,
   },
@@ -105,7 +99,7 @@ return {
   {
     "vuki656/package-info.nvim",
     requires = "MunifTanjim/nui.nvim",
-    config = true,
+    opts = {},
     event = "BufRead package.json",
   },
   {
@@ -143,8 +137,7 @@ return {
   },
   {
     "dmmulroy/tsc.nvim",
-    ft = "typescript",
-    event = "User AstroFile",
-    config = function() require("tsc").setup() end,
+    cmd = { "TSC" },
+    opts = {},
   },
 }

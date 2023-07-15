@@ -1,10 +1,17 @@
 local prefix = "<leader>s"
+local maps = { n = {}, x = {} }
+
+local icon = vim.g.icons_enabled and "󰛔 " or ""
+maps.n[prefix] = { desc = icon .. "Search / Replace" }
+maps.x[prefix] = { desc = icon .. "Search / Replace" }
+
+require("astronvim.utils").set_mappings(maps)
+
 return {
   {
     "nvim-pack/nvim-spectre",
     cmd = "Spectre",
     keys = {
-      { prefix, desc = "Search / Replace", mode = { "n", "x" } },
       { prefix .. "s", function() require("spectre").toggle() end, desc = "Toggle Spectre" },
       {
         prefix .. "w",
@@ -14,6 +21,7 @@ return {
       },
       { prefix .. "f", function() require("spectre").open_file_search() end, desc = "Spectre (current file)" },
     },
+
     opts = function()
       return {
         mapping = {
