@@ -36,5 +36,4 @@ return {
   keys = {
     { prefix .. "x", "<cmd>Hardtime toggle<CR>", desc = "Toggle hardtime" },
   },
-
 }

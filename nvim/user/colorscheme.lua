@@ -1,1 +1,1 @@
-return "astrotheme"
+return "astrodark"
