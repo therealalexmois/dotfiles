@@ -124,6 +124,3 @@ eval "$(pyenv init -)"
 alias pip=/usr/bin/pip3
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(virtualenv custom_pyenv)
-POWERLEVEL9K_CUSTOM_PYENV="echo \$(python -c 'import sys; print(\" \".join(map(str, sys.version.split(\" \")[:2]))[:-1].replace(\" (main\", \"\"))')"
