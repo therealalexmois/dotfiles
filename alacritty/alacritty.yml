@@ -1,7 +1,7 @@
 # # Configuration for Alacritty, the GPU enhanced terminal emulator
 import:
   - "~/.config/alacritty/color.yml"
-
+  - "~/.config/alacritty/key_bindings.yml"
 # Any items in the `env` entry below will be added as
 # environment variables. Some entries may override variables
 # set by alacritty it self.
@@ -13,43 +13,33 @@ env:
   # Note that some xterm terminfo databases don't declare support for italics.
   # You can verify this by checking for the presence of `smso` and `sitm` in
   # `infocmp xterm-256color`.
-  TERM: alacritty-direct 
-
+  TERM: alacritty-direct
 window:
   # Window dimensions in character columns and lines
   # (changes require restart)
   dimensions:
     columns: 160
     lines: 48
-
   # Adds this many blank pixels of padding around the window
   # Units are physical pixels; this is not DPI aware.
   # (change requires restart)
   padding:
     x: 2
     y: 2
-
   # Spread additional padding evenly around the terminal content.
   dynamic_padding: false
-
   dynamic_title: true
-
   # Background opacity
-  opacity: 1.0
-
-
+  opacity: 0.7
   # Window decorations
   # Setting this to false will result in window without borders and title bar.
   decorations: full
-
 # When true, bold text is drawn using the bright variant of colors.
 draw_bold_text_with_bright_colors: true
-
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
   history: 10000
-
 font:
   # Normal (roman) font face
   normal:
@@ -57,40 +47,33 @@ font:
     # family: MesloLGS NF
     # The `style` can be specified to pick a specific face.
     style: Regular
-
     # Bold font face
     bold:
       # family: MesloLGS NF
       family: JetBrainsMono Nerd Font
       # The `style` can be specified to pick a specific face.
       style: Bold
-  
     # Italic font face
     italic:
       # family: MesloLGS NF
       family: JetBrainsMono Nerd Font
       # The `style` can be specified to pick a specific face.
       style: Italic
-
   size: 14
-
   # Offset is the extra space around each character. offset.y can be thought of
   # as modifying the linespacing, and offset.x as modifying the letter spacing.
   offset:
     x: 0
     y: 0
-
   # Glyph offset determines the locations of the glyphs within their cells with
   # the default being at the bottom. Increase the x offset to move the glyph to
   # the right, increase the y offset to move the glyph upward.
   glyph_offset:
     x: 0
     y: 0
-
 debug:
   # Should display the render timer
   render_timer: false
-
 # Visual Bell
 #
 # Any time the BEL code is received, Alacritty "rings" the visual bell. Once
@@ -116,7 +99,6 @@ debug:
 bell:
   animation: EaseOutExpo
   duration: 0
-
 mouse:
   # Click settings
   #
@@ -125,18 +107,14 @@ mouse:
   # or triple click.
   double_click: { threshold: 300 }
   triple_click: { threshold: 300 }
-
   # If this is `true`, the cursor is temporarily hidden when typing.
   hide_when_typing: true
-
 selection:
-  semantic_escape_chars: ",│`|:\"' ()[]{}<>"
-
+  semantic_escape_chars: ',│`|:"'' ()[]{}<>'
   # When set to `true`, selected text will be copied to both the primary and
   # the selection clipboard. Otherwise, it will only be copied to the selection
   # clipboard.
   save_to_clipboard: true
-
 cursor:
   # Cursor style
   #
@@ -144,11 +122,9 @@ cursor:
   #   - ▇ Block
   #   - _ Underline
   #   - | Beam
-  style: Block
-    # If this is `true`, the cursor will be rendered as a hollow box when the
+  style: Block # If this is `true`, the cursor will be rendered as a hollow box when the
   # window is not focused.
   unfocused_hollow: true
-
 # Live config reload (changes require restart)
 live_config_reload: true
 
