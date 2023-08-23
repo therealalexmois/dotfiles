@@ -2,6 +2,7 @@ local prefix = "<leader>u"
 return {
   "m4xshen/hardtime.nvim",
   event = "User AstroFile",
+  lazy = false,
   opts = {
     max_time = 1000,
     max_count = 3,
