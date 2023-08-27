@@ -1,6 +1,6 @@
 # # Configuration for Alacritty, the GPU enhanced terminal emulator
 import:
-  - "~/.config/alacritty/color.yml"
+  - "~/.config/alacritty/themes/github_dark_default.yaml"
   - "~/.config/alacritty/key_bindings.yml"
 # Any items in the `env` entry below will be added as
 # environment variables. Some entries may override variables
@@ -115,17 +115,17 @@ selection:
   # the selection clipboard. Otherwise, it will only be copied to the selection
   # clipboard.
   save_to_clipboard: true
-cursor:
+  # cursor:
   # Cursor style
   #
   # Values for 'style':
   #   - ▇ Block
   #   - _ Underline
   #   - | Beam
-  style: Block # If this is `true`, the cursor will be rendered as a hollow box when the
+  # style: Underline # If this is `true`, the cursor will be rendered as a hollow box when the
   # window is not focused.
-  unfocused_hollow: true
-# Live config reload (changes require restart)
+  # unfocused_hollow: true
+  # Live config reload (changes require restart)
 live_config_reload: true
 
 #shell:
