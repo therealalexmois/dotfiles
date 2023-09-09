@@ -7,5 +7,10 @@ return {
       desc = "Toggle CursorWord",
     },
   },
-  opts = {},
+  opts = {
+    inverses = {
+      ["True"] = "False",
+      ["top"] = "bottom",
+    },
+  },
 }

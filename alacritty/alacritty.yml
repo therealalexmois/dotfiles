@@ -1,6 +1,6 @@
 # # Configuration for Alacritty, the GPU enhanced terminal emulator
 import:
-  - "~/.config/alacritty/themes/github_dark_default.yaml"
+  - "~/.config/alacritty/themes/nightfox.yml"
   - "~/.config/alacritty/key_bindings.yml"
 # Any items in the `env` entry below will be added as
 # environment variables. Some entries may override variables

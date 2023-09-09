@@ -1,4 +1,4 @@
-local prefix = "<leader>r"
+local prefix = "<leader>R"
 
 return {
   "ThePrimeagen/refactoring.nvim",
@@ -6,8 +6,9 @@ return {
   cmd = { "Refactor" },
   opts = {},
   keys = {
+    { prefix, desc = "Refactoring" },
     {
-      "<leader>re",
+      prefix .. "e",
       [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function')<CR>]],
       { silent = true, expr = false },
       mode = {
@@ -17,7 +18,7 @@ return {
       desc = "Extract Function",
     },
     {
-      "<leader>rf",
+      prefix .. "f",
       [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function To File')<CR>]],
       { silent = true, expr = false },
       mode = {
@@ -27,7 +28,7 @@ return {
       desc = "Extract Function To File",
     },
     {
-      "<leader>rv",
+      prefix .. "v",
       [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Variable')<CR>]],
       { silent = true, expr = false },
       mode = {
@@ -37,7 +38,7 @@ return {
       desc = "Extract Variable",
     },
     {
-      "<leader>ri",
+      prefix .. "i",
       [[ <Esc><Cmd>lua require('refactoring').refactor('Inline Variable')<CR>]],
       { silent = true, expr = false },
       mode = {
@@ -48,7 +49,7 @@ return {
       desc = "Inline Variable",
     },
     {
-      "<leader>rb",
+      prefix .. "b",
       function() require("refactoring").refactor "Extract Block" end,
       { silent = true, expr = false },
       mode = {
@@ -57,7 +58,7 @@ return {
       desc = "Extract Block",
     },
     {
-      "<leader>rbf",
+      prefix .. "bf",
       function() require("refactoring").refactor "Extract Block To File" end,
       { silent = true, expr = false },
       mode = {
@@ -66,31 +67,31 @@ return {
       desc = "Extract Block To File",
     },
     {
-      "<leader>rr",
+      prefix .. "r",
       function() require("refactoring").select_refactor() end,
       { silent = true, expr = false },
       desc = "Select Refactor",
     },
     {
-      "<leader>rp",
+      prefix .. "p",
       function() require("refactoring").debug.printf { below = false } end,
       mode = { "n" },
       desc = "Debug: Print Function",
     },
     {
-      "<leader>rd",
+      prefix .. "d",
       function() require("refactoring").debug.print_var { normal = true, below = false } end,
       mode = { "n" },
       desc = "Debug: Print Variable",
     },
     {
-      "<leader>rd",
+      prefix .. "d",
       function() require("refactoring").debug.print_var { below = false } end,
       mode = { "v" },
       desc = "Debug: Print Variable",
     },
     {
-      "<leader>rc",
+      prefix .. "c",
       function() require("refactoring").debug.cleanup {} end,
       mode = { "n" },
       desc = "Debug: Clean Up",
