@@ -1,8 +1,10 @@
 return {
   "AstroNvim/astrocommunity",
-  { import = "astrocommunity.bars-and-lines.heirline-mode-text-statusline" },
   { import = "astrocommunity.bars-and-lines.bufferline-nvim" },
+  { import = "astrocommunity.bars-and-lines.heirline-mode-text-statusline" },
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
+  { import = "astrocommunity.color.headlines-nvim" },
+  { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.catppuccin", enabled = true },
   { import = "astrocommunity.debugging.nvim-dap-repl-highlights" },
   { import = "astrocommunity.debugging.nvim-dap-virtual-text" },
@@ -38,7 +40,5 @@ return {
   { import = "astrocommunity.syntax.vim-cool" },
   { import = "astrocommunity.utility.neodim" },
   { import = "astrocommunity.utility.telescope-live-grep-args-nvim" },
-  { import = "astrocommunity.color.transparent-nvim" },
-  { import = "astrocommunity.color.headlines-nvim" },
   { import = "astrocommunity.workflow.hardtime-nvim", lazy = false },
 }
