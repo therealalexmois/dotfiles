@@ -38,8 +38,7 @@ return {
   { import = "astrocommunity.syntax.vim-cool" },
   { import = "astrocommunity.utility.neodim" },
   { import = "astrocommunity.utility.telescope-live-grep-args-nvim" },
-  { import = "astrocommunity.utility.transparent-nvim" },
-  { import = "astrocommunity.color.headlines-nvim" },
+  { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.color.headlines-nvim" },
   { import = "astrocommunity.workflow.hardtime-nvim", lazy = false },
 }
