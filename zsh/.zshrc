@@ -124,3 +124,4 @@ eval "$(pyenv init -)"
 alias pip=/usr/bin/pip3
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+

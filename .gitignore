@@ -1,0 +1,7 @@
+# Tmux plugins
+tmux/plugins/*
+
+# ZSH
+zsh/*
+!zsh/.zshrc
+!zsh/.zshenv
