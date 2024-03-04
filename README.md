@@ -259,4 +259,10 @@ Useful gist for install fonts: [font gist](https://gist.github.com/davidteren/89
 
 You can also download your own fonts and place them in ~/Library/Fonts
 
+## Testing tools
+[wrk](https://github.com/wg/wrk) - a HTTP benchmarking tool
+
+```sh
+brew install wrk
+```
 
