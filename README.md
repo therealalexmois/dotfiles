@@ -266,3 +266,9 @@ You can also download your own fonts and place them in ~/Library/Fonts
 brew install wrk
 ```
 
+## Miscellaneous
+[nmap](https://nmap.org/) – is an open source tool for network exploration and security auditing.
+
+```sh
+brew install nmap
+```
