@@ -2,7 +2,7 @@ local prefix = "<leader>L"
 local maps = { n = {} }
 local icon = vim.g.icons_enabled and " " or ""
 maps.n[prefix] = { desc = icon .. "Log" }
-require("astronvim.utils").set_mappings(maps)
+require("astrocore").set_mappings(maps)
 
 return {
   "chrisgrieser/nvim-chainsaw",

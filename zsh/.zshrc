@@ -9,15 +9,13 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# export ZSH="$HOME/.dotfiles/zsh/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="robbyrussell"
 ZSH_THEME="powerlevel10k/powerlevel10k"
-
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -73,12 +71,13 @@ DISABLE_AUTO_TITLE="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(poetry git gitignore colored-man-pages colorize docker docker-compose macos brew nvm zsh-autosuggestions zsh-syntax-highlighting python pip virtualenv rust)
+# Which plugins would you like to load? Standard plugins can be found in
+# $ZSH/plugins/ Custom plugins may be added to $ZSH_CUSTOM/plugins/ Example
+# format: plugins=(rails git textmate ruby lighthouse) Add wisely, as too many
+# plugins slow down shell startup.
+plugins=(git gitignore colored-man-pages colorize docker docker-compose
+  macos brew nvm zsh-autosuggestions zsh-syntax-highlighting python pip
+  pyenv poetry virtualenv rust fast-syntax-highlighting minikube fnm)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -108,20 +107,19 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-export PATH="/opt/homebrew/bin:$PATH:/Users/alexmois/.local/bin:$PATH"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="/opt/homebrew/bin:$PATH:$HOME/.local/bin"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-export PYENV_ROOT="$HOME/.pyenv"
+# Python
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
-alias pip=/usr/bin/pip3
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+# To automatically run fnm use when a directory contains a .node-version or .nvmrc file
+eval "$(fnm env --use-on-cd)"
