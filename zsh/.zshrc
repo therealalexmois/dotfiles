@@ -1,10 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -15,7 +8,7 @@ fi
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -76,8 +69,10 @@ DISABLE_AUTO_TITLE="true"
 # format: plugins=(rails git textmate ruby lighthouse) Add wisely, as too many
 # plugins slow down shell startup.
 plugins=(git gitignore colored-man-pages colorize docker docker-compose
-  macos brew nvm zsh-autosuggestions zsh-syntax-highlighting python pip
-  pyenv poetry virtualenv rust fast-syntax-highlighting minikube fnm)
+  macos brew nvm zsh-autosuggestions zsh-syntax-highlighting zsh-completions python pip
+  pyenv poetry virtualenv rust fast-syntax-highlighting kubectl minikube fnm)
+
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 
 source $ZSH/oh-my-zsh.sh
 
@@ -106,11 +101,10 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias n="nvim ."
 
 export PATH="/opt/homebrew/bin:$PATH:$HOME/.local/bin"
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 
 # Python
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
@@ -123,3 +117,26 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 # To automatically run fnm use when a directory contains a .node-version or .nvmrc file
 eval "$(fnm env --use-on-cd)"
+
+eval "$(starship init zsh)"
+
+eval "$(mcfly init zsh)"
+
+[ -s "/Users/alexmois/.scm_breeze/scm_breeze.sh" ] && source "/Users/alexmois/.scm_breeze/scm_breeze.sh"
+
+# Display timestamps for each command
+HIST_STAMPS="%T %d.%m.%y"
+# Ignore these commands in history
+HISTORY_IGNORE="(ls|cd|pwd|exit|cd)*"
+
+HISTSIZE=10000000
+SAVEHIST=10000000
+
+# Write the history file in the ':start:elapsed;command' format.
+setopt EXTENDED_HISTORY
+
+# Do not record an event starting with a space.
+setopt HIST_IGNORE_SPACE
+
+# Don't store history commands
+setopt HIST_NO_STORE
