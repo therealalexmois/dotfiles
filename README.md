@@ -1,17 +1,52 @@
 # dotfiles
 
+<!--toc:start-->
+
+- [dotfiles](#dotfiles)
+  - [System Settings](#system-settings)
+  - [Command Line Tools](#command-line-tools)
+  - [Install brew](#install-brew)
+  - [Requirements](#requirements)
+  - [![Installation](https://github.githubassets.com/images/icons/emoji/unicode/1f6e0.png) Installation](#installationhttpsgithubgithubassetscomimagesiconsemojiunicode1f6e0png-installation)
+  - [Macos misc](#macos-misc)
+  - [Content Creation](#content-creation)
+  - [Improving the Launcher](#improving-the-launcher)
+  - [Window Management](#window-management)
+  - [CLI utilities](#cli-utilities)
+  - [FZF](#fzf)
+  - [Terminal System Monitors](#terminal-system-monitors)
+  - [Web Tools](#web-tools)
+  - [Documentation](#documentation)
+  - [Programming Languages](#programming-languages)
+    - [Python](#python)
+    - [Node](#node)
+    - [Rust](#rust)
+    - [Lua](#lua)
+    - [Go](#go)
+  - [Install Neovim](#install-neovim)
+  - [Rosetta](#rosetta)
+  - [Docker](#docker)
+  - [Install my dotfiles](#install-my-dotfiles)
+  - [Nerd fonts](#nerd-fonts)
+  - [Testing tools](#testing-tools)
+  - [Miscellaneous](#miscellaneous)
+  <!--toc:end-->
+
 ## System Settings
+
 - set caps lock to escape
 - bump key repeat up by one notch
 - set turn display off after 20 mins while on battery 30 mins while charging
 - turn on night shift
 
 ## Command Line Tools
+
 ```sh
 xcode-select --install
 ```
 
 ## Install brew
+
 ```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
@@ -66,9 +101,11 @@ Next we need to install python support (node is optional)
   ```
   npm i -g neovim
   ```
+
 ---
 
 ## Requirements
+
 - [Nerd Fonts](https://www.nerdfonts.com/font-downloads) (Optional with manual intervention: See Documentation on customizing icons)
 - [Neovim 0.8+ (Not including nightly)](https://github.com/neovim/neovim/releases/tag/stable)
 - [Tree-sitter CLI](https://github.com/tree-sitter/tree-sitter/blob/master/cli/README.md) (Note: This is only necessary if you want to use auto_install feature with Treesitter)
@@ -82,10 +119,12 @@ Next we need to install python support (node is optional)
 ## ![Installation](https://github.githubassets.com/images/icons/emoji/unicode/1f6e0.png) Installation
 
 ## Macos misc
+
 - [macOS system monitor](https://github.com/exelban/stats)
 - [clock](https://www.mowglii.com/itsycal/)
 
 ## Content Creation
+
 ```sh
 brew install obs     # to record my screen
 brew install gimp    # image editing
@@ -93,24 +132,31 @@ brew install blender # video editing
 ```
 
 ## Improving the Launcher
+
 ```sh
 brew install raycast
 ```
 
 ## Window Management
+
 ```sh
 brew install rectangle
 ```
 
 ## CLI utilities
+
+````sh
+brew install tree    # allows you to see the outline of a directory
+
 ```sh
-brew install tree    # allows you to see the outline of a directory 
+brew install tree    # allows you to see the outline of a directory
 brew install zoxide  # jump anywhere within your filesystem with z <foldername>
 brew install ripgrep # blazingly fast grep
 brew install fd      # blazingly fast find
-```
+````
 
 ## FZF
+
 ```sh
 brew install fzf
 $(brew --prefix)/opt/fzf/install
@@ -125,6 +171,7 @@ brew list | fzf
 ```
 
 ## Terminal System Monitors
+
 ```sh
 brew install htop
 brew install glances
@@ -132,6 +179,7 @@ brew install lazygit
 ```
 
 ## Web Tools
+
 ```sh
 brew install insomnia
 brew install wget
@@ -142,18 +190,22 @@ npm install -g http-server
 ```
 
 ## Documentation
+
 ```sh
 brew install tldr
 ```
 
 ## Programming Languages
+
 ### Python
+
 ```sh
 echo "alias python=/usr/bin/python3" >> ~/.zshrc
 echo "alias pip=/usr/bin/pip3" >> ~/.zshrc
 ```
 
 Install miniforge for apple silicon:
+
 ```sh
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-arm64.sh -O ~/miniforge.sh
 
@@ -163,6 +215,7 @@ rm ~/miniforge.sh
 ```
 
 Add the following in your .zshrc file:
+
 ```sh
 if [ -f "$HOME/.miniforge/etc/profile.d/conda.sh" ]; then
       . "$HOME/.miniforge/etc/profile.d/conda.sh"
@@ -178,6 +231,7 @@ conda config --set auto_activate_base false
 ```
 
 ### Node
+
 ```sh
 brew install fnm
 
@@ -187,18 +241,22 @@ fnm install 17
 ```
 
 ### Rust
+
 This should be all you need to install rust.
+
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
-  
+
 ### Lua
+
 ```sh
 brew install lua
 brew install stylua
 ```
 
 ### Go
+
 ```sh
 brew install go
 ```
@@ -217,6 +275,7 @@ sudo rm -rf ~/go
 ```
 
 ## Install Neovim
+
 Neovim is my text editor of choice
 
 I install Neovim from source you can probably just:
@@ -234,6 +293,7 @@ softwareupdate --install-rosetta
 ```
 
 ## Docker
+
 Follow the instructions at the following link to install docker desktop for Apple silicon.
 
 [docker desktop](https://docs.docker.com/desktop/install/mac-install/)
@@ -245,12 +305,14 @@ brew install lazydocker
 Make sure to stop docker desktop after installing and set it to not auto-start since it is pretty resource hungry.
 
 ## Install my dotfiles
+
 ```sh
 brew install stow
 git clone https://github.com/therealalexmois/dotfiles.git
 ```
 
 ## Nerd fonts
+
 ```sh
 brew install fontconfig
 ```
@@ -259,4 +321,18 @@ Useful gist for install fonts: [font gist](https://gist.github.com/davidteren/89
 
 You can also download your own fonts and place them in ~/Library/Fonts
 
+## Testing tools
 
+[wrk](https://github.com/wg/wrk) - a HTTP benchmarking tool
+
+```sh
+brew install wrk
+```
+
+## Miscellaneous
+
+[nmap](https://nmap.org/) – is an open source tool for network exploration and security auditing.
+
+```sh
+brew install nmap
+```

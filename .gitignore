@@ -5,3 +5,11 @@ tmux/plugins/*
 zsh/*
 !zsh/.zshrc
 !zsh/.zshenv
+
+# Python
+.pyenv
+
+# Misc
+fontforge
+htop
+lazygit
