@@ -141,4 +141,4 @@ setopt HIST_IGNORE_SPACE
 # Don't store history commands
 setopt HIST_NO_STORE
 
-source /Users/alexmois/.config/broot/launcher/bash/br
+source /Users/$(id -un)/.config/broot/launcher/bash/br
