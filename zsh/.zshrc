@@ -122,7 +122,7 @@ eval "$(starship init zsh)"
 
 eval "$(mcfly init zsh)"
 
-[ -s "/Users/alexmois/.scm_breeze/scm_breeze.sh" ] && source "/Users/alexmois/.scm_breeze/scm_breeze.sh"
+[ -s "/Users/$(id -un)/.scm_breeze/scm_breeze.sh" ] && source "/Users/$(id -un)/.scm_breeze/scm_breeze.sh"
 
 # Display timestamps for each command
 HIST_STAMPS="%T %d.%m.%y"
