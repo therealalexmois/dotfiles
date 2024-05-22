@@ -1,39 +1,36 @@
-# dotfiles
+# MacOS configuration
 
 <!--toc:start-->
-
-- [dotfiles](#dotfiles)
-  - [System Settings](#system-settings)
-  - [Command Line Tools](#command-line-tools)
-  - [Install brew](#install-brew)
-  - [Requirements](#requirements)
-  - [![Installation](https://github.githubassets.com/images/icons/emoji/unicode/1f6e0.png) Installation](#installationhttpsgithubgithubassetscomimagesiconsemojiunicode1f6e0png-installation)
-  - [Macos misc](#macos-misc)
-  - [Content Creation](#content-creation)
-  - [Improving the Launcher](#improving-the-launcher)
-  - [Window Management](#window-management)
-  - [CLI utilities](#cli-utilities)
-  - [FZF](#fzf)
-  - [Terminal System Monitors](#terminal-system-monitors)
-  - [Web Tools](#web-tools)
-  - [Documentation](#documentation)
-  - [Programming Languages](#programming-languages)
-    - [Python](#python)
-    - [Node](#node)
-    - [Rust](#rust)
-    - [Lua](#lua)
-    - [Go](#go)
-  - [Install Neovim](#install-neovim)
-  - [Rosetta](#rosetta)
-  - [Docker](#docker)
-  - [Install my dotfiles](#install-my-dotfiles)
-  - [Nerd fonts](#nerd-fonts)
-  - [Testing tools](#testing-tools)
-  - [Miscellaneous](#miscellaneous)
-  <!--toc:end-->
+- [System Settings](#system-settings)
+- [Command Line Tools](#command-line-tools)
+- [Install brew](#install-brew)
+- [Requirements](#requirements)
+- [Installation](#installationhttpsgithubgithubassetscomimagesiconsemojiunicode1f6e0png-installation)
+- [Macos misc](#macos-misc)
+- [Content Creation](#content-creation)
+- [Improving the Launcher](#improving-the-launcher)
+- [Window Management](#window-management)
+- [CLI utilities](#cli-utilities)
+- [FZF](#fzf)
+- [Terminal System Monitors](#terminal-system-monitors)
+- [Web Tools](#web-tools)
+- [Documentation](#documentation)
+- [Programming Languages](#programming-languages)
+  - [Python](#python)
+  - [Node](#node)
+  - [Rust](#rust)
+  - [Lua](#lua)
+  - [Go](#go)
+- [Install Neovim](#install-neovim)
+- [Rosetta](#rosetta)
+- [Docker](#docker)
+- [Install my dotfiles](#install-my-dotfiles)
+- [Nerd fonts](#nerd-fonts)
+- [Testing tools](#testing-tools)
+- [Miscellaneous](#miscellaneous)
+<!--toc:end-->
 
 ## System Settings
-
 - set caps lock to escape
 - bump key repeat up by one notch
 - set turn display off after 20 mins while on battery 30 mins while charging
@@ -51,32 +48,21 @@ xcode-select --install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 echo '# Set PATH, MANPATH, etc., for Homebrew.' >> /Users/chris/.zprofile
-
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/chris/.zprofile
-
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 brew analytics off
 ```
 
 For Mac OS:
-
 ```sh
-brew install nvim
-
-brew install rust-analyzer
-
-brew install ripgrep
-
-brew install fd
-
-brew tap homebrew/cask-fonts && brew install --cask font-jetbrains-mono-nerd-font
-
-npm install -g pyright
+xargs brew install < macos-setup/brew-casks.txt
 ```
 
 ```sh
-brew install lazygit
+brew tap homebrew/cask-fonts && brew install --cask font-jetbrains-mono-nerd-font
+
+npm install -g pyright
 ```
 
 ```sh
@@ -84,19 +70,15 @@ brew install -f gdu
 brew link --overwrite gdu  # if you have coreutils installed as well
 ```
 
-```sh
-brew install bottom
-```
-
 Next we need to install python support (node is optional)
 
-- Neovim python support
+- Neovim python support:
 
   ```
   pip install pynvim
   ```
 
-- Neovim node support
+- Neovim node support:
 
   ```
   npm i -g neovim
