@@ -1,0 +1,7 @@
+alacritty
+brave-browser
+discord
+ngrok
+postman
+raycast
+visual-studio-code
