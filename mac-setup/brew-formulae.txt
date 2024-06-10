@@ -21,8 +21,6 @@ htop
 httpie
 jq
 lazygit
-lsd
-lsd
 lua
 mcfly
 minikube

@@ -13,3 +13,5 @@ export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship.toml"
 # Go
 export GOPATH=$HOME/.local/share/go
 export PATH=$HOME/.local/share/go/bin:$PATH
+
+# Poetry
