@@ -15,3 +15,5 @@ export GOPATH=$HOME/.local/share/go
 export PATH=$HOME/.local/share/go/bin:$PATH
 
 # Poetry
+# Zellij
+export ZELLIJ_CONFIG_DIR="$XDG_CONFIG_HOME/zellij"
