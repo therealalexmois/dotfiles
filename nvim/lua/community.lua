@@ -34,7 +34,7 @@ return {
   { import = "astrocommunity.note-taking.venn-nvim", enabled = true },
   { import = "astrocommunity.pack.bash", enabled = true },
   { import = "astrocommunity.pack.docker", enabled = true },
-  { import = "astrocommunity.pack.go", enabled = true },
+  { import = "astrocommunity.pack.go", enabled = false },
   { import = "astrocommunity.pack.helm", enabled = true },
   { import = "astrocommunity.pack.html-css", enabled = true },
   { import = "astrocommunity.pack.json", enabled = true },
