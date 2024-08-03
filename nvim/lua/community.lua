@@ -21,6 +21,7 @@ return {
   { import = "astrocommunity.editing-support.nvim-treesitter-context", enabled = true },
   { import = "astrocommunity.editing-support.telescope-undo-nvim", enabled = true },
   { import = "astrocommunity.editing-support.undotree", enabled = true },
+  { import = "astrocommunity.editing-support.vim-doge", enabled = true },
   { import = "astrocommunity.editing-support.vim-visual-multi", enabled = true },
   { import = "astrocommunity.editing-support.zen-mode-nvim", enabled = true },
   { import = "astrocommunity.file-explorer.telescope-file-browser-nvim", enabled = true },
