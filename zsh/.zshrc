@@ -68,7 +68,7 @@ DISABLE_AUTO_TITLE="true"
 # $ZSH/plugins/ Custom plugins may be added to $ZSH_CUSTOM/plugins/ Example
 # format: plugins=(rails git textmate ruby lighthouse) Add wisely, as too many
 # plugins slow down shell startup.
-plugins=(git gitignore colored-man-pages colorize docker docker-compose
+plugins=(git git-commit gitignore dotenv colored-man-pages colorize celery docker docker-compose
   macos brew nvm zsh-autosuggestions zsh-syntax-highlighting zsh-completions python pip
   pyenv poetry virtualenv rust fast-syntax-highlighting kubectl minikube fnm)
 
