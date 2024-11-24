@@ -1,3 +1,5 @@
+echo "Loading .zshrc..."
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -70,11 +72,7 @@ DISABLE_AUTO_TITLE="true"
 # plugins slow down shell startup.
 plugins=(git git-commit gitignore dotenv colored-man-pages colorize celery docker docker-compose
   macos brew nvm zsh-autosuggestions zsh-syntax-highlighting zsh-completions python pip
-  pyenv poetry virtualenv rust fast-syntax-highlighting kubectl minikube fnm)
-
-fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
-
-source $ZSH/oh-my-zsh.sh
+  poetry virtualenv rust fast-syntax-highlighting kubectl minikube fnm)
 
 # User configuration
 
@@ -99,15 +97,17 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 alias n="nvim ."
+
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+
+source $ZSH_ROOT/.oh-my-zsh/oh-my-zsh.sh
 
 export PATH="/opt/homebrew/bin:$PATH:$HOME/.local/bin"
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 
 # Python
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+# command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -118,7 +118,14 @@ export PATH="$PATH:$HOME/.rvm/bin"
 # To automatically run fnm use when a directory contains a .node-version or .nvmrc file
 eval "$(fnm env --use-on-cd)"
 
+# Starship
+command -v 'starship' > /dev/null || export PATH="/usr/local/bin/starship:$PATH"
 eval "$(starship init zsh)"
+
+# Mcfly
+export MCFLY_KEY_SCHEME=vim
+export MCFLY_FUZZY=2
+export MCFLY_RESULTS_SORT=LAST_RUN
 
 eval "$(mcfly init zsh)"
 
