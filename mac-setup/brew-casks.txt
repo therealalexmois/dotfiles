@@ -40,6 +40,7 @@ font-iosevka-nerd-font
 font-jetbrains-mono-nerd-font
 font-lekton-nerd-font
 font-liberation-nerd-font
+font-m+-nerd-font
 font-meslo-lg-nerd-font
 font-monofur-nerd-font
 font-monoid-nerd-font
@@ -66,6 +67,7 @@ postman
 pycharm
 raycast
 rustrover
+vial
 visual-studio-code
 webstorm
 wezterm
