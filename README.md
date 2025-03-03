@@ -217,7 +217,7 @@ conda config --set auto_activate_base false
 ```sh
 brew install fnm
 
-echo '"$(fnm env --use-on-cd)"' >> /Users/chris/.zprofile
+echo '"$(fnm env --use-on-cd)"' >> /Users/<username>/.zprofile
 
 fnm install 17
 ```
