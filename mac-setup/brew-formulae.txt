@@ -14,7 +14,6 @@ coreutils
 ctags
 duf
 dust
-expat
 fd
 fnm
 fontconfig
@@ -32,7 +31,6 @@ git
 glib
 gmp
 go
-go-task
 gobject-introspection
 gping
 graphite2
@@ -50,7 +48,6 @@ jasper
 jpeg-turbo
 jpeg-xl
 jq
-just
 krb5
 kubernetes-cli
 lazydocker
@@ -58,7 +55,7 @@ lazygit
 libavif
 libdeflate
 libevent
-libgit2
+libgit2@1.7
 libgpg-error
 libidn2
 libksba
@@ -70,6 +67,7 @@ libscrypt
 libspiro
 libssh2
 libtiff
+libtommath
 libtool
 libuninameslist
 libunistring
@@ -130,6 +128,7 @@ ruff
 sad
 sqlite
 starship
+tcl-tk
 tcl-tk@8
 the_silver_searcher
 tldr
@@ -139,7 +138,6 @@ tree
 tree-sitter
 unibilium
 utf8proc
-uv
 webp
 wget
 woff2
