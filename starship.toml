@@ -1,5 +1,5 @@
-command_timeout = 2000
-scan_timeout = 10
+command_timeout = 300
+scan_timeout = 5
 
 [aws]
 format = '\[[$symbol($profile)(\($region\))(\[$duration\])]($style)\]'
@@ -14,6 +14,7 @@ format = '\[[$symbol($version(-$name))]($style)\]'
 format = '\[[$symbol($version)]($style)\]'
 
 [cmd_duration]
+min_time = 200
 format = '\[[⏱ $duration]($style)\]'
 
 [cobol]
