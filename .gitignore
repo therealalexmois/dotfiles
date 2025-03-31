@@ -5,6 +5,8 @@ tmux/plugins/*
 zsh/*
 !zsh/.zshrc
 !zsh/.zshenv
+!zsh/.zprofile
+!zsh/bootstrap.zsh
 
 # Python
 .pyenv
