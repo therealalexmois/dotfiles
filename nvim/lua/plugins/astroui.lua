@@ -28,5 +28,41 @@ return {
       GitChange = "",
       GitDelete = "",
     },
+    text_icons = {
+      GitAdd = "[+]",
+    },
+    status = {
+      -- Configure attributes of components defined in the `status` API. Check the AstroNvim documentation for a complete list of color names, this applies to colors that have `_fg` and/or `_bg` names with the suffix removed (ex. `git_branch_fg` as attributes from `git_branch`).
+      attributes = {
+        git_branch = { bold = true },
+      },
+      colors = {
+        git_branch_fg = "#ABCDEF",
+      },
+      icon_highlights = {
+        -- enable or disable breadcrumb icon highlighting
+        breadcrumbs = false,
+        -- Enable or disable the highlighting of filetype icons both in the statusline and tabline
+        file_icon = {
+          tabline = function(self) return self.is_active or self.is_visible end,
+          statusline = true,
+        },
+      },
+    },
+    lazygit = {
+      theme_path = vim.fs.normalize(vim.fn.stdpath "cache" .. "/lazygit-theme.yml"),
+      theme = {
+        [241] = { fg = "Special" },
+        activeBorderColor = { fg = "MatchParen", bold = true },
+        cherryPickedCommitBgColor = { fg = "Identifier" },
+        cherryPickedCommitFgColor = { fg = "Function" },
+        defaultFgColor = { fg = "Normal" },
+        inactiveBorderColor = { fg = "FloatBorder" },
+        optionsTextColor = { fg = "Function" },
+        searchingActiveBorderColor = { fg = "MatchParen", bold = true },
+        selectedLineBgColor = { bg = "Visual" },
+        unstagedChangesColor = { fg = "DiagnosticError" },
+      },
+    },
   },
 }
