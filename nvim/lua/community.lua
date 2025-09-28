@@ -3,7 +3,7 @@ return {
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim", enabled = true },
   { import = "astrocommunity.color.modes-nvim", enabled = true },
   { import = "astrocommunity.color.tint-nvim", enabled = true },
-  { import = "astrocommunity.color.transparent-nvim", enabled = true },
+  { import = "astrocommunity.color.transparent-nvim", enabled = false },
   { import = "astrocommunity.color.twilight-nvim", enabled = true },
   { import = "astrocommunity.colorscheme.catppuccin", enabled = true },
   { import = "astrocommunity.comment.mini-comment", enabled = true },
