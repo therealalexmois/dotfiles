@@ -61,5 +61,10 @@ setopt HIST_IGNORE_SPACE
 # --- Performance tweaks for Git repos ---
 DISABLE_UNTRACKED_FILES_DIRTY=true
 
+DISABLE_AUTO_TITLE="true"
+
 # --- Prompt: clean multi-line rendering ---
 setopt PROMPT_SUBST
+
+# --- LLM configuration for https://github.com/Kurama622/llm.nvim ---
+export LLM_KEY=NONE
