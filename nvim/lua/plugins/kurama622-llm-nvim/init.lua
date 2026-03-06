@@ -1,11 +1,3 @@
-local function notify(msg, level, title)
-  level = level or vim.log.levels.INFO
-  title = title or "AI Commit"
-
-  -- Fallback
-  vim.notify(msg, level, { title = title })
-end
-
 return {
   "Kurama622/llm.nvim",
   dependencies = {
@@ -93,7 +85,7 @@ return {
           prompt = function()
             local diff = vim.fn.system "git diff --no-ext-diff --staged"
             if diff == "" then
-              notify("No staged changes. Stage files first.", vim.log.levels.WARN)
+              vim.notify("No staged changes. Stage files first.", vim.log.levels.WARN)
               return ""
             end
             local recent = vim.fn.system "git log --pretty=%s -n 30"
@@ -137,7 +129,7 @@ return {
                 local lines = vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, true)
                 local msg = table.concat(lines, "\n")
                 vim.fn.setreg("+", msg)
-                notify("AI commit copied to clipboard (+). Paste in LazyGit.", vim.log.levels.INFO)
+                vim.notify("AI commit copied to clipboard (+). Paste in LazyGit.", vim.log.levels.INFO)
               end,
             },
           },
@@ -149,7 +141,7 @@ return {
           prompt = function()
             local diff = vim.fn.system "git diff --no-ext-diff --staged"
             if diff == "" then
-              notify("No staged changes. Stage files first.", vim.log.levels.WARN)
+              vim.notify("No staged changes. Stage files first.", vim.log.levels.WARN)
               return ""
             end
             local branch = vim.fn.system("git rev-parse --abbrev-ref HEAD"):gsub("%s+$", "")
@@ -183,7 +175,7 @@ DIFF:
 
                 -- escape for shell commit
                 local msg = out:gsub('"', '\\"'):gsub("[$`\\]", "\\%0"):gsub("#", "\\#")
-                notify("Committing…", vim.log.levels.INFO)
+                vim.notify("Committing…", vim.log.levels.INFO)
                 vim.cmd(('!git commit -m "%s"'):format(msg))
               end,
             },
