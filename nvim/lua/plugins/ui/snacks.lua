@@ -1,7 +1,16 @@
+local Snacks = require "snacks"
+
 ---@type LazySpec
 return {
   {
     "folke/snacks.nvim",
+    keys = {
+      {
+        "<Leader>fN",
+        function() Snacks.notifier.show_history() end,
+        desc = "Notification history",
+      },
+    },
     opts = function(_, opts)
       opts.input = vim.tbl_deep_extend("force", opts.input or {}, {
         icon = " ",
@@ -10,6 +19,13 @@ return {
         win = {
           style = "input",
         },
+      })
+
+      opts.notifier = vim.tbl_deep_extend("force", opts.notifier or {}, {
+        timeout = 3000,
+        level = vim.log.levels.INFO,
+        style = "compact",
+        top_down = true,
       })
 
       opts.styles = opts.styles or {}
