@@ -1,39 +1,52 @@
 ---@type LazySpec
 return {
-  -- use mason-lspconfig to configure LSP installations
   {
-    "williamboman/mason-lspconfig.nvim",
-    -- overrides `require("mason-lspconfig").setup(...)`
-    opts = function(_, opts)
-      -- add more things to the ensure_installed table protecting against community packs modifying it
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        "lua_ls",
-        -- add more arguments for adding more language servers
-      })
-    end,
-  },
-  -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
-  {
-    "jay-babu/mason-null-ls.nvim",
-    -- overrides `require("mason-null-ls").setup(...)`
-    opts = function(_, opts)
-      -- add more things to the ensure_installed table protecting against community packs modifying it
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        "prettier",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    opts = {
+      ensure_installed = {
+        -- Lua / Neovim config
+        "lua-language-server",
         "stylua",
-        -- add more arguments for adding more null-ls sources
-      })
-    end,
+        "selene", -- Lua linter and static analyzer
+
+        -- Python
+        "basedpyright", -- Python LSP + fast live type diagnostics in editor
+        "ruff", -- Python linter and formatter
+        "mypy", -- Project type checker for CLI / CI, not planned as live editor diagnostics for now
+        "debugpy", -- Python debugger adapter for nvim-dap
+
+        -- SQL
+        "sqls",
+        "sqlfluff",
+
+        -- Docker / Shell
+        "docker-language-server",
+        "hadolint", -- Dockerfile linter
+        "bash-language-server",
+        "shellcheck",
+        "shfmt",
+
+        -- Config files
+        "yaml-language-server",
+        "taplo", -- TOML language server / formatter
+        "json-lsp",
+
+        -- Occasional web work
+        "vtsls", -- TypeScript / JavaScript language server
+        "eslint-lsp",
+        "html-lsp",
+        "css-lsp",
+        "emmet-ls", -- Fast HTML/CSS abbreviation expansion
+        "prettierd",
+
+        -- Uncomment when Go becomes active again
+        -- 'gopls',
+        -- 'delve',
+
+        -- Uncomment when Rust becomes active again
+        -- 'rust-analyzer',
+        -- 'codelldb',
+      },
+    },
   },
-  -- {
-  --   "jay-babu/mason-nvim-dap.nvim",
-  --   -- overrides `require("mason-nvim-dap").setup(...)`
-  --   opts = function(_, opts)
-  --     -- add more things to the ensure_installed table protecting against community packs modifying it
-  --     opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-  --       "python",
-  --       -- add more arguments for adding more debuggers
-  --     })
-  --   end,
-  -- },
 }

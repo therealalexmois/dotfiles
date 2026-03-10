@@ -1,19 +1,3 @@
-return function()
-  if vim.fn.exists "$TMUX" == 1 then
-    local has_tmux, _ = pcall(require, "tmux")
-    if has_tmux then
-      require("tmux").setup {
-        copy_sync = {
-          enable = false,
-        },
-        navigation = {
-          cycle_navigation = true,
-          enable_default_keybindings = true,
-        },
-        resize = {
-          enable_default_keybindings = true,
-        },
-      }
-    end
-  end
-end
+-- This will run last in the setup process.
+-- This is just pure lua so anything that doesn't
+-- fit in the normal config locations above can go here
