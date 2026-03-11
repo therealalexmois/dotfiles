@@ -35,6 +35,7 @@ return {
 
       opts.bufdelete = opts.bufdelete or {}
       opts.toggle = opts.toggle or {}
+      opts.rename = opts.rename or {}
 
       opts.words = vim.tbl_deep_extend("force", opts.words or {}, {
         modes = { "n" },
