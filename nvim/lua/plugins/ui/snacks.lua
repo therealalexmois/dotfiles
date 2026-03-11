@@ -15,6 +15,11 @@ return {
         function() Snacks.toggle.words():toggle() end,
         desc = "Toggle LSP Words",
       },
+      {
+        "<Leader>uM",
+        function() Snacks.toggle.dim():toggle() end,
+        desc = "Toggle Dim",
+      },
     },
     opts = function(_, opts)
       opts.input = vim.tbl_deep_extend("force", opts.input or {}, {
@@ -36,6 +41,25 @@ return {
       opts.bufdelete = opts.bufdelete or {}
       opts.toggle = opts.toggle or {}
       opts.rename = opts.rename or {}
+      opts.dim = vim.tbl_deep_extend("force", opts.dim or {}, {
+        animate = {
+          enabled = false,
+        },
+        scope = {
+          siblings = false,
+          treesitter = {
+            blocks = {
+              enabled = true,
+              "function_declaration",
+              "function_definition",
+              "method_declaration",
+              "method_definition",
+              "class_declaration",
+              "class_definition",
+            },
+          },
+        },
+      })
 
       opts.words = vim.tbl_deep_extend("force", opts.words or {}, {
         modes = { "n" },
