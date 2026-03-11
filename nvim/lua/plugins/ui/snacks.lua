@@ -10,6 +10,11 @@ return {
         function() Snacks.notifier.show_history() end,
         desc = "Notification history",
       },
+      {
+        "<Leader>uo",
+        function() Snacks.toggle.words():toggle() end,
+        desc = "Toggle LSP Words",
+      },
     },
     opts = function(_, opts)
       opts.input = vim.tbl_deep_extend("force", opts.input or {}, {
@@ -26,6 +31,13 @@ return {
         level = vim.log.levels.INFO,
         style = "compact",
         top_down = true,
+      })
+
+      opts.bufdelete = opts.bufdelete or {}
+      opts.toggle = opts.toggle or {}
+
+      opts.words = vim.tbl_deep_extend("force", opts.words or {}, {
+        modes = { "n" },
       })
 
       opts.styles = opts.styles or {}
