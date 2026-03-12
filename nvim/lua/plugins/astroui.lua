@@ -66,6 +66,13 @@ return {
       },
     },
     lazygit = {
+      configure = true,
+      config = {
+        os = { editPreset = "nvim-remote" },
+        gui = {
+          nerdFontsVersion = "3",
+        },
+      },
       theme_path = vim.fs.normalize(vim.fn.stdpath "cache" .. "/lazygit-theme.yml"),
       theme = {
         [241] = { fg = "Special" },
@@ -78,6 +85,9 @@ return {
         searchingActiveBorderColor = { fg = "MatchParen", bold = true },
         selectedLineBgColor = { bg = "Visual" },
         unstagedChangesColor = { fg = "DiagnosticError" },
+      },
+      win = {
+        style = "lazygit",
       },
     },
   },
