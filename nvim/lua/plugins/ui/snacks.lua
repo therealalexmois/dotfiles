@@ -20,6 +20,11 @@ return {
         function() Snacks.toggle.dim():toggle() end,
         desc = "Toggle Dim",
       },
+      {
+        "<Leader>uZ",
+        function() Snacks.toggle.zen():toggle() end,
+        desc = "Toggle Zen Mode",
+      },
     },
     opts = function(_, opts)
       opts.input = vim.tbl_deep_extend("force", opts.input or {}, {
@@ -57,6 +62,19 @@ return {
               "class_declaration",
               "class_definition",
             },
+          },
+        },
+      })
+
+      opts.zen = vim.tbl_deep_extend("force", opts.zen or {}, {
+        toggles = {
+          dim = false,
+          git_signs = false,
+          mini_diff_signs = false,
+          center = true,
+          show = {
+            statusline = true,
+            tabline = true,
           },
         },
       })
