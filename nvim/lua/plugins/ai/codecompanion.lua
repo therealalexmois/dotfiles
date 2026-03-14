@@ -85,7 +85,7 @@ return {
           prompt = "Prompt ",
           provider = "snacks",
           opts = {
-            show_preset_actions = false,
+            show_preset_actions = true,
             show_preset_prompts = false,
             title = "AI actions",
           },
