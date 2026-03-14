@@ -55,19 +55,19 @@ return {
         chat = {
           adapter = {
             name = "ollama",
-            model = "mistral",
+            model = "mistral-16k",
           },
         },
         inline = {
           adapter = {
             name = "ollama",
-            model = "mistral",
+            model = "mistral-16k",
           },
         },
         cmd = {
           adapter = {
             name = "ollama",
-            model = "mistral",
+            model = "mistral-16k",
           },
         },
       },
