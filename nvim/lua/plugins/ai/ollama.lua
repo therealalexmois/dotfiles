@@ -10,35 +10,35 @@ return {
       local ok, wk = pcall(require, 'which-key')
       if ok then
         wk.add({
-          { '<leader>a', group = 'AI' },
+          { '<leader>A', group = 'AI' },
         })
       end
     end,
     keys = {
       {
-        '<leader>aa',
+        '<leader>Aa',
         function() require('ollama').prompt() end,
         desc = 'AI prompt',
         mode = { 'n', 'v' },
       },
       {
-        '<leader>aG',
+        '<leader>AG',
         function() require('ollama').prompt('Generate_Code') end,
         desc = 'AI generate code',
         mode = { 'n', 'v' },
       },
       {
-        '<leader>am',
+        '<leader>Am',
         '<cmd>OllamaModel<cr>',
         desc = 'AI select model',
       },
       {
-        '<leader>as',
+        '<leader>As',
         '<cmd>OllamaServe<cr>',
         desc = 'AI serve start',
       },
       {
-        '<leader>aS',
+        '<leader>AS',
         '<cmd>OllamaServeStop<cr>',
         desc = 'AI serve stop',
       },
