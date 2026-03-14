@@ -2,6 +2,13 @@
 name: Explain Code
 description: Explain selected code in a concise and practical way
 interaction: chat
+opts:
+  alias: explain
+  auto_submit: true
+  is_slash_cmd: true
+  modes:
+    - v
+  stop_context_insertion: true
 ---
 
 ## system
