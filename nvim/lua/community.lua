@@ -15,7 +15,7 @@ return {
   { import = "astrocommunity.colorscheme.github-nvim-theme" },
   { import = "astrocommunity.colorscheme.rose-pine" },
   { import = "astrocommunity.colorscheme.vscode-nvim" },
-  { import = "astrocommunity.comment.mini-comment" },
+  -- { import = "astrocommunity.comment.mini-comment" },
 
   -- Language packs
   { import = "astrocommunity.pack.bash" },
@@ -30,15 +30,14 @@ return {
   { import = "astrocommunity.pack.toml" },
   { import = "astrocommunity.pack.typescript" },
   { import = "astrocommunity.pack.yaml" },
-
-  -- Editing / search
+  --
+  -- -- Editing / search
   { import = "astrocommunity.editing-support.mini-splitjoin" },
   { import = "astrocommunity.editing-support.neogen" },
   { import = "astrocommunity.editing-support.nvim-devdocs" },
   { import = "astrocommunity.editing-support.nvim-regexplainer" },
   { import = "astrocommunity.editing-support.nvim-treesitter-context" },
   { import = "astrocommunity.editing-support.undotree" },
-  { import = "astrocommunity.editing-support.vim-doge" },
   { import = "astrocommunity.editing-support.vim-visual-multi" },
   { import = "astrocommunity.quickfix.nvim-bqf" },
   { import = "astrocommunity.search.nvim-spectre" },
@@ -67,19 +66,19 @@ return {
   { import = "astrocommunity.workflow.hardtime-nvim", lazy = false },
 
   -- Disabled
-  { import = "astrocommunity.completion.coq_nvim", enabled = false },
-  { import = "astrocommunity.completion.mini-completion", enabled = false },
-  { import = "astrocommunity.editing-support.multiple-cursors-nvim", enabled = false },
-  { import = "astrocommunity.game.leetcode-nvim", enabled = false },
-  { import = "astrocommunity.git.gitgraph-nvim", enabled = false },
-  { import = "astrocommunity.keybinding.mini-clue", enabled = false },
-  { import = "astrocommunity.keybinding.nvcheatsheet-nvim", enabled = false },
-  { import = "astrocommunity.media.codesnap-nvim", enabled = false },
-  { import = "astrocommunity.motion.before-nvim", enabled = false },
-  { import = "astrocommunity.motion.nvim-tree-pairs", enabled = false },
-  { import = "astrocommunity.note-taking.obsidian-nvim", enabled = false },
-  { import = "astrocommunity.pack.go", enabled = false },
-  { import = "astrocommunity.pack.rust", enabled = false },
-  { import = "astrocommunity.pack.tailwindcss", enabled = false },
-  { import = "astrocommunity.recipes.vscode-icons", enabled = false },
+  -- { import = "astrocommunity.completion.coq_nvim", enabled = false },
+  -- { import = "astrocommunity.completion.mini-completion", enabled = false },
+  -- { import = "astrocommunity.editing-support.multiple-cursors-nvim", enabled = false },
+  -- { import = "astrocommunity.game.leetcode-nvim", enabled = false },
+  -- { import = "astrocommunity.git.gitgraph-nvim", enabled = false },
+  -- { import = "astrocommunity.keybinding.mini-clue", enabled = false },
+  -- { import = "astrocommunity.keybinding.nvcheatsheet-nvim", enabled = false },
+  -- { import = "astrocommunity.media.codesnap-nvim", enabled = false },
+  -- { import = "astrocommunity.motion.before-nvim", enabled = false },
+  -- { import = "astrocommunity.motion.nvim-tree-pairs", enabled = false },
+  -- { import = "astrocommunity.note-taking.obsidian-nvim", enabled = false },
+  -- { import = "astrocommunity.pack.go", enabled = false },
+  -- { import = "astrocommunity.pack.rust", enabled = false },
+  -- { import = "astrocommunity.pack.tailwindcss", enabled = false },
+  -- { import = "astrocommunity.recipes.vscode-icons", enabled = false },
 }
