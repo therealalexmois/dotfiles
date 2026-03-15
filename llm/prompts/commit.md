@@ -120,6 +120,6 @@ fix(mcp): handle timeout propagation in http hook
 
 Generate one Conventional Commit line for these changes:
 
-```text
+```diff
 ${commit.input}
 ```
