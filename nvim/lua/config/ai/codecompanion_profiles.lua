@@ -1,9 +1,10 @@
 local M = {}
 
 local DEFAULT_HOME_PROFILE = 'home_local'
-local DEFAULT_WORK_PROFILE = 'work_proxy'
-local DEFAULT_HOME_MODEL = 'mistral-16k'
+local DEFAULT_HOME_MODEL = 'qwen2.5-coder:7b'
+
 local DEFAULT_WORK_CHAT_URL = '/v1/chat/completions'
+local DEFAULT_WORK_PROFILE = 'work_proxy'
 
 local REQUIRED_WORK_ENV = {
   'NVIM_AI_WORK_URL',
@@ -13,6 +14,16 @@ local REQUIRED_WORK_ENV = {
 
 local function is_true(value)
   return value == '1' or value == 'true' or value == 'yes'
+end
+
+local function non_empty(value)
+  return value ~= nil and value ~= ''
+end
+
+local function get_env(name)
+  local value = vim.env[name]
+  if non_empty(value) then return value end
+  return nil
 end
 
 function M.get_active_profile()
@@ -30,15 +41,15 @@ function M.is_work_proxy()
 end
 
 function M.get_home_model()
-  return DEFAULT_HOME_MODEL
+  return get_env('NVIM_AI_OLLAMA_MODEL') or DEFAULT_HOME_MODEL
 end
 
 function M.get_work_model()
-  return vim.env.NVIM_AI_WORK_MODEL or ''
+  return get_env('NVIM_AI_WORK_MODEL') or ''
 end
 
 function M.get_work_chat_url()
-  return vim.env.NVIM_AI_WORK_CHAT_URL or DEFAULT_WORK_CHAT_URL
+  return get_env('NVIM_AI_WORK_CHAT_URL') or DEFAULT_WORK_CHAT_URL
 end
 
 function M.get_http_opts()
@@ -48,7 +59,7 @@ function M.get_http_opts()
 
   if not M.is_work_proxy() then return opts end
 
-  if vim.env.NVIM_AI_WORK_PROXY and vim.env.NVIM_AI_WORK_PROXY ~= '' then
+  if non_empty(vim.env.NVIM_AI_WORK_PROXY) then
     opts.proxy = vim.env.NVIM_AI_WORK_PROXY
   end
 
@@ -60,10 +71,7 @@ end
 function M.get_interaction_adapter()
   if M.is_work_proxy() then return DEFAULT_WORK_PROFILE end
 
-  return {
-    name = 'ollama',
-    model = M.get_home_model(),
-  }
+  return 'ollama'
 end
 
 function M.validate_work_proxy()
@@ -79,14 +87,19 @@ function M.validate_work_proxy()
   local missing = {}
 
   for _, name in ipairs(REQUIRED_WORK_ENV) do
-    if not vim.env[name] or vim.env[name] == '' then table.insert(missing, name) end
+    if not non_empty(vim.env[name]) then
+      table.insert(missing, name)
+    end
   end
 
   if #missing > 0 then
     return {
       ok = false,
       profile = DEFAULT_WORK_PROFILE,
-      message = ('AI profile "%s" is not ready. Missing ENV: %s'):format(DEFAULT_WORK_PROFILE, table.concat(missing, ', ')),
+      message = ('AI profile "%s" is not ready. Missing ENV: %s'):format(
+        DEFAULT_WORK_PROFILE,
+        table.concat(missing, ', ')
+      ),
       level = vim.log.levels.ERROR,
     }
   end
@@ -103,6 +116,7 @@ function M.notify_preflight()
   local status = M.validate_work_proxy()
 
   if status.profile ~= DEFAULT_WORK_PROFILE then return end
+  if status.ok then return end
 
   vim.schedule(function()
     vim.notify(status.message, status.level, { title = 'AI profile' })
@@ -114,6 +128,7 @@ function M.setup_commands()
 
   vim.api.nvim_create_user_command('AIProfileStatus', function()
     local status = M.validate_work_proxy()
+
     vim.notify(status.message, status.level, { title = 'AI profile' })
   end, {
     desc = 'Show active AI profile status',
