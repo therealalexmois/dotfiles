@@ -22,6 +22,7 @@ fpath+=("${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-completions/src")
 
 # --- Aliases ---
 alias n='nvim .'
+alias anki='open -a Anki'
 
 # Pyenv shell integration
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -65,6 +66,3 @@ DISABLE_AUTO_TITLE="true"
 
 # --- Prompt: clean multi-line rendering ---
 setopt PROMPT_SUBST
-
-# --- LLM configuration for https://github.com/Kurama622/llm.nvim ---
-export LLM_KEY=NONE

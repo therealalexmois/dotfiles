@@ -15,9 +15,11 @@ return {
     },
     init = function()
       local profiles = require "config.ai.codecompanion_profiles"
+      local docstring = require "config.ai.docstring"
 
       profiles.setup_commands()
       profiles.notify_preflight()
+      docstring.setup_commands()
 
       local ok, wk = pcall(require, "which-key")
       if ok then wk.add {
