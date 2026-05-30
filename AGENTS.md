@@ -13,7 +13,7 @@ interactive development environment.
   into repo config.
 - `lazydocker/` - lazydocker configuration.
 - `llm/` - Global AI prompt library and prompt-system policy used by Neovim.
-- `mac-setup/` - Homebrew formula and cask lists for macOS bootstrap.
+- `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
 - `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile.
 - `pypoetry/` - Poetry configuration.
 - `tmux/` - tmux configuration; plugin checkouts are intentionally ignored.
@@ -32,6 +32,9 @@ tool-native commands and keep missing workflows behind TODOs.
 Install or bootstrap:
 
 ```sh
+# Install Homebrew packages, applications, and fonts declared by the repo.
+brew bundle --file mac-setup/Brewfile
+
 # Create ~/.zshenv as a symlink to bootstrap/.zshenv.
 stow --target "$HOME" bootstrap
 
@@ -211,6 +214,7 @@ needed.
 - Add AstroCommunity imports in `nvim/lua/community.lua` while preserving its section order.
 - Add tmux plugins with `set -g @plugin` entries in `tmux/tmux.conf`.
 - Add Stow-managed home-level Zsh entrypoint behavior in `bootstrap/.zshenv`.
+- Add Homebrew package bootstrap entries in `mac-setup/Brewfile`.
 - Add Zsh symlink/install behavior in `zsh/bootstrap.zsh` and startup behavior in tracked
   Zsh startup files.
 - Add prompt modules or display modules in `starship.toml`.
@@ -224,6 +228,7 @@ needed.
 - [bootstrap/.zshenv](bootstrap/.zshenv)
 - [llm/README.md](llm/README.md)
 - [llm/PROMPT_POLICY.md](llm/PROMPT_POLICY.md)
+- [mac-setup/Brewfile](mac-setup/Brewfile)
 - [nvim/README.md](nvim/README.md)
 - [nvim/lua/config/ai/codecompanion_profiles.lua](nvim/lua/config/ai/codecompanion_profiles.lua)
 - [nvim/lua/plugins/mason.lua](nvim/lua/plugins/mason.lua)

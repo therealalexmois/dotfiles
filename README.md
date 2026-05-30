@@ -54,20 +54,10 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 brew analytics off
 ```
 
-For Mac OS:
-```sh
-xargs brew install < macos-setup/brew-casks.txt
-```
+Install packages from the tracked Brewfile:
 
 ```sh
-brew tap homebrew/cask-fonts && brew install --cask font-jetbrains-mono-nerd-font
-
-npm install -g pyright
-```
-
-```sh
-brew install -f gdu
-brew link --overwrite gdu  # if you have coreutils installed as well
+brew bundle --file mac-setup/Brewfile
 ```
 
 Next we need to install python support (node is optional)
