@@ -1,5 +1,3 @@
-echo "Loading ${USER} .zprofile..."
-
 # GUI terminal session-specific setup
 [[ -n "$DISPLAY" ]] && export EDITOR="nvim"
 

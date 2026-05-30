@@ -1,5 +1,3 @@
-echo "Loading ${USER} .zshrc..."
-
 plugins=(
   git
   colored-man-pages colorize
