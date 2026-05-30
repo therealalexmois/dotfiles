@@ -2,13 +2,15 @@
 
 This repository is an XDG-oriented macOS dotfiles workspace for terminal, shell, editor,
 and developer tooling configuration. It centralizes Neovim/AstroNvim setup, reusable AI
-prompt workflows, tmux, Starship, Zsh, terminal emulator configs, package bootstrap lists,
-and selected CLI tool settings so one laptop can reproduce a consistent interactive
-development environment.
+prompt workflows, tmux, Starship, Zsh bootstrap files, terminal emulator configs, package
+bootstrap lists, and selected CLI tool settings so one laptop can reproduce a consistent
+interactive development environment.
 
 ## Repository Structure
 
 - `alacritty/` - Alacritty terminal configuration, key bindings, color script, and themes.
+- `bootstrap/` - Minimal home-level bootstrap files that redirect shell startup into repo
+  config.
 - `lazydocker/` - lazydocker configuration.
 - `llm/` - Global AI prompt library and prompt-system policy used by Neovim.
 - `mac-setup/` - Homebrew formula and cask lists for macOS bootstrap.
@@ -30,6 +32,9 @@ tool-native commands and keep missing workflows behind TODOs.
 Install or bootstrap:
 
 ```sh
+# Point Zsh at the repo-managed startup directory.
+ln -sf ~/.dotfiles/bootstrap/.zshenv ~/.zshenv
+
 # Link tracked Zsh startup files and install Oh My Zsh if missing.
 zsh zsh/bootstrap.zsh
 
@@ -51,7 +56,7 @@ Lint:
 ```sh
 stylua --check nvim
 selene nvim
-zsh -n zsh/.zshenv zsh/.zprofile zsh/.zshrc zsh/bootstrap.zsh
+zsh -n bootstrap/.zshenv zsh/.zshenv zsh/.zprofile zsh/.zshrc zsh/bootstrap.zsh
 ```
 
 Type-check:
@@ -106,7 +111,9 @@ Deploy:
 
 ```mermaid
 flowchart TD
-  ZshEnv["zsh/.zshenv"] --> XDG["XDG_CONFIG_HOME=$HOME/.dotfiles"]
+  HomeZshEnv["~/.zshenv"] --> BootstrapZshEnv["bootstrap/.zshenv"]
+  BootstrapZshEnv --> ZshEnv["zsh/.zshenv"]
+  ZshEnv --> XDG["XDG_CONFIG_HOME=$HOME/.dotfiles"]
   XDG --> Nvim["nvim/ AstroNvim config"]
   XDG --> Tmux["tmux/tmux.conf"]
   XDG --> Starship["starship.toml"]
@@ -127,13 +134,15 @@ flowchart TD
   ZshBootstrap["zsh/bootstrap.zsh"] --> ZshFiles["~/.zshrc, ~/.zprofile, ~/.zlogin"]
 ```
 
-The shell layer sets XDG paths so application configs resolve from `~/.dotfiles`.
-Neovim loads `lazy_setup.lua`, which imports AstroNvim, AstroCommunity packs, and local
-plugin specs. CodeCompanion reads reusable prompt Markdown from `llm/prompts` and selects
-either the local Ollama adapter or a work proxy adapter from environment variables. tmux
-uses `tmux.conf` as the source of truth and bootstraps TPM when the plugin manager is
-missing. `zsh/bootstrap.zsh` links startup files into `$HOME` and installs Oh My Zsh into
-an ignored local checkout when needed.
+The shell layer starts from a home-level `.zshenv` symlink to `bootstrap/.zshenv`, which
+sets `ZDOTDIR=$HOME/.dotfiles/zsh` and sources the repo-managed `zsh/.zshenv`.
+That repo-managed shell layer sets XDG paths so application configs resolve from
+`~/.dotfiles`. Neovim loads `lazy_setup.lua`, which imports AstroNvim, AstroCommunity
+packs, and local plugin specs. CodeCompanion reads reusable prompt Markdown from
+`llm/prompts` and selects either the local Ollama adapter or a work proxy adapter from
+environment variables. tmux uses `tmux.conf` as the source of truth and bootstraps TPM
+when the plugin manager is missing. `zsh/bootstrap.zsh` links startup files into `$HOME`
+and installs Oh My Zsh into an ignored local checkout when needed.
 
 ## Testing Strategy
 
@@ -179,8 +188,9 @@ an ignored local checkout when needed.
   refresh.
 - Be cautious with `nvim/init.lua`; it is a bootstrap file and its own comment says it
   should not usually be touched.
-- Changes to `llm/PROMPT_POLICY.md`, CodeCompanion profile selection, shell startup files,
-  and tmux bootstrap behavior require focused review because they affect every session.
+- Changes to `llm/PROMPT_POLICY.md`, CodeCompanion profile selection, shell bootstrap or
+  startup files, and tmux bootstrap behavior require focused review because they affect
+  every session.
 - Prompt workflows that modify code must use a reviewable surface by default; the prompt
   policy explicitly forbids automatic application of destructive output.
 - Do not run network-heavy plugin updates, work-proxy AI calls, or broad recursive scans of
@@ -199,8 +209,9 @@ an ignored local checkout when needed.
   `nvim/lua/plugins/treesitter.lua`.
 - Add AstroCommunity imports in `nvim/lua/community.lua` while preserving its section order.
 - Add tmux plugins with `set -g @plugin` entries in `tmux/tmux.conf`.
-- Add Zsh bootstrap behavior in `zsh/bootstrap.zsh` and startup behavior in tracked Zsh
-  startup files.
+- Add home-level Zsh entrypoint behavior in `bootstrap/.zshenv`.
+- Add Zsh symlink/install behavior in `zsh/bootstrap.zsh` and startup behavior in tracked
+  Zsh startup files.
 - Add prompt modules or display modules in `starship.toml`.
 - Add terminal-specific behavior in `alacritty/`, `wezterm/`, or `zellij/`.
 - Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile
@@ -209,6 +220,7 @@ an ignored local checkout when needed.
 ## Further Reading
 
 - [README.md](README.md)
+- [bootstrap/.zshenv](bootstrap/.zshenv)
 - [llm/README.md](llm/README.md)
 - [llm/PROMPT_POLICY.md](llm/PROMPT_POLICY.md)
 - [nvim/README.md](nvim/README.md)
