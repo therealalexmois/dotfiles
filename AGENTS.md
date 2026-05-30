@@ -9,8 +9,8 @@ interactive development environment.
 ## Repository Structure
 
 - `alacritty/` - Alacritty terminal configuration, key bindings, color script, and themes.
-- `bootstrap/` - Minimal home-level bootstrap files that redirect shell startup into repo
-  config.
+- `bootstrap/` - Stow package for home-level bootstrap files that redirect shell startup
+  into repo config.
 - `lazydocker/` - lazydocker configuration.
 - `llm/` - Global AI prompt library and prompt-system policy used by Neovim.
 - `mac-setup/` - Homebrew formula and cask lists for macOS bootstrap.
@@ -32,8 +32,8 @@ tool-native commands and keep missing workflows behind TODOs.
 Install or bootstrap:
 
 ```sh
-# Point Zsh at the repo-managed startup directory.
-ln -sf ~/.dotfiles/bootstrap/.zshenv ~/.zshenv
+# Create ~/.zshenv as a symlink to bootstrap/.zshenv.
+stow --target "$HOME" bootstrap
 
 # Link tracked Zsh startup files and install Oh My Zsh if missing.
 zsh zsh/bootstrap.zsh
@@ -134,15 +134,16 @@ flowchart TD
   ZshBootstrap["zsh/bootstrap.zsh"] --> ZshFiles["~/.zshrc, ~/.zprofile, ~/.zlogin"]
 ```
 
-The shell layer starts from a home-level `.zshenv` symlink to `bootstrap/.zshenv`, which
-sets `ZDOTDIR=$HOME/.dotfiles/zsh` and sources the repo-managed `zsh/.zshenv`.
-That repo-managed shell layer sets XDG paths so application configs resolve from
-`~/.dotfiles`. Neovim loads `lazy_setup.lua`, which imports AstroNvim, AstroCommunity
-packs, and local plugin specs. CodeCompanion reads reusable prompt Markdown from
-`llm/prompts` and selects either the local Ollama adapter or a work proxy adapter from
-environment variables. tmux uses `tmux.conf` as the source of truth and bootstraps TPM
-when the plugin manager is missing. `zsh/bootstrap.zsh` links startup files into `$HOME`
-and installs Oh My Zsh into an ignored local checkout when needed.
+The shell layer starts from `$HOME/.zshenv`, which is managed by Stow as a symlink to
+`bootstrap/.zshenv`. That bootstrap file sets `ZDOTDIR=$HOME/.dotfiles/zsh` and sources
+the repo-managed `zsh/.zshenv`; the repo-managed shell layer then sets XDG paths so
+application configs resolve from `~/.dotfiles`. Neovim loads `lazy_setup.lua`, which
+imports AstroNvim, AstroCommunity packs, and local plugin specs. CodeCompanion reads
+reusable prompt Markdown from `llm/prompts` and selects either the local Ollama adapter or
+a work proxy adapter from environment variables. tmux uses `tmux.conf` as the source of
+truth and bootstraps TPM when the plugin manager is missing. `zsh/bootstrap.zsh` links
+startup files into `$HOME` and installs Oh My Zsh into an ignored local checkout when
+needed.
 
 ## Testing Strategy
 
@@ -209,7 +210,7 @@ and installs Oh My Zsh into an ignored local checkout when needed.
   `nvim/lua/plugins/treesitter.lua`.
 - Add AstroCommunity imports in `nvim/lua/community.lua` while preserving its section order.
 - Add tmux plugins with `set -g @plugin` entries in `tmux/tmux.conf`.
-- Add home-level Zsh entrypoint behavior in `bootstrap/.zshenv`.
+- Add Stow-managed home-level Zsh entrypoint behavior in `bootstrap/.zshenv`.
 - Add Zsh symlink/install behavior in `zsh/bootstrap.zsh` and startup behavior in tracked
   Zsh startup files.
 - Add prompt modules or display modules in `starship.toml`.
