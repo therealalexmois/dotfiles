@@ -1,5 +1,7 @@
 # Load Rust's environment
-. "$HOME/.cargo/env"
+if [ -f "$HOME/.cargo/env" ]; then
+  . "$HOME/.cargo/env"
+fi
 
 # XDG base dirs
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.dotfiles}
