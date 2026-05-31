@@ -1,5 +1,3 @@
-echo "Loading ${USER} .zshenv..."
-
 # Load Rust's environment
 . "$HOME/.cargo/env"
 
