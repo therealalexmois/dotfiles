@@ -1,0 +1,11 @@
+# Copy this file to ~/.codex/config.local.toml and keep it local.
+# Only host-specific project trust entries belong here.
+
+[projects."/Users/al.a.moiseenko/work/dwsai-data-agent"]
+trust_level = "trusted"
+
+[projects."/Users/al.a.moiseenko/projects/work-vault"]
+trust_level = "trusted"
+
+[projects."/Users/al.a.moiseenko/.dotfiles"]
+trust_level = "trusted"

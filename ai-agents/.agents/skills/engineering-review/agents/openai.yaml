@@ -1,0 +1,4 @@
+interface:
+  display_name: "Engineering Review"
+  short_description: "Strict engineering code review"
+  default_prompt: "Use $engineering-review to review this diff with a strict engineering lens."

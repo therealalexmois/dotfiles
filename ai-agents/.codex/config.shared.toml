@@ -1,0 +1,41 @@
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+plan_mode_reasoning_effort = "high"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+
+[sandbox_workspace_write]
+network_access = false
+
+[tui]
+vim_mode_default = true
+status_line = [
+  "model-with-reasoning",
+  "current-dir",
+  "git-branch",
+  "branch-changes",
+  "context-remaining",
+  "five-hour-limit",
+  "weekly-limit",
+  "run-state",
+]
+status_line_use_colors = true
+terminal_title = ["activity", "project-name", "model", "current-dir"]
+theme = "catppuccin-mocha"
+
+[plugins."atlassian-rovo@openai-curated"]
+enabled = true
+
+[plugins."google-calendar@openai-curated"]
+enabled = true
+
+[plugins."google-drive@openai-curated"]
+enabled = true
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+
+[features]
+memories = true

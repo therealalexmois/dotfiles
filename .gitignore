@@ -10,8 +10,50 @@ zsh/*
 
 # Python
 .pyenv
+__pycache__/
+*.py[cod]
 
 # Misc
 fontforge
 htop
 lazygit
+
+# Codex local/runtime state
+ai-agents/.codex/config.toml
+ai-agents/.codex/config.local.toml
+ai-agents/.codex/auth.json
+ai-agents/.codex/history*
+ai-agents/.codex/sessions/
+ai-agents/.codex/cache/
+ai-agents/.codex/logs/
+ai-agents/.codex/*.sqlite*
+ai-agents/.codex/state_*
+ai-agents/.codex/goals_*
+ai-agents/.codex/memories*
+ai-agents/.codex/plugins/cache/
+ai-agents/.codex/.tmp/
+ai-agents/.codex/tmp/
+ai-agents/.codex/shell_snapshots/
+ai-agents/.codex/packages/
+ai-agents/.codex/models_cache.json
+ai-agents/.codex/installation_id
+ai-agents/.codex/version.json
+
+# Claude local/runtime state
+.claude.json
+ai-agents/.claude/history*
+ai-agents/.claude/cache/
+ai-agents/.claude/projects/
+ai-agents/.claude/sessions/
+ai-agents/.claude/session-env/
+ai-agents/.claude/paste-cache/
+ai-agents/.claude/shell-snapshots/
+ai-agents/.claude/telemetry/
+ai-agents/.claude/file-history/
+ai-agents/.claude/downloads/
+ai-agents/.claude/backups/
+ai-agents/.claude/stats-cache.json
+ai-agents/.claude/.last-*
+ai-agents/.claude/plugins/cache/
+ai-agents/.claude/plugins/data/
+ai-agents/.claude/plugins/marketplaces/
