@@ -26,7 +26,9 @@ return {
     servers = {},
     ---@diagnostic disable: missing-fields
     config = {},
-    handlers = {},
+    handlers = {
+      basedpyright = false,
+    },
     autocmds = {
       lsp_codelens_refresh = {
         cond = "textDocument/codeLens",
