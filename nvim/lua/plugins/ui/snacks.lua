@@ -27,6 +27,14 @@ return {
       },
     },
     opts = function(_, opts)
+      opts.image = vim.tbl_deep_extend("force", opts.image or {}, {
+        enabled = false,
+        formats = {},
+        doc = {
+          enabled = false,
+        },
+      })
+
       opts.input = vim.tbl_deep_extend("force", opts.input or {}, {
         icon = " ",
         prompt_pos = "title",

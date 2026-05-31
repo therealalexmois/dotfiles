@@ -19,6 +19,7 @@ return {
 
   -- Language packs
   { import = "astrocommunity.pack.bash" },
+  { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.helm" },
   { import = "astrocommunity.pack.html-css" },
   { import = "astrocommunity.pack.json" },
