@@ -1,11 +1,14 @@
 {
+  "model": "sonnet",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.dotfiles/ai-agents/.claude/statusline.sh",
+    "padding": 0,
+    "refreshInterval": 5
+  },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
   },
-  "theme": "light-ansi",
-  "effortLevel": "high",
-  "statusLine": {
-    "type": "command",
-    "command": "bash $HOME/.claude/statusline-command.sh"
-  }
+  "effortLevel": "xhigh",
+  "theme": "light-ansi"
 }
