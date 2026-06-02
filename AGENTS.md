@@ -100,7 +100,7 @@ Deploy:
   ordered as foundation/UI, language packs, editing/search, git/docker, LSP/debugging,
   then workflow/motion.
 - Keep plugin specs under `nvim/lua/plugins/` grouped by domain: `ai`, `debugging`,
-  `editing`, `lang`, `ui`, and top-level shared specs.
+  `editing`, `ui`, and top-level shared specs.
 - Keep reusable prompts in `llm/prompts/` as Markdown files with metadata/frontmatter.
   Use short kebab-case names and one stable logical purpose per prompt.
 - Keep project-specific prompts outside this repo in `<repo>/.prompts` unless the prompt
@@ -227,7 +227,7 @@ Examples:
 ```text
 chore(zsh): remove zshenv loading echo
 docs(agents): add git commit rules
-fix(nvim): restore treesitter plugin config
+fix(nvim): correct treesitter ensure_installed in astrocore
 ```
 
 ## Progress Updates
@@ -254,8 +254,9 @@ fix(nvim): restore treesitter plugin config
 - Add or adjust CodeCompanion profiles in `nvim/lua/config/ai/codecompanion_profiles.lua`.
 - Add Neovim plugin specs through `nvim/lua/plugins/init.lua` and domain folders below
   `nvim/lua/plugins/`.
-- Extend language tooling through `nvim/lua/plugins/mason.lua` and parser coverage through
-  `nvim/lua/plugins/treesitter.lua`.
+- Extend language tooling through `nvim/lua/plugins/mason.lua`, language packs through
+  `astrocommunity.pack.*` imports in `nvim/lua/community.lua`, and Treesitter parser
+  coverage through `opts.treesitter.ensure_installed` in `nvim/lua/plugins/astrocore.lua`.
 - Add AstroCommunity imports in `nvim/lua/community.lua` while preserving its section order.
 - Add tmux plugins with `set -g @plugin` entries in `tmux/tmux.conf`.
 - Add Stow-managed home-level Zsh entrypoint behavior in `bootstrap/.zshenv`.
