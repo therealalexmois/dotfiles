@@ -14,7 +14,7 @@ This skill writes Markdown only. It does not run code, call APIs (Jira/GitLab/et
 - **Evidence-first.** Conclusions come only from notes/links/artifacts actually read. Never invent impact, metrics, outcomes, scope, feedback, or Staff coverage. If something is missing, write `TBD` / `missing data` — do not reconstruct facts.
 - **Activity ≠ output ≠ outcome.** Separate them explicitly. A finished task is activity; a shipped/merged result with effect is outcome. Only outcomes with evidence back achievement claims.
 - **Product scale ≠ personal influence.** A big product does not equal the user's impact; state what the user personally did and how it affected others.
-- **Do not edit source daily notes.** Treat `1_Planning/Daily/**` as read-only raw source. Consolidation reads them and writes elsewhere.
+- **Do not edit source daily notes.** Treat `1_Planning/Daily/**` as read-only raw source. Consolidation reads them and writes elsewhere. Structuring an individual daily note is the **paired `daily-note` skill**'s job (the write side); it must run separately and **before** `consolidate`, never inside a weekly-review flow.
 - **No silent destructive action.** Never delete or bulk-move files without an explicit, confirmed request (see `consolidate-delete`).
 - **Stay in lane.** Vault restructuring, Inbox setup, `AGENTS.md` edits, and historical migration are out of scope. If asked, decline the bulk action and offer per-week `consolidate` instead.
 - **Output in Russian**, concise business style. No motivational framing. Mobile-friendly formatting (short lines, light structure).
@@ -52,7 +52,7 @@ Goal: open a week and agree goals.
 
 ### 2. `log-update`
 Goal: record a day in the single weekly log.
-- Append/update the day's entry in `02_weekly_log.md` under a `### <YYYY-MM-DD>` heading, using the day fields: `Done / Planned / Blockers / Jira / Artifacts / Learn / Research / Attention`.
+- Append/update the day's entry in `02_weekly_log.md` under a `### <YYYY-MM-DD>` heading, using the day fields: `Done / Planned / Blockers / Decisions / Jira / Artifacts / Learn / Research / Attention`.
 - Keep Jira keys as `DWSAI-<n>` with their URL. Keep artifact links verbatim. Do not rewrite task meaning. Do not mark unchecked items done.
 
 ### 3. `daily-status`
@@ -67,6 +67,7 @@ Goal: turn a week's daily notes into the single weekly log. On-demand and idempo
    - Strip the source note's YAML frontmatter from the embedded content; keep source metadata separately under a `Source metadata` line (path + created/updated).
    - Keep headings, task lines (preserve `[ ]`/`[x]` state and `✅ DATE`), and non-empty Back Matter (Questions/Study/Backlog/Reference/Knowledge). Omit empty Back Matter subsections.
    - Extract Jira keys (`DWSAI-\d+`) into the day's `Jira` field. Put artifact links in the day's `Artifacts` field **with inline status** where known: `<link> — <status>` (`draft / in-review / merged / shipped / abandoned / unknown`). Classify type when useful (MR / RFC / ADR / doc / note / dashboard / chat / incident / Jira issue / other).
+   - Keep any `Decisions` from the day in the day's `Decisions` field — these are high-value Staff signal; surface them later in the review's **1:1 talking points** and **Staff check** (do not invent them).
 3. **Missing days:** flag only missing **working days** (a Mon–Fri with no note) under a `Missing / unclear` note in `02_weekly_log.md` (e.g. "no daily note for 2026-05-18"). Do **not** flag absent Sat/Sun. Never fabricate a day.
 4. **Never modify the source daily notes.**
 
