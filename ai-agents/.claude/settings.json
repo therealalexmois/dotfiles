@@ -1,5 +1,5 @@
 {
-  "model": "sonnet",
+  "model": "claude-opus-4-8",
   "statusLine": {
     "type": "command",
     "command": "~/.dotfiles/ai-agents/.claude/statusline.sh",
