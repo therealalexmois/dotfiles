@@ -10,7 +10,6 @@ return {
         "selene", -- Lua linter and static analyzer
 
         -- Python
-        "basedpyright", -- Python LSP + fast live type diagnostics in editor
         "ruff", -- Python linter and formatter
         "mypy", -- Project type checker for CLI / CI, not planned as live editor diagnostics for now
         "debugpy", -- Python debugger adapter for nvim-dap

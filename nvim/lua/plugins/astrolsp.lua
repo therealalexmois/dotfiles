@@ -26,7 +26,9 @@ return {
     servers = {},
     ---@diagnostic disable: missing-fields
     config = {},
-    handlers = {},
+    handlers = {
+      basedpyright = false,
+    },
     autocmds = {
       lsp_codelens_refresh = {
         cond = "textDocument/codeLens",
@@ -64,7 +66,7 @@ return {
           function() require("astrolsp.toggles").buffer_semantic_tokens() end,
           desc = "Toggle LSP semantic highlight (buffer)",
           cond = function(client)
-            return client.supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens ~= nil
+            return client:supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens ~= nil
           end,
         },
       },

@@ -5,9 +5,7 @@ return {
     opts = function(_, opts)
       local events = require "neo-tree.events"
 
-      local function on_move(data)
-        require("snacks").rename.on_rename_file(data.source, data.destination)
-      end
+      local function on_move(data) require("snacks").rename.on_rename_file(data.source, data.destination) end
 
       opts.event_handlers = opts.event_handlers or {}
 
