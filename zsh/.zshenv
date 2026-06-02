@@ -15,6 +15,9 @@ export ZSH="$ZSH_ROOT/.oh-my-zsh"
 export ZSH_CUSTOM="$ZDOTDIR/custom"
 export HISTFILE="$ZSH_ROOT/.zsh_history"
 
+# Local user binaries
+export PATH="$HOME/.local/bin:$PATH"
+
 # Pyenv
 export PYENV_ROOT="${XDG_CONFIG_HOME}/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
