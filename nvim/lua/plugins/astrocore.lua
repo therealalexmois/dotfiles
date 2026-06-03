@@ -1,6 +1,5 @@
 -- AstroCore provides a central place to modify mappings, vim options, autocommands, and more!
 -- Configuration documentation can be found with `:h astrocore`
-local Snacks = require "snacks"
 
 ---@type LazySpec
 return {
@@ -85,26 +84,30 @@ return {
 
           -- Buffer actions
           ["<Leader>c"] = {
-            function() Snacks.bufdelete.delete() end,
+            function() require("snacks").bufdelete.delete() end,
             desc = "Close buffer",
           },
           ["<Leader>bc"] = {
-            function() Snacks.bufdelete.other() end,
+            function() require("snacks").bufdelete.other() end,
             desc = "Close all except current",
           },
           ["<Leader>bC"] = {
-            function() Snacks.bufdelete.all() end,
+            function() require("snacks").bufdelete.all() end,
             desc = "Close all buffers",
           },
           ["<Leader>bd"] = {
             function()
-              require("astroui.status.heirline").buffer_picker(function(bufnr) Snacks.bufdelete.delete(bufnr) end)
+              require("astroui.status.heirline").buffer_picker(
+                function(bufnr) require("snacks").bufdelete.delete(bufnr) end
+              )
             end,
             desc = "Close buffer from tabline",
           },
           ["<Leader>bD"] = {
             function()
-              require("astroui.status.heirline").buffer_picker(function(bufnr) Snacks.bufdelete.delete(bufnr) end)
+              require("astroui.status.heirline").buffer_picker(
+                function(bufnr) require("snacks").bufdelete.delete(bufnr) end
+              )
             end,
             desc = "Pick to close",
           },
@@ -113,7 +116,7 @@ return {
           -- Picker
           ["<Leader>fF"] = {
             function()
-              Snacks.picker.files {
+              require("snacks").picker.files {
                 hidden = true,
                 ignored = true,
                 exclude = { ".git" },
@@ -123,7 +126,7 @@ return {
           },
           ["<Leader>fW"] = {
             function()
-              Snacks.picker.grep {
+              require("snacks").picker.grep {
                 hidden = true,
                 ignored = true,
                 exclude = { ".git" },

@@ -1,5 +1,3 @@
-local Snacks = require "snacks"
-
 ---@type LazySpec
 return {
   {
@@ -7,22 +5,22 @@ return {
     keys = {
       {
         "<Leader>fN",
-        function() Snacks.notifier.show_history() end,
+        function() require("snacks").notifier.show_history() end,
         desc = "Notification history",
       },
       {
         "<Leader>uo",
-        function() Snacks.toggle.words():toggle() end,
+        function() require("snacks").toggle.words():toggle() end,
         desc = "Toggle LSP Words",
       },
       {
         "<Leader>uM",
-        function() Snacks.toggle.dim():toggle() end,
+        function() require("snacks").toggle.dim():toggle() end,
         desc = "Toggle Dim",
       },
       {
         "<Leader>uZ",
-        function() Snacks.toggle.zen():toggle() end,
+        function() require("snacks").toggle.zen():toggle() end,
         desc = "Toggle Zen Mode",
       },
     },
