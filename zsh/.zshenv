@@ -27,6 +27,3 @@ export PATH="$GOPATH/bin:$PATH"
 
 # Zellij
 export ZELLIJ_CONFIG_DIR="$XDG_CONFIG_HOME/zellij"
-
-# Wezterm
-export WEZTERM_CONFIG_FILE="$XDG_CONFIG_HOME/wezterm/wezterm.lua"

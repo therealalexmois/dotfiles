@@ -25,7 +25,6 @@ settings so one laptop can reproduce a consistent interactive development enviro
 - `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile.
 - `pypoetry/` - Poetry configuration.
 - `tmux/` - tmux configuration; plugin checkouts are intentionally ignored.
-- `wezterm/` - WezTerm configuration.
 - `zellij/` - Zellij configuration.
 - `zsh/` - Tracked Zsh startup files and bootstrap script.
 - `.gitignore` - Ignore rules for machine state, plugin caches, and local-only tools.
@@ -137,7 +136,7 @@ flowchart TD
   XDG --> Nvim["nvim/ AstroNvim config"]
   XDG --> Tmux["tmux/tmux.conf"]
   XDG --> Starship["starship.toml"]
-  XDG --> Terminals["alacritty, wezterm, zellij"]
+  XDG --> Terminals["alacritty, zellij"]
   XDG --> Tools["lazydocker and pypoetry"]
 
   Nvim --> Lazy["lazy.nvim"]
@@ -320,7 +319,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 - Add Zsh symlink/install behavior in `zsh/bootstrap.zsh` and startup behavior in tracked
   Zsh startup files.
 - Add prompt modules or display modules in `starship.toml`.
-- Add terminal-specific behavior in `alacritty/`, `wezterm/`, or `zellij/`.
+- Add terminal-specific behavior in `alacritty/` or `zellij/`.
 - Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile
   variables in CodeCompanion config, and tool-specific paths for Zellij and WezTerm.
 
