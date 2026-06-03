@@ -141,7 +141,7 @@ flowchart TD
   XDG --> Tools["lazydocker and pypoetry"]
 
   Nvim --> Lazy["lazy.nvim"]
-  Lazy --> Astro["AstroNvim v5"]
+  Lazy --> Astro["AstroNvim v6"]
   Lazy --> Community["astrocommunity imports"]
   Lazy --> Plugins["nvim/lua/plugins/*"]
   Nvim --> AI["codecompanion.nvim"]
