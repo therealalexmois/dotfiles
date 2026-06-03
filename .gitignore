@@ -18,6 +18,10 @@ fontforge
 htop
 lazygit
 
+# atuin: track config only; history/key/session live in XDG_DATA_HOME (~/.local/share/atuin)
+atuin/*
+!atuin/config.toml
+
 # Skill-creator eval scratch output (never part of a shared skill)
 ai-agents/.agents/skills/*-workspace/
 
