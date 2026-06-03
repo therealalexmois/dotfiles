@@ -70,7 +70,9 @@ Lint:
 
 ```sh
 stylua --check nvim
-selene nvim
+# selene resolves selene.toml from the CWD, so run it from nvim/ (not `selene nvim`,
+# which finds no config at the repo root and floods false positives).
+(cd nvim && selene .)
 zsh -n bootstrap/.zshenv zsh/.zshenv zsh/.zprofile zsh/.zshrc zsh/bootstrap.zsh
 
 # Lint + smoke the AI CLI tooling (zsh -n, shellcheck, py_compile, render --check,
@@ -110,7 +112,8 @@ Deploy:
 - Format first-party Lua with `stylua`; `nvim/.stylua.toml` sets Unix line endings,
   two-space indentation, `column_width = 120`, `quote_style = "AutoPreferDouble"`,
   `call_parentheses = "None"`, and `collapse_simple_statement = "Always"`.
-- Lint Neovim Lua with `selene nvim`; `nvim/selene.toml` uses `std = "neovim"` and
+- Lint Neovim Lua with `(cd nvim && selene .)`; selene reads `selene.toml` from the CWD,
+  so it must run inside `nvim/`. `nvim/selene.toml` uses `std = "neovim"` and
   allows selected rules for this config style.
 - Keep `nvim/lua/community.lua` imports enabled-only, alphabetized within sections, and
   ordered as foundation/UI, language packs, editing/search, git/docker, LSP/debugging,
@@ -194,7 +197,7 @@ keys Claude rewrites (model, theme, effort) do not churn the tracked defaults.
 - Unit tests: no first-party unit test suite is documented.
   > TODO: Add tests for `nvim/lua/config/ai/docstring/extractor.lua` if its behavior
   > becomes shared or regression-prone.
-- Integration checks: run `stylua --check nvim`, `selene nvim`, `zsh -n ...`, and
+- Integration checks: run `stylua --check nvim`, `(cd nvim && selene .)`, `zsh -n ...`, and
   `nvim --headless "+checkhealth" +qa` before broad config changes.
 - Neovim plugin checks: start `nvim` after editing plugin specs so Lazy can surface
   install, dependency, or lockfile issues.
