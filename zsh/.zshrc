@@ -11,6 +11,9 @@ plugins=(
   kubectl minikube
 )
 
+# OMZ reads HIST_STAMPS at source time, so set it before sourcing.
+export HIST_STAMPS="%T %d.%m.%y"
+
 # Source Oh My Zsh
 source "$ZSH/oh-my-zsh.sh"
 
@@ -45,9 +48,8 @@ if command -v zoxide >/dev/null; then
 fi
 
 # --- History Options ---
-export HISTSIZE=10000000
-export SAVEHIST=10000000
-export HIST_STAMPS="%T %d.%m.%y"
+export HISTSIZE=200000
+export SAVEHIST=200000
 export HISTIGNORE="ls:cd:pwd:exit"
 
 setopt EXTENDED_HISTORY
