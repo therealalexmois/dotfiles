@@ -18,6 +18,9 @@ fontforge
 htop
 lazygit
 
+# Skill-creator eval scratch output (never part of a shared skill)
+ai-agents/.agents/skills/*-workspace/
+
 # Codex local/runtime state
 ai-agents/.codex/config.toml
 ai-agents/.codex/config.local.toml
