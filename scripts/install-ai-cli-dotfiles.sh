@@ -162,6 +162,9 @@ main() {
   for skill in "${skills[@]}"; do
     prepare_stow_path "${HOME}/.agents/skills/${skill}" "../../.dotfiles/ai-agents/.agents/skills/${skill}" "stow-conflicts/agents/skills/${skill}"
   done
+  for profile in "${codex_profiles[@]}"; do
+    prepare_stow_path "${HOME}/.codex/${profile}" "../.dotfiles/ai-agents/.codex/${profile}" "stow-conflicts/codex/${profile}"
+  done
 
   stow -n -v --target "$HOME" bootstrap ai-agents
   stow --target "$HOME" bootstrap ai-agents
