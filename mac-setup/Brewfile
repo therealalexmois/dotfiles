@@ -49,6 +49,10 @@ brew "wget"
 brew "yq"
 
 # Applications and fonts.
+# alacritty cask is adhoc-signed + deprecated (fails Gatekeeper, slated to be
+# disabled 2026-09-01). Homebrew tags the .app with com.apple.quarantine, so macOS
+# removes it on first launch. After every install/upgrade, strip the attribute:
+#   xattr -dr com.apple.quarantine /Applications/Alacritty.app
 cask "alacritty"
 cask "docker-desktop"
 cask "font-0xproto-nerd-font"
