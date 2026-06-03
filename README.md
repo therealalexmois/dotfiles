@@ -60,26 +60,17 @@ Install packages from the tracked Brewfile:
 brew bundle --file mac-setup/Brewfile
 ```
 
-Next we need to install python support (node is optional)
-
-- Neovim python support:
-
-  ```
-  pip install pynvim
-  ```
-
-- Neovim node support:
-
-  ```
-  npm i -g neovim
-  ```
+Language runtimes are managed outside Homebrew: Python via `uv`, Node via `mise`
+(see [Programming Languages](#programming-languages)). Neovim language providers are
+optional — AstroNvim v6 relies on Mason-managed LSPs — so install the `pynvim` / `neovim`
+host packages only if a specific plugin needs the `:python3` / `:node` provider.
 
 ---
 
 ## Requirements
 
 - [Nerd Fonts](https://www.nerdfonts.com/font-downloads) (Optional with manual intervention: See Documentation on customizing icons)
-- [Neovim 0.8+ (Not including nightly)](https://github.com/neovim/neovim/releases/tag/stable)
+- [Neovim 0.11+ (stable, not nightly)](https://github.com/neovim/neovim/releases/tag/stable) — AstroNvim v6 baseline
 - [Tree-sitter CLI](https://github.com/tree-sitter/tree-sitter/blob/master/cli/README.md) (Note: This is only necessary if you want to use auto_install feature with Treesitter)
 - A clipboard tool is necessary for the integration with the system clipboard (see [:help clipboard-tool](https://neovim.io/doc/user/provider.html#clipboard-tool) for supported solutions)
 - Terminal with true color support (for the default theme, otherwise it is dependent on the theme you are using)
@@ -87,6 +78,8 @@ Next we need to install python support (node is optional)
 - [lazygit](https://github.com/jesseduffield/lazygit) - git ui toggle terminal (<leader>tl or <leader>gg)
 - [Python](https://www.python.org/) - python repl toggle terminal (<leader>tp)
 - [Node](https://nodejs.org/en) - node repl toggle terminal (<leader>tn)
+- [gdu](https://github.com/dundee/gdu) - disk usage toggle terminal (<leader>tu)
+- [bottom](https://github.com/ClementTsang/bottom) - process viewer toggle terminal (<leader>tt)
 
 ## ![Installation](https://github.githubassets.com/images/icons/emoji/unicode/1f6e0.png) Installation
 
@@ -117,15 +110,12 @@ brew install rectangle
 
 ## CLI utilities
 
-````sh
-brew install tree    # allows you to see the outline of a directory
-
 ```sh
-brew install tree    # allows you to see the outline of a directory
+brew install tree    # see the outline of a directory
 brew install zoxide  # jump anywhere within your filesystem with z <foldername>
 brew install ripgrep # blazingly fast grep
 brew install fd      # blazingly fast find
-````
+```
 
 ## FZF
 
@@ -145,9 +135,10 @@ brew list | fzf
 ## Terminal System Monitors
 
 ```sh
-brew install htop
-brew install glances
-brew install lazygit
+brew install htop    # process monitor
+brew install bottom  # process viewer (AstroNvim <leader>tt)
+brew install gdu     # disk usage analyzer (AstroNvim <leader>tu)
+brew install lazygit # git ui (AstroNvim <leader>tl)
 ```
 
 ## Web Tools
@@ -171,46 +162,33 @@ brew install tldr
 
 ### Python
 
-```sh
-echo "alias python=/usr/bin/python3" >> ~/.zshrc
-echo "alias pip=/usr/bin/pip3" >> ~/.zshrc
-```
-
-Install miniforge for apple silicon:
+Python is managed with [uv](https://docs.astral.sh/uv/) — interpreters, virtualenvs,
+dependencies, and CLI tools (replaces pyenv, pipx, and poetry):
 
 ```sh
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-arm64.sh -O ~/miniforge.sh
+brew install uv
 
-sh ~/miniforge.sh -b -f -p  $HOME/.miniforge
-
-rm ~/miniforge.sh
+# Global interpreter; exposes python/python3 on PATH (~/.local/bin):
+uv python install 3.13 --default
 ```
 
-Add the following in your .zshrc file:
-
-```sh
-if [ -f "$HOME/.miniforge/etc/profile.d/conda.sh" ]; then
-      . "$HOME/.miniforge/etc/profile.d/conda.sh"
-  else
-      export PATH="$HOME/.miniforge/bin:$PATH"
-fi
-```
-
-Open up a new terminal and the conda command should be available, if you don’t want to activate the base environment run the following:
-
-```sh
-conda config --set auto_activate_base false
-```
+- Per-project: `uv init`, `uv add <pkg>`, `uv run ...` — the Python version is pinned via
+  `uv.lock` / `.python-version`, reproducible across machines.
+- Global CLI tools (pipx replacement): `uv tool install <tool>`.
 
 ### Node
 
+Node is managed with [mise](https://mise.jdx.dev/) — it also handles other runtimes and
+per-project version pins via `mise.toml`:
+
 ```sh
-brew install fnm
+brew install mise
 
-echo '"$(fnm env --use-on-cd)"' >> /Users/<username>/.zprofile
-
-fnm install 17
+# .zshrc already runs: eval "$(mise activate zsh)"
+mise use -g node@lts     # global Node (writes ~/.dotfiles/mise/config.toml)
 ```
+
+- Per-project: `mise use node@<version>` writes a tracked `mise.toml` pin.
 
 ### Rust
 
@@ -280,7 +258,15 @@ Make sure to stop docker desktop after installing and set it to not auto-start s
 
 ```sh
 brew install stow
-git clone https://github.com/therealalexmois/dotfiles.git
+git clone https://github.com/therealalexmois/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+
+# Shell: symlink ~/.zshenv to the bootstrap entrypoint, then link zsh startup files.
+stow --target "$HOME" bootstrap
+zsh zsh/bootstrap.zsh
+
+# AI CLI agents (Codex + Claude): stow ai-agents, render Codex config, link skills/profiles.
+scripts/install-ai-cli-dotfiles.sh
 ```
 
 ## Nerd fonts
