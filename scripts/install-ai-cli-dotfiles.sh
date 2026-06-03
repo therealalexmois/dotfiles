@@ -6,23 +6,20 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 repo_dir="${HOME}/.dotfiles"
 backup_dir="${HOME}/.dotfiles-backups/ai-cli-dotfiles/$(date +%Y%m%d-%H%M%S)"
 
-skills=(
-  cli-creator
-  codebase-onboarding
-  define-goal
-  defuddle
-  engineering-review
-  find-skills
-  obsidian-bases
-  obsidian-cli
-  obsidian-markdown
-  prd
-  python-docstring-editor
-  russian-technical-editor
-  skill-creator
-  to-jira-issues
-  to-prd
-)
+# Shared skills are discovered from the tracked source of truth so this list never
+# drifts. Skill-creator eval scratch dirs (`*-workspace`) are excluded.
+skills=()
+for skill_dir in "${repo_dir}/ai-agents/.agents/skills/"*/(N); do
+  skill_name="${skill_dir:t}"
+  [[ "$skill_name" == *-workspace ]] && continue
+  skills+=("$skill_name")
+done
+
+# Codex reasoning-effort / mode profiles, symlinked into ~/.codex alongside config.toml.
+codex_profiles=()
+for profile_file in "${repo_dir}/ai-agents/.codex/"*.config.toml(N); do
+  codex_profiles+=("${profile_file:t}")
+done
 
 backup_item() {
   local item_path="$1"
@@ -99,6 +96,29 @@ ensure_correct_skill_link() {
   echo "created skill link: $link_path -> $target"
 }
 
+ensure_correct_profile_link() {
+  local profile="$1"
+  local target="../.dotfiles/ai-agents/.codex/${profile}"
+  local link_path="${HOME}/.codex/${profile}"
+
+  mkdir -p "${HOME}/.codex"
+  if [[ -L "$link_path" ]]; then
+    local current
+    current="$(readlink "$link_path")"
+    if [[ "$current" == "$target" ]]; then
+      echo "profile link ok: $link_path -> $current"
+      return 0
+    fi
+    echo "unexpected profile symlink: $link_path -> $current" >&2
+    exit 1
+  fi
+  if [[ -e "$link_path" ]]; then
+    move_conflict "$link_path" "codex-profiles/${profile}"
+  fi
+  ln -s "$target" "$link_path"
+  echo "created profile link: $link_path -> $target"
+}
+
 validate_sources() {
   for skill in "${skills[@]}"; do
     if [[ ! -d "${repo_dir}/ai-agents/.agents/skills/${skill}" ]]; then
@@ -123,7 +143,10 @@ main() {
   backup_item "${HOME}/.codex/AGENTS.md" "codex/AGENTS.md"
   backup_item "${HOME}/.claude/settings.json" "claude/settings.json"
   backup_item "${HOME}/.claude/CLAUDE.md" "claude/CLAUDE.md"
-  backup_item "${HOME}/.claude/statusline-command.sh" "claude/statusline-command.sh"
+
+  for profile in "${codex_profiles[@]}"; do
+    backup_item "${HOME}/.codex/${profile}" "codex/${profile}"
+  done
 
   for skill in "${skills[@]}"; do
     backup_item "${HOME}/.agents/skills/${skill}" "agents/skills/${skill}"
@@ -136,7 +159,6 @@ main() {
   prepare_stow_path "${HOME}/.codex/AGENTS.md" "../.dotfiles/ai-agents/.codex/AGENTS.md" "stow-conflicts/codex/AGENTS.md"
   prepare_stow_path "${HOME}/.claude/CLAUDE.md" "../.dotfiles/ai-agents/.claude/CLAUDE.md" "stow-conflicts/claude/CLAUDE.md"
   prepare_stow_path "${HOME}/.claude/settings.json" "../.dotfiles/ai-agents/.claude/settings.json" "stow-conflicts/claude/settings.json"
-  prepare_stow_path "${HOME}/.claude/statusline-command.sh" "../.dotfiles/ai-agents/.claude/statusline-command.sh" "stow-conflicts/claude/statusline-command.sh"
   for skill in "${skills[@]}"; do
     prepare_stow_path "${HOME}/.agents/skills/${skill}" "../../.dotfiles/ai-agents/.agents/skills/${skill}" "stow-conflicts/agents/skills/${skill}"
   done
@@ -151,6 +173,14 @@ main() {
     ensure_correct_skill_link "${HOME}/.claude" "$skill"
   done
 
+  for profile in "${codex_profiles[@]}"; do
+    ensure_correct_profile_link "$profile"
+  done
+
+  # Claude rewrites runtime keys (model, theme, effort) into settings.json. Hide those
+  # local edits from git so the tracked defaults stay stable across machines.
+  git -C "$repo_dir" update-index --skip-worktree ai-agents/.claude/settings.json
+
   if [[ -d "${HOME}/.agents/skills/skill-creator" && -d "${HOME}/.codex/skills/.system/skill-creator" ]]; then
     echo "warning: global skill-creator duplicates Codex .system/skill-creator; neither was modified"
   fi
@@ -160,11 +190,11 @@ main() {
   test -L "${HOME}/.codex/AGENTS.md" && readlink "${HOME}/.codex/AGENTS.md"
   test -L "${HOME}/.claude/CLAUDE.md" && readlink "${HOME}/.claude/CLAUDE.md"
   test -L "${HOME}/.claude/settings.json" && readlink "${HOME}/.claude/settings.json"
-  test -L "${HOME}/.claude/statusline-command.sh" && readlink "${HOME}/.claude/statusline-command.sh"
   test -d "${HOME}/.codex/skills/.system"
   find "${HOME}/.agents/skills" -maxdepth 1 -mindepth 1 -type l -print | sort
   find "${HOME}/.codex/skills" -maxdepth 1 -type l -print | sort
   find "${HOME}/.claude/skills" -maxdepth 1 -type l -print | sort
+  find "${HOME}/.codex" -maxdepth 1 -name '*.config.toml' -type l -print | sort
 }
 
 main "$@"

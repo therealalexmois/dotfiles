@@ -179,7 +179,20 @@ def main() -> int:
         action="store_true",
         help="create ~/.codex/config.local.toml from current config and exit without rendering",
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="validate shared and local configs merge and serialize without writing output",
+    )
     args = parser.parse_args()
+
+    if args.check:
+        shared = load_toml(SHARED_CONFIG, required=True)
+        local = load_toml(LOCAL_CONFIG, required=False)
+        merged = merge_tables(shared, local)
+        tomllib.loads(dumps_toml(merged))
+        print(f"codex config check ok: {SHARED_CONFIG}")
+        return 0
 
     if args.init_local_from_current or args.init_local_only:
         created = init_local_from_current(LOCAL_CONFIG, OUTPUT_CONFIG)
