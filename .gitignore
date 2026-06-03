@@ -46,6 +46,9 @@ ai-agents/.codex/models_cache.json
 ai-agents/.codex/installation_id
 ai-agents/.codex/version.json
 
+# npx skills lock file (install-time machine state)
+skills-lock.json
+
 # Claude local/runtime state
 .claude.json
 ai-agents/.claude/history*
