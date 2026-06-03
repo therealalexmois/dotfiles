@@ -1,5 +1,6 @@
 # Formulae installed on request.
 brew "acpica"
+brew "atuin"
 brew "bat"
 brew "bottom"
 brew "choose-rust"
@@ -22,7 +23,6 @@ brew "kubernetes-cli"
 brew "lazydocker"
 brew "lazygit"
 brew "luarocks"
-brew "mcfly"
 brew "minikube"
 brew "mise"
 brew "neovim"
@@ -42,6 +42,7 @@ brew "tree"
 brew "uv"
 brew "wget"
 brew "yq"
+brew "zoxide"
 
 # Applications and fonts.
 # alacritty cask is adhoc-signed + deprecated (fails Gatekeeper, slated to be
@@ -50,8 +51,8 @@ brew "yq"
 #   xattr -dr com.apple.quarantine /Applications/Alacritty.app
 cask "alacritty"
 cask "docker-desktop"
-# Nerd Fonts: only the family the terminals actually use (alacritty.toml + wezterm.lua
-# pin "JetBrainsMono Nerd Font") plus a symbols-only glyph fallback.
+# Nerd Fonts: only the family the terminal actually uses (alacritty.toml pins
+# "JetBrainsMono Nerd Font") plus a symbols-only glyph fallback.
 cask "font-jetbrains-mono-nerd-font"
 cask "font-symbols-only-nerd-font"
 cask "obsidian"

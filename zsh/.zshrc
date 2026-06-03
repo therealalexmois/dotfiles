@@ -34,12 +34,14 @@ fi
 # --- fzf ---
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
-# --- McFly (fuzzy history search) ---
-if command -v mcfly >/dev/null; then
-  export MCFLY_KEY_SCHEME=vim
-  export MCFLY_FUZZY=2
-  export MCFLY_RESULTS_SORT=LAST_RUN
-  eval "$(mcfly init zsh)"
+# --- atuin (shell history, syncable across machines) ---
+if command -v atuin >/dev/null; then
+  eval "$(atuin init zsh)"
+fi
+
+# --- zoxide (smarter cd: `z <dir>`) ---
+if command -v zoxide >/dev/null; then
+  eval "$(zoxide init zsh)"
 fi
 
 # --- History Options ---
