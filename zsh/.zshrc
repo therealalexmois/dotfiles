@@ -9,7 +9,6 @@ plugins=(
   zsh-completions
   poetry
   kubectl minikube
-  fnm
 )
 
 # Source Oh My Zsh
@@ -22,19 +21,14 @@ fpath+=("${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-completions/src")
 alias n='nvim .'
 alias anki='open -a Anki'
 
-# Pyenv shell integration
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init - zsh)"
-fi
-
 # --- Starship prompt ---
 if command -v starship >/dev/null; then
   eval "$(starship init zsh)"
 fi
 
-# --- fnm (Fast Node Manager) ---
-if command -v fnm >/dev/null; then
-  eval "$(fnm env --use-on-cd)"
+# --- mise (runtime version manager: Node, etc.) ---
+if command -v mise >/dev/null; then
+  eval "$(mise activate zsh)"
 fi
 
 # --- fzf ---
