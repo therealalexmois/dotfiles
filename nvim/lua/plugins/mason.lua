@@ -36,7 +36,7 @@ return {
         "html-lsp",
         "css-lsp",
         "emmet-ls", -- Fast HTML/CSS abbreviation expansion
-        "prettierd",
+        "prettierd", -- @fsouza scope routed to public npmjs in ~/.npmrc (corp mirror lags)
 
         -- Uncomment when Go becomes active again
         -- 'gopls',
