@@ -67,7 +67,7 @@ Neovim config использует prompts из этой папки как **glo
 
 Сейчас здесь лежат:
 - `commit`, `branch-name`, `branch-from-diff`
-- `explain`, `fix`, `lsp`
+- `explain`, `fix`, `lsp`, `review`, `refactor`
 - `docstring`, `unit-tests`
 - `inline-prompt`, `code-workflow`
 
@@ -199,11 +199,11 @@ ${context.code}
 Реально существующие global prompts:
 
 - `commit`, `branch-name`, `branch-from-diff`
-- `explain`, `fix`, `lsp`
+- `explain`, `fix`, `lsp`, `review`, `refactor`
 - `docstring`, `unit-tests`
 - `inline-prompt`, `code-workflow`
 
-Запланированные (пока нет): `ask-selected`, `refactor-selection`, `better-name`.
+Запланированные (пока нет): `ask-selected`, `better-name`.
 
 Project-specific (пока нет): `generate-tests`.
 

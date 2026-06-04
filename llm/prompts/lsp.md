@@ -4,7 +4,8 @@ interaction: chat
 description: Explain the LSP diagnostics for the selected code
 opts:
   alias: lsp
-  is_slash_cmd: false
+  auto_submit: true
+  is_slash_cmd: true
   modes:
     - v
   stop_context_insertion: true
