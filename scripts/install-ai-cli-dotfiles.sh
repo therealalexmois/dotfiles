@@ -96,6 +96,35 @@ ensure_correct_skill_link() {
   echo "created skill link: $link_path -> $target"
 }
 
+# Remove leftover skill symlinks that point into our managed namespace but no
+# longer match a tracked source skill (renamed/removed skills, or broken links
+# from earlier botched runs). Only symlinks under that namespace are touched;
+# real files, foreign symlinks, and the Codex `.system` directory are left alone.
+prune_stray_skill_links() {
+  local agent_dir="$1"
+  local skills_dir="${agent_dir}/skills"
+  [[ -d "$skills_dir" ]] || return 0
+
+  typeset -A tracked
+  local skill
+  for skill in "${skills[@]}"; do
+    tracked[$skill]=1
+  done
+
+  local link name target
+  for link in "${skills_dir}"/*(@N); do
+    name="${link:t}"
+    [[ -n "${tracked[$name]:-}" ]] && continue
+    target="$(readlink "$link")"
+    [[ "$target" == ../../.agents/skills/* ]] || continue
+    if [[ -e "$link" ]]; then
+      backup_item "$link" "${agent_dir:t}-stray-skills/${name}"
+    fi
+    rm "$link"
+    echo "removed stray skill link: $link -> $target"
+  done
+}
+
 ensure_correct_profile_link() {
   local profile="$1"
   local target="../.dotfiles/ai-agents/.codex/${profile}"
@@ -172,6 +201,9 @@ main() {
     ensure_correct_skill_link "${HOME}/.codex" "$skill"
     ensure_correct_skill_link "${HOME}/.claude" "$skill"
   done
+
+  prune_stray_skill_links "${HOME}/.codex"
+  prune_stray_skill_links "${HOME}/.claude"
 
   for profile in "${codex_profiles[@]}"; do
     ensure_correct_profile_link "$profile"
