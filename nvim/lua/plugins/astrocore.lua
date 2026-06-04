@@ -73,6 +73,11 @@ return {
         g = {
           -- NOTE: `mapleader` and `maplocalleader` must be set before `lazy.setup`
           -- This can be found in the `lua/lazy_setup.lua` file
+
+          -- Disable unused remote-plugin providers (silences :checkhealth warnings)
+          loaded_perl_provider = 0,
+          loaded_ruby_provider = 0,
+          loaded_python3_provider = 0,
         },
       },
 
