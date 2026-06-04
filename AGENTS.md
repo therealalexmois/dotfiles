@@ -23,9 +23,7 @@ settings so one laptop can reproduce a consistent interactive development enviro
 - `llm/` - Global AI prompt library and prompt-system policy used by Neovim.
 - `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
 - `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile.
-- `pypoetry/` - Poetry configuration.
 - `tmux/` - tmux configuration; plugin checkouts are intentionally ignored.
-- `zellij/` - Zellij configuration.
 - `zsh/` - Tracked Zsh startup files and bootstrap script.
 - `.gitignore` - Ignore rules for machine state, plugin caches, and local-only tools.
 - `README.md` - Manual macOS setup notes and installation checklist.
@@ -91,7 +89,6 @@ Run:
 ```sh
 nvim
 tmux source-file ~/.dotfiles/tmux/tmux.conf
-zellij --config-dir ~/.dotfiles/zellij
 ```
 
 Debug:
@@ -139,8 +136,8 @@ flowchart TD
   XDG --> Nvim["nvim/ AstroNvim config"]
   XDG --> Tmux["tmux/tmux.conf"]
   XDG --> Starship["starship.toml"]
-  XDG --> Terminals["alacritty, zellij"]
-  XDG --> Tools["lazydocker and pypoetry"]
+  XDG --> Terminals["alacritty"]
+  XDG --> Tools["lazydocker"]
 
   Nvim --> Lazy["lazy.nvim"]
   Lazy --> Astro["AstroNvim v6"]
@@ -322,9 +319,9 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 - Add Zsh symlink/install behavior in `zsh/bootstrap.zsh` and startup behavior in tracked
   Zsh startup files.
 - Add prompt modules or display modules in `starship.toml`.
-- Add terminal-specific behavior in `alacritty/` or `zellij/`.
+- Add terminal-specific behavior in `alacritty/`.
 - Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile
-  variables in CodeCompanion config, and tool-specific paths for Zellij and WezTerm.
+  variables in CodeCompanion config, and tool-specific paths for WezTerm.
 
 ## Further Reading
 

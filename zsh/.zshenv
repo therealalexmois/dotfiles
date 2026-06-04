@@ -24,6 +24,3 @@ export STARSHIP_CONFIG="${XDG_CONFIG_HOME}/starship.toml"
 # Go
 export GOPATH="$XDG_DATA_HOME/go"
 export PATH="$GOPATH/bin:$PATH"
-
-# Zellij
-export ZELLIJ_CONFIG_DIR="$XDG_CONFIG_HOME/zellij"
