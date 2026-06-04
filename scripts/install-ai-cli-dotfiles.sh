@@ -143,6 +143,7 @@ main() {
   backup_item "${HOME}/.codex/AGENTS.md" "codex/AGENTS.md"
   backup_item "${HOME}/.claude/settings.json" "claude/settings.json"
   backup_item "${HOME}/.claude/CLAUDE.md" "claude/CLAUDE.md"
+  backup_item "${HOME}/.claude/agents" "claude/agents"
 
   for profile in "${codex_profiles[@]}"; do
     backup_item "${HOME}/.codex/${profile}" "codex/${profile}"
@@ -159,6 +160,7 @@ main() {
   prepare_stow_path "${HOME}/.codex/AGENTS.md" "../.dotfiles/ai-agents/.codex/AGENTS.md" "stow-conflicts/codex/AGENTS.md"
   prepare_stow_path "${HOME}/.claude/CLAUDE.md" "../.dotfiles/ai-agents/.claude/CLAUDE.md" "stow-conflicts/claude/CLAUDE.md"
   prepare_stow_path "${HOME}/.claude/settings.json" "../.dotfiles/ai-agents/.claude/settings.json" "stow-conflicts/claude/settings.json"
+  prepare_stow_path "${HOME}/.claude/agents" "../.dotfiles/ai-agents/.claude/agents" "stow-conflicts/claude/agents"
   for skill in "${skills[@]}"; do
     prepare_stow_path "${HOME}/.agents/skills/${skill}" "../../.dotfiles/ai-agents/.agents/skills/${skill}" "stow-conflicts/agents/skills/${skill}"
   done
@@ -193,6 +195,7 @@ main() {
   test -L "${HOME}/.codex/AGENTS.md" && readlink "${HOME}/.codex/AGENTS.md"
   test -L "${HOME}/.claude/CLAUDE.md" && readlink "${HOME}/.claude/CLAUDE.md"
   test -L "${HOME}/.claude/settings.json" && readlink "${HOME}/.claude/settings.json"
+  test -L "${HOME}/.claude/agents" && readlink "${HOME}/.claude/agents"
   test -d "${HOME}/.codex/skills/.system"
   find "${HOME}/.agents/skills" -maxdepth 1 -mindepth 1 -type l -print | sort
   find "${HOME}/.codex/skills" -maxdepth 1 -type l -print | sort
