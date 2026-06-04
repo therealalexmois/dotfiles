@@ -65,14 +65,11 @@ Neovim config использует prompts из этой папки как **glo
 ~/.dotfiles/llm/prompts
 ```
 
-Использовать для:
-- `commit-message`
-- `branch-name`
-- `docstring`
-- `ask-selected`
-- `explain-code`
-- `refactor-selection`
-- `better-name`
+Сейчас здесь лежат:
+- `commit`, `branch-name`, `branch-from-diff`
+- `explain`, `fix`, `lsp`
+- `docstring`, `unit-tests`
+- `inline-prompt`, `code-workflow`
 
 ### Project prompts
 Путь:
@@ -109,42 +106,50 @@ Neovim config использует prompts из этой папки как **glo
 Profile влияет на backend execution, но не на identity prompt’а.
 
 Правильно:
-- один `commit-message` prompt
+- один `commit` prompt
 - разные backend/profile execution paths
 
 Неправильно:
-- `commit-message-home`
-- `commit-message-work`
+- `commit-home`
+- `commit-work`
 
 ---
 
 ## Prompt format
 
-Prompts хранятся как markdown-файлы с metadata/frontmatter.
+Prompts хранятся как markdown-файлы нативного формата CodeCompanion: YAML frontmatter +
+тело с ролями `## system` / `## user`. Переменные `${context.*}` и `${ns.fn}` (резолвер
+`ns.lua` рядом) подставляются при выполнении.
 
-Пример:
+Пример (`prompts/explain.md`):
 
 ```yaml
 ---
-name: explain-code
+name: Explain Code
 description: Explain selected code in a concise and practical way
-kind: explain
-scope: global
 interaction: chat
-requires:
-  - selection
-profiles:
-  - both
-review_mode: none
+opts:
+  alias: explain
+  auto_submit: true
+  is_slash_cmd: true
+  modes:
+    - v
+  stop_context_insertion: true
 ---
 ```
 
 ```md
-Explain the selected code:
-- describe what it does
-- mention hidden assumptions
-- point out risks and edge cases
-- keep the explanation concise
+## system
+
+You are a senior software engineer ...
+
+## user
+
+Please explain the following code:
+
+```${context.filetype}
+${context.code}
+```
 ```
 
 Полный contract и правила описаны в `PROMPT_POLICY.md`.
@@ -158,12 +163,12 @@ Explain the selected code:
 - короткие и стабильные имена
 - одно имя на один logical purpose
 
-Примеры:
-- `commit-message.md`
+Примеры (реальные файлы):
+- `commit.md`
 - `branch-name.md`
+- `branch-from-diff.md`
 - `docstring.md`
-- `explain-code.md`
-- `refactor-selection.md`
+- `explain.md`
 
 ---
 
@@ -189,20 +194,18 @@ Explain the selected code:
 
 ---
 
-## First-iteration prompt pack
+## Current prompt pack
 
-План для первой итерации:
+Реально существующие global prompts:
 
-- `ask-selected`
-- `explain-code`
-- `refactor-selection`
-- `commit-message`
-- `branch-name`
-- `docstring`
-- `better-name`
+- `commit`, `branch-name`, `branch-from-diff`
+- `explain`, `fix`, `lsp`
+- `docstring`, `unit-tests`
+- `inline-prompt`, `code-workflow`
 
-Project-specific:
-- `generate-tests`
+Запланированные (пока нет): `ask-selected`, `refactor-selection`, `better-name`.
+
+Project-specific (пока нет): `generate-tests`.
 
 ---
 
