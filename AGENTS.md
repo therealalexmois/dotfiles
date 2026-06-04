@@ -10,9 +10,10 @@ settings so one laptop can reproduce a consistent interactive development enviro
 
 - `ai-agents/` - Single Stow package for AI CLI agents. Holds `.codex/` (Codex `AGENTS.md`,
   `config.shared.toml`, `config.local.toml.example`, and `*.config.toml` reasoning/mode
-  profiles), `.claude/` (`CLAUDE.md`, `settings.json`, `statusline.sh`), and
-  `.agents/skills/` (shared agent skills, the source of truth for both CLIs). Runtime state,
-  secrets, and the rendered `config.toml` are git-ignored.
+  profiles), `.claude/` (`CLAUDE.md`, `settings.json`, `statusline.sh`, and `agents/`
+  tracked Claude Code subagents), and `.agents/skills/` (shared agent skills, the source of
+  truth for both CLIs). Runtime state, secrets, and the rendered `config.toml` are
+  git-ignored.
 - `alacritty/` - Alacritty terminal configuration, key bindings, color script, and themes.
 - `bootstrap/` - Stow package for home-level bootstrap files that redirect shell startup
   into repo config.
@@ -46,9 +47,10 @@ stow --target "$HOME" bootstrap
 # Link tracked Zsh startup files and install Oh My Zsh if missing.
 zsh zsh/bootstrap.zsh
 
-# Install AI CLI agent dotfiles: backup, Stow `bootstrap`+`ai-agents`, render Codex
-# config, and create per-skill / per-profile symlinks for Codex and Claude. Idempotent;
-# moves real-file conflicts to a timestamped backup and never touches ~/.codex/skills/.system.
+# Install AI CLI agent dotfiles: backup, Stow `bootstrap`+`ai-agents` (folds
+# ~/.claude/agents), render Codex config, and create per-skill / per-profile symlinks for
+# Codex and Claude. Idempotent; moves real-file conflicts to a timestamped backup and never
+# touches ~/.codex/skills/.system.
 scripts/install-ai-cli-dotfiles.sh
 
 # Neovim bootstraps lazy.nvim on first start.
@@ -147,6 +149,9 @@ flowchart TD
   AI --> Prompts["llm/prompts"]
   AI --> Ollama["home_local: Ollama"]
   AI --> WorkProxy["work_proxy: OpenAI-compatible endpoint"]
+  AI --> ClaudeACP["claude profile: claude_code ACP (subscription)"]
+  Nvim --> ClaudeCode["claudecode.nvim (agent/research)"]
+  ClaudeCode --> ClaudeCLI["claude CLI: MCP, subagents, skills, rules"]
 
   Tmux --> Tpm["tmux plugin manager"]
   Tpm --> TmuxPlugins["ignored tmux/plugins/*"]
@@ -154,7 +159,7 @@ flowchart TD
 
   Install["scripts/install-ai-cli-dotfiles.sh"] --> StowAI["stow ai-agents"]
   StowAI --> CodexLink["~/.codex/AGENTS.md, config.shared.toml"]
-  StowAI --> ClaudeLink["~/.claude/CLAUDE.md, settings.json"]
+  StowAI --> ClaudeLink["~/.claude/CLAUDE.md, settings.json, agents/*"]
   StowAI --> AgentsLink["~/.agents/skills/*"]
   Install --> Render["render-codex-config.py"]
   Render --> CodexCfg["~/.codex/config.toml (0600, git-ignored)"]
@@ -169,19 +174,25 @@ The shell layer starts from `$HOME/.zshenv`, which is managed by Stow as a symli
 the repo-managed `zsh/.zshenv`; the repo-managed shell layer then sets XDG paths so
 application configs resolve from `~/.dotfiles`. Neovim loads `lazy_setup.lua`, which
 imports AstroNvim, AstroCommunity packs, and local plugin specs. CodeCompanion reads
-reusable prompt Markdown from `llm/prompts` and selects either the local Ollama adapter or
-a work proxy adapter from environment variables. tmux uses `tmux.conf` as the source of
-truth and bootstraps TPM when the plugin manager is missing. `zsh/bootstrap.zsh` links
-startup files into `$HOME` and installs Oh My Zsh into an ignored local checkout when
-needed.
+reusable prompt Markdown from `llm/prompts` and selects the adapter from `NVIM_AI_PROFILE`:
+the local Ollama adapter (`home`), the work proxy adapter (`work`), or the subscription
+`claude_code` ACP adapter (`claude`); inline/cmd edits stay on the HTTP adapters while the
+`claude` profile only routes chat to ACP. A second, independent surface, `claudecode.nvim`,
+drives the `claude` CLI over the official IDE protocol for agentic/research work with native
+diffs and inherits the CLI's MCP servers, subagents, skills, and rules with no nvim-side
+wiring. tmux uses `tmux.conf` as the source of truth and bootstraps TPM when the plugin
+manager is missing. `zsh/bootstrap.zsh` links startup files into `$HOME` and installs Oh My
+Zsh into an ignored local checkout when needed.
 
 The AI CLI layer is one Stow package, `ai-agents/`, deliberately consolidated so Codex and
 Claude share one skill source of truth. `scripts/install-ai-cli-dotfiles.sh` backs up
 existing files, Stows `bootstrap` and `ai-agents`, renders the Codex config, and then
 creates child symlinks: each `~/.agents/skills/<skill>` is linked into both
 `~/.codex/skills/<skill>` and `~/.claude/skills/<skill>`, and each tracked
-`ai-agents/.codex/*.config.toml` profile is linked into `~/.codex/`. The whole
-`~/.codex/skills` directory is never replaced, so `~/.codex/skills/.system` stays intact.
+`ai-agents/.codex/*.config.toml` profile is linked into `~/.codex/`. Stow also folds
+`ai-agents/.claude/agents` into `~/.claude/agents`, so the tracked Claude Code subagents
+resolve from the repo. The whole `~/.codex/skills` directory is never replaced, so
+`~/.codex/skills/.system` stays intact.
 `render-codex-config.py` recursively merges `config.shared.toml` with the local-only
 `~/.codex/config.local.toml` (local values win), validates via `tomllib`, and atomically
 writes `~/.codex/config.toml` with `0600`. Project trust entries (`[projects."..."]`) and
@@ -212,6 +223,11 @@ keys Claude rewrites (model, theme, effort) do not churn the tracked defaults.
   `NVIM_AI_WORK_MODEL`. Optional variables are `NVIM_AI_WORK_CHAT_URL`,
   `NVIM_AI_WORK_PROXY`, `NVIM_AI_WORK_ALLOW_INSECURE`, `NVIM_AI_PROFILE`, and
   `NVIM_AI_OLLAMA_MODEL`.
+- The Claude surfaces use the subscription, not an API key. The `claude` CodeCompanion
+  profile needs the `claude-code-acp` bridge (`npm install -g @zed-industries/claude-code-acp`);
+  `claudecode.nvim` needs only the `claude` CLI. `CLAUDE_CODE_OAUTH_TOKEN` (from
+  `claude setup-token`) is optional and, if used, is a local-only secret exported from the
+  shell env — never commit it. ACP also works without it on an interactive subscription.
 - Treat `.pyenv/`, `tmux/plugins/*`, ignored Zsh plugin checkouts, shell history, htop
   config, and local-only CLI configs as machine state unless the user explicitly asks to
   version them.
@@ -302,6 +318,9 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 - Add shared agent skills under `ai-agents/.agents/skills/<skill>/` (the source of truth);
   `install-ai-cli-dotfiles.sh` discovers them automatically and symlinks them into Codex and
   Claude. Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored.
+- Add Claude Code subagents as `ai-agents/.claude/agents/<name>.md` (frontmatter `name`,
+  `description`, `tools`, `model`); they reach `~/.claude/agents` through the Stow fold and
+  are auto-discovered by the `claude` CLI and `claudecode.nvim` (`/agents`, Task tool).
 - Add Codex reasoning/mode profiles as `ai-agents/.codex/<name>.config.toml`; the install
   script symlinks every `*.config.toml` into `~/.codex/`.
 - Adjust shared Codex settings in `ai-agents/.codex/config.shared.toml`; keep machine-specific
