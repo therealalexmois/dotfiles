@@ -1,5 +1,5 @@
 ---
-name: russian-technical-editor
+name: writing-russian-editor
 description: Редактирует и сокращает русскоязычные технические тексты без изменения смысла, требований и контрактов. Подключай skill для правки документации, Jira descriptions, MR-описаний, README, docstrings и коротких технических формулировок.
 version: 0.1.0
 ---

@@ -1,6 +1,6 @@
 ---
-name: weekly-review
-description: Manage a weekly planning-and-review workflow inside an Obsidian vault for a Staff/Staff-candidate engineer. Use whenever the user wants to start a work week, keep a weekly log, generate a daily status message for their team, consolidate daily notes into a weekly log, draft a weekly review, check whether quarterly goals/OKR are attainable, collect Staff promotion evidence, or carry unfinished work forward. Trigger on phrases like "начать неделю", "weekly review", "weekly log", "подведи итоги недели", "daily status", "консолидируй daily", "собери evidence", "start week", or when the user references a weekly workspace folder, a `YYYY-Www` week, or quarterly goal attainability. This skill is markdown-only, evidence-first, and never invents impact, metrics, or Staff coverage.
+name: work-weekly-review
+description: Manage a weekly planning-and-review workflow inside an Obsidian vault for a Staff/Staff-candidate engineer. Use whenever the user wants to start a work week, keep a weekly log, generate a daily status message for their team, consolidate daily notes into a weekly log, draft a weekly review, check whether quarterly goals/OKR are attainable, collect Staff promotion evidence, or carry unfinished work forward. Trigger on phrases like "начать неделю", "weekly review", "weekly log", "подведи итоги недели", "daily status", "консолидируй daily", "собери evidence", "start week", or when the user references a weekly workspace folder, a `YYYY-Www` week, or quarterly goal attainability. This skill is markdown-only, evidence-first, and never invents impact, metrics, or Staff coverage. Part of the work-* planning skill set (work-daily-log, work-daily-note, future work-okr).
 ---
 
 # Weekly Review
@@ -14,7 +14,7 @@ This skill writes Markdown only. It does not run code, call APIs (Jira/GitLab/et
 - **Evidence-first.** Conclusions come only from notes/links/artifacts actually read. Never invent impact, metrics, outcomes, scope, feedback, or Staff coverage. If something is missing, write `TBD` / `missing data` — do not reconstruct facts.
 - **Activity ≠ output ≠ outcome.** Separate them explicitly. A finished task is activity; a shipped/merged result with effect is outcome. Only outcomes with evidence back achievement claims.
 - **Product scale ≠ personal influence.** A big product does not equal the user's impact; state what the user personally did and how it affected others.
-- **Do not edit source daily notes.** Treat `1_Planning/Daily/**` as read-only raw source. Consolidation reads them and writes elsewhere. Structuring an individual daily note is the **paired `daily-note` skill**'s job (the write side); it must run separately and **before** `consolidate`, never inside a weekly-review flow.
+- **Do not edit source daily notes.** Treat `1_Planning/Daily/**` as read-only raw source. Consolidation reads them and writes elsewhere. Structuring an individual daily note is the **paired `work-daily-note` skill**'s job (the write side); it must run separately and **before** `consolidate`, never inside a work-weekly-review flow.
 - **No silent destructive action.** Never delete or bulk-move files without an explicit, confirmed request (see `consolidate-delete`).
 - **Stay in lane.** Vault restructuring, Inbox setup, `AGENTS.md` edits, and historical migration are out of scope. If asked, decline the bulk action and offer per-week `consolidate` instead.
 - **Output in Russian**, concise business style. No motivational framing. Mobile-friendly formatting (short lines, light structure).

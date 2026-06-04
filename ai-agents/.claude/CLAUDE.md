@@ -239,7 +239,7 @@ If the production code violates the contract, suggest the minimal correction dir
 
 Write Russian technical text in Russian: short, direct, factual sentences. Preserve identifiers, API contracts, and established project terms. Avoid filler, bureaucratic wording, and anglicisms that have a precise Russian equivalent. Do not expand scope. These rules do not apply to git commit messages.
 
-For any non-trivial writing, editing, or shortening of Russian technical text — Jira, README, MR / RFC / ADR titles and descriptions, documentation, docstrings — use the `russian-technical-editor` skill. It is the single source of truth: full preserve-list, anglicism handling, compound-modifier and keep-list term policy, genre output formats, glossary, and the safety rule. Do not duplicate those rules here.
+For any non-trivial writing, editing, or shortening of Russian technical text — Jira, README, MR / RFC / ADR titles and descriptions, documentation, docstrings — use the `writing-russian-editor` skill. It is the single source of truth: full preserve-list, anglicism handling, compound-modifier and keep-list term policy, genre output formats, glossary, and the safety rule. Do not duplicate those rules here.
 
 ## Delivery
 
