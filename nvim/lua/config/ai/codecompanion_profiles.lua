@@ -6,6 +6,11 @@ local DEFAULT_HOME_MODEL = "qwen2.5-coder:7b"
 local DEFAULT_WORK_CHAT_URL = "/v1/chat/completions"
 local DEFAULT_WORK_PROFILE = "work_proxy"
 
+local DEFAULT_CLAUDE_PROFILE = "claude"
+local CLAUDE_ACP_ADAPTER = "claude_code"
+local CLAUDE_ACP_COMMAND = "claude-code-acp"
+local CLAUDE_BRIDGE_INSTALL = "npm install -g @zed-industries/claude-code-acp"
+
 local REQUIRED_WORK_ENV = {
   "NVIM_AI_WORK_URL",
   "NVIM_AI_WORK_API_KEY",
@@ -28,11 +33,16 @@ function M.get_active_profile()
   if profile == "" then return DEFAULT_HOME_PROFILE end
   if profile == "home" then return DEFAULT_HOME_PROFILE end
   if profile == "work" then return DEFAULT_WORK_PROFILE end
+  if profile == "claude" then return DEFAULT_CLAUDE_PROFILE end
 
   return profile
 end
 
 function M.is_work_proxy() return M.get_active_profile() == DEFAULT_WORK_PROFILE end
+
+function M.is_claude() return M.get_active_profile() == DEFAULT_CLAUDE_PROFILE end
+
+function M.claude_bridge_available() return vim.fn.executable(CLAUDE_ACP_COMMAND) == 1 end
 
 function M.get_home_model() return get_env "NVIM_AI_OLLAMA_MODEL" or DEFAULT_HOME_MODEL end
 
@@ -54,13 +64,44 @@ function M.get_http_opts()
   return opts
 end
 
+--- Адаптер для inline и cmd. ACP (Claude) не используется для inline-стратегии,
+--- поэтому при профиле `claude` inline/cmd остаются на локальном/HTTP-адаптере.
 function M.get_interaction_adapter()
   if M.is_work_proxy() then return DEFAULT_WORK_PROFILE end
 
   return "ollama"
 end
 
-function M.validate_work_proxy()
+--- Адаптер чата. При профиле `claude` чат идёт через ACP-адаптер Claude Code;
+--- иначе совпадает с inline-адаптером.
+function M.get_chat_adapter()
+  if M.is_claude() then return CLAUDE_ACP_ADAPTER end
+
+  return M.get_interaction_adapter()
+end
+
+function M.validate()
+  if M.is_claude() then
+    if not M.claude_bridge_available() then
+      return {
+        ok = false,
+        profile = DEFAULT_CLAUDE_PROFILE,
+        message = ('AI profile "%s" needs the ACP bridge. Install: %s'):format(
+          DEFAULT_CLAUDE_PROFILE,
+          CLAUDE_BRIDGE_INSTALL
+        ),
+        level = vim.log.levels.ERROR,
+      }
+    end
+
+    return {
+      ok = true,
+      profile = DEFAULT_CLAUDE_PROFILE,
+      message = ("AI profile: %s (Claude Code ACP, subscription)"):format(DEFAULT_CLAUDE_PROFILE),
+      level = vim.log.levels.INFO,
+    }
+  end
+
   if not M.is_work_proxy() then
     return {
       ok = true,
@@ -97,9 +138,8 @@ function M.validate_work_proxy()
 end
 
 function M.notify_preflight()
-  local status = M.validate_work_proxy()
+  local status = M.validate()
 
-  if status.profile ~= DEFAULT_WORK_PROFILE then return end
   if status.ok then return end
 
   vim.schedule(function() vim.notify(status.message, status.level, { title = "AI profile" }) end)
@@ -109,7 +149,7 @@ function M.setup_commands()
   if vim.fn.exists ":AIProfileStatus" > 0 then return end
 
   vim.api.nvim_create_user_command("AIProfileStatus", function()
-    local status = M.validate_work_proxy()
+    local status = M.validate()
 
     vim.notify(status.message, status.level, { title = "AI profile" })
   end, {
