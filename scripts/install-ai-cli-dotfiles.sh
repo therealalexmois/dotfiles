@@ -98,12 +98,18 @@ ensure_correct_skill_link() {
 
 # Remove leftover skill symlinks that point into our managed namespace but no
 # longer match a tracked source skill (renamed/removed skills, or broken links
-# from earlier botched runs). Only symlinks under that namespace are touched;
-# real files, foreign symlinks, and the Codex `.system` directory are left alone.
+# from earlier botched runs, including array-collapse orphans whose name is the
+# whole skill list joined by spaces). Only symlinks whose target starts with the
+# given managed prefix are touched; real files, foreign symlinks, and the Codex
+# `.system` directory are left alone. `target_prefix` differs per namespace:
+# `~/.codex` and `~/.claude` links point at `../../.agents/skills/`, while
+# `~/.agents/skills` links point at `../../.dotfiles/ai-agents/.agents/skills/`.
 prune_stray_skill_links() {
-  local agent_dir="$1"
-  local skills_dir="${agent_dir}/skills"
+  local skills_dir="$1"
+  local target_prefix="$2"
   [[ -d "$skills_dir" ]] || return 0
+
+  local label="${skills_dir:h:t}"
 
   typeset -A tracked
   local skill
@@ -116,9 +122,9 @@ prune_stray_skill_links() {
     name="${link:t}"
     [[ -n "${tracked[$name]:-}" ]] && continue
     target="$(readlink "$link")"
-    [[ "$target" == ../../.agents/skills/* ]] || continue
+    [[ "$target" == ${target_prefix}* ]] || continue
     if [[ -e "$link" ]]; then
-      backup_item "$link" "${agent_dir:t}-stray-skills/${name}"
+      backup_item "$link" "${label}-stray-skills/${name}"
     fi
     rm "$link"
     echo "removed stray skill link: $link -> $target"
@@ -202,8 +208,9 @@ main() {
     ensure_correct_skill_link "${HOME}/.claude" "$skill"
   done
 
-  prune_stray_skill_links "${HOME}/.codex"
-  prune_stray_skill_links "${HOME}/.claude"
+  prune_stray_skill_links "${HOME}/.codex/skills" "../../.agents/skills/"
+  prune_stray_skill_links "${HOME}/.claude/skills" "../../.agents/skills/"
+  prune_stray_skill_links "${HOME}/.agents/skills" "../../.dotfiles/ai-agents/.agents/skills/"
 
   for profile in "${codex_profiles[@]}"; do
     ensure_correct_profile_link "$profile"
