@@ -1,3 +1,9 @@
+<!--
+Derived from Matt Pocock's grill-with-docs:
+https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs/ADR-FORMAT.md
+MIT License © 2026 Matt Pocock. Reproduced verbatim under MIT.
+-->
+
 # ADR Format
 
 ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
