@@ -10,6 +10,14 @@ These are user-level instructions.
 - Apply the Russian Technical Writing rules only when writing, editing, or shortening Russian technical text.
 - Apply the Git commit message rule whenever the user provides `git diff` and asks for a commit message.
 
+## Output Style
+
+These rules apply to all output: chat, code, comments, and documentation, in any language.
+
+- Do not use emoji unless the user explicitly asks for them.
+- Do not use the em dash `—` in generated text. Use a hyphen, comma, colon, or split the sentence instead.
+- In Russian text, always write `е` instead of `ё`.
+
 ## Working Style
 
 - Read the relevant files, contracts, and tests before changing behavior.
