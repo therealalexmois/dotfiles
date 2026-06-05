@@ -189,6 +189,45 @@ machine state live only in the local config and are never tracked. The install s
 sets `git update-index --skip-worktree` on `ai-agents/.claude/settings.json` so the runtime
 keys Claude rewrites (model, theme, effort) do not churn the tracked defaults.
 
+## Agent Skills: Naming and Layout
+
+Source of truth and symlink chain (two link layers on top of the repo, easy to break):
+
+- Real files live in `ai-agents/.agents/skills/<name>/` with `SKILL.md` at the skill root.
+- `~/.agents/skills/<name>` -> `../../.dotfiles/ai-agents/.agents/skills/<name>` (Stow side).
+- `~/.claude/skills/<name>` -> `../../.agents/skills/<name>`.
+- `~/.codex/skills/<name>` -> `../../.agents/skills/<name>`.
+- All three links are created by `scripts/install-ai-cli-dotfiles.sh` (idempotent). Skills
+  load only at CLI startup, so new or renamed skills appear after restarting Claude Code
+  and Codex.
+
+Naming convention for first-party skills: the directory name and the `name:` field in
+`SKILL.md` frontmatter must carry a domain prefix:
+
+| Prefix | Domain |
+| --- | --- |
+| `work-` | planning, reflection, and work processes |
+| `writing-` | text editing |
+| `jira-` | Jira workflows |
+| `gitlab-` | GitLab workflows |
+| `spirit-deploy` | deploy (single-skill domain) |
+
+Third-party imported skills keep their upstream names and are exempt. In particular,
+`obsidian-*` skills are third-party vault tooling; do not confuse them with `work-*`.
+Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored and not skills.
+
+> TODO: Rename the unprefixed first-party skills to follow the convention: `to-prd`,
+> `wiki`, `daas-k8s-debug`, `incident-triage`, `time-messenger`.
+
+Rename checklist (every step is required, the link layers break silently):
+
+1. Rename the directory under `ai-agents/.agents/skills/`.
+2. Update `name:` in the skill's `SKILL.md` frontmatter.
+3. Recreate all three symlinks (`~/.agents/skills`, `~/.claude/skills`,
+   `~/.codex/skills`) or rerun `scripts/install-ai-cli-dotfiles.sh`.
+4. Update cross-references to the old name in other `SKILL.md` files.
+5. Restart Claude Code and Codex so the renamed skill is picked up.
+
 ## Testing Strategy
 
 - Unit tests: no first-party unit test suite is documented.
@@ -301,7 +340,9 @@ fix(nvim): correct treesitter ensure_installed in astrocore
   in `<repo>/.prompts`.
 - Add shared agent skills under `ai-agents/.agents/skills/<skill>/` (the source of truth);
   `install-ai-cli-dotfiles.sh` discovers them automatically and symlinks them into Codex and
-  Claude. Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored.
+  Claude. Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored. Naming
+  convention, symlink chain, and the rename checklist live in "Agent Skills: Naming and
+  Layout" above.
 - Add Codex reasoning/mode profiles as `ai-agents/.codex/<name>.config.toml`; the install
   script symlinks every `*.config.toml` into `~/.codex/`.
 - Adjust shared Codex settings in `ai-agents/.codex/config.shared.toml`; keep machine-specific
