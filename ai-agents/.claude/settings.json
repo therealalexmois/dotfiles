@@ -12,5 +12,11 @@
   "effortLevel": "xhigh",
   "theme": "light-ansi",
   "editorMode": "vim",
-  "includeCoAuthoredBy": false
+  "includeCoAuthoredBy": false,
+  "language": "russian",
+  "voice": {
+    "enabled": true,
+    "mode": "tap"
+  },
+  "voiceEnabled": true
 }
