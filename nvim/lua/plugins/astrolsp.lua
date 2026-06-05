@@ -25,10 +25,17 @@ return {
     },
     servers = {},
     ---@diagnostic disable: missing-fields
-    config = {},
-    handlers = {
-      basedpyright = false,
+    config = {
+      basedpyright = {
+        settings = {
+          basedpyright = {
+            -- Типы проверяет mypy; basedpyright оставлен только для hover/references/completion.
+            analysis = { typeCheckingMode = "off" },
+          },
+        },
+      },
     },
+    handlers = {},
     autocmds = {
       lsp_codelens_refresh = {
         cond = "textDocument/codeLens",
