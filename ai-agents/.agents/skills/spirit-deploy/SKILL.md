@@ -7,6 +7,8 @@ description: Помогает деплоить приложения в Spirit De
 
 Помогает работать со **Spirit Deploy** (DaaS) через CLI: `dp deploy <command>` (плагин `spirit-deploy` для `dp`).
 
+См. также `daas-k8s-debug` - post-deploy триаж rollout-а в Kubernetes, когда выкат прошел, но под/деплой не поднялся.
+
 Две главные задачи:
 
 1. **Готовить и валидировать `application.yaml`** — корректно заполнять placeholder-значения, проставлять `isModified`, согласовывать `environmentType` с `--env`, выбирать кластеры, настраивать пробы/порты/ресурсы.
