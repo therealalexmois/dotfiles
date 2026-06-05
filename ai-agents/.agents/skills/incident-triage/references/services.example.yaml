@@ -1,0 +1,66 @@
+# services.example.yaml - ШАБЛОН реестра сервисов для разбора инцидентов.
+#
+# Это пример. Скопируй файл в `.claude/context/services.yaml` своего проекта
+# и заполни реальными значениями. Реальные cluster, namespace, sage_group
+# и gitlab project здесь намеренно НЕ указаны - смотри их в своей инфраструктуре
+# (dp_sage_groups, dp_sage_systems, манифесты Spirit Deploy, настройки GitLab).
+#
+# Skill incident-triage читает этот реестр как источник истины: по имени или
+# alias находит сервис и берет из него sage_group, k8s_cluster, k8s_namespace,
+# gitlab_project, gitlab_tenant для проверок в dp_sage_*, dp_kube_*, dp_gitlab_*.
+
+services:
+  # Иллюстративный пример - значения-заглушки, замени на реальные.
+  - name: dwsai-data-agent
+    # Под какими именами сервис могут назвать в алерте, тикете или чате.
+    aliases:
+      - data-agent
+      - дата-агент
+      - dwsai-agent
+
+    # Sage: группа логов. Берется из dp_sage_groups.
+    # ЗАГЛУШКА - подставь реальную группу.
+    sage_group: <sage-group-placeholder>
+
+    # Kubernetes: кластеры, где крутится сервис. Список - проверяй все.
+    # ЗАГЛУШКИ - подставь реальные кластеры.
+    k8s_cluster:
+      - <cluster-a-placeholder>
+      - <cluster-b-placeholder>
+
+    # Kubernetes: namespace(ы) сервиса. Может быть списком - проверяй все.
+    # В Sage namespace обычно совпадает с `system` для dp_sage_logs.
+    # ЗАГЛУШКА - подставь реальный namespace.
+    k8s_namespace:
+      - <namespace-placeholder>
+
+    # GitLab: проект и tenant для проверки deploy-пайплайнов.
+    # ЗАГЛУШКИ - подставь реальные.
+    gitlab_project: <gitlab-project-placeholder>
+    gitlab_tenant: <gitlab-tenant-placeholder>
+
+    # Опционально: путь к YAML с индикаторами (метрики, SLO, пороги),
+    # относительно `.claude/context/`. Удали, если индикаторов нет.
+    # Формат файла индикаторов: список записей с полями name/description
+    # и search_request (готовый MageQL для dp_sage_logs/dp_sage_query).
+    indicators_file: indicators/dwsai-data-agent.yaml
+
+  # Добавляй остальные свои сервисы по той же схеме.
+  # - name: <service>
+  #   aliases: [...]
+  #   sage_group: <...>
+  #   k8s_cluster: [<...>]
+  #   k8s_namespace: [<...>]
+  #   gitlab_project: <...>
+  #   gitlab_tenant: <...>
+
+# Опционально, рядом полезно держать `.claude/context/data-flows.yaml`:
+# граф зависимостей сервисов (кто кого вызывает, kafka, dwh, внешние HTTP).
+# Skill читает его, чтобы отличить сервис-источник инцидента от сервиса,
+# который только показывает downstream-симптомы. Пример схемы:
+#
+# flows:
+#   - from: dwsai-data-agent
+#     to: <upstream-service>
+#     kind: http        # http | grpc | kafka | db | external
+#     internal: true    # true - есть в services.yaml; false - внешняя зависимость
