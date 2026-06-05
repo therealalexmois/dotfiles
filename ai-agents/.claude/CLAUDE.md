@@ -25,6 +25,7 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 - Keep implementations simple; add abstractions only when they reduce real duplication or clarify a contract.
 - Prefer explicit errors over hidden failures, empty fallback results, or warning-only output.
 - Do not add retries around side-effecting operations unless an idempotency contract is clear.
+- Spawn subagents and run parallel sessions deliberately, not by default: each subagent and each session consumes its own token budget against the shared limit. Prefer one focused session, smaller fan-out, and a cheaper model for simple subagents.
 
 ## Code Quality
 

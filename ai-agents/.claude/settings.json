@@ -1,4 +1,10 @@
 {
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6"
+  },
+  "attribution": {
+    "commit": ""
+  },
   "model": "sonnet",
   "statusLine": {
     "type": "command",
@@ -11,8 +17,5 @@
   },
   "effortLevel": "xhigh",
   "theme": "light-ansi",
-  "editorMode": "vim",
-  "attribution": {
-    "commit": ""
-  }
+  "editorMode": "vim"
 }
