@@ -128,42 +128,6 @@ Deploy:
 
 ## Architecture Notes
 
-```mermaid
-flowchart TD
-  HomeZshEnv["~/.zshenv"] --> BootstrapZshEnv["bootstrap/.zshenv"]
-  BootstrapZshEnv --> ZshEnv["zsh/.zshenv"]
-  ZshEnv --> XDG["XDG_CONFIG_HOME=$HOME/.dotfiles"]
-  XDG --> Nvim["nvim/ AstroNvim config"]
-  XDG --> Tmux["tmux/tmux.conf"]
-  XDG --> Starship["starship.toml"]
-  XDG --> Terminals["alacritty, zellij"]
-  XDG --> Tools["lazydocker and pypoetry"]
-
-  Nvim --> Lazy["lazy.nvim"]
-  Lazy --> Astro["AstroNvim v6"]
-  Lazy --> Community["astrocommunity imports"]
-  Lazy --> Plugins["nvim/lua/plugins/*"]
-  Nvim --> AI["codecompanion.nvim"]
-  AI --> Prompts["llm/prompts"]
-  AI --> Ollama["home_local: Ollama"]
-  AI --> WorkProxy["work_proxy: OpenAI-compatible endpoint"]
-
-  Tmux --> Tpm["tmux plugin manager"]
-  Tpm --> TmuxPlugins["ignored tmux/plugins/*"]
-  ZshBootstrap["zsh/bootstrap.zsh"] --> ZshFiles["~/.zshrc, ~/.zprofile, ~/.zlogin"]
-
-  Install["scripts/install-ai-cli-dotfiles.sh"] --> StowAI["stow ai-agents"]
-  StowAI --> CodexLink["~/.codex/AGENTS.md, config.shared.toml"]
-  StowAI --> ClaudeLink["~/.claude/CLAUDE.md, settings.json"]
-  StowAI --> AgentsLink["~/.agents/skills/*"]
-  Install --> Render["render-codex-config.py"]
-  Render --> CodexCfg["~/.codex/config.toml (0600, git-ignored)"]
-  CodexShared["config.shared.toml"] --> Render
-  CodexLocal["~/.codex/config.local.toml (local-only)"] --> Render
-  AgentsLink --> SkillLinks["~/.codex/skills/<skill>, ~/.claude/skills/<skill>"]
-  Install --> ProfileLinks["~/.codex/*.config.toml profiles"]
-```
-
 The shell layer starts from `$HOME/.zshenv`, which is managed by Stow as a symlink to
 `bootstrap/.zshenv`. That bootstrap file sets `ZDOTDIR=$HOME/.dotfiles/zsh` and sources
 the repo-managed `zsh/.zshenv`; the repo-managed shell layer then sets XDG paths so
@@ -208,6 +172,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | --- | --- |
 | `work-` | planning, reflection, and work processes |
 | `writing-` | text editing |
+| `python-` | Python coding conventions |
 | `jira-` | Jira workflows |
 | `gitlab-` | GitLab workflows |
 | `spirit-deploy` | deploy (single-skill domain) |
@@ -338,49 +303,30 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 
 - Add reusable AI workflows as Markdown prompts in `llm/prompts/`; project overrides live
   in `<repo>/.prompts`.
-- Add shared agent skills under `ai-agents/.agents/skills/<skill>/` (the source of truth);
-  `install-ai-cli-dotfiles.sh` discovers them automatically and symlinks them into Codex and
-  Claude. Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored. Naming
-  convention, symlink chain, and the rename checklist live in "Agent Skills: Naming and
-  Layout" above.
+- Add shared agent skills under `ai-agents/.agents/skills/<skill>/`; see "Agent Skills:
+  Naming and Layout" above for the convention, symlink chain, and rename checklist.
 - Add Codex reasoning/mode profiles as `ai-agents/.codex/<name>.config.toml`; the install
   script symlinks every `*.config.toml` into `~/.codex/`.
 - Adjust shared Codex settings in `ai-agents/.codex/config.shared.toml`; keep machine-specific
   values in `~/.codex/config.local.toml` (see `config.local.toml.example`).
 - Add or adjust CodeCompanion profiles in `nvim/lua/config/ai/codecompanion_profiles.lua`.
 - Add Neovim plugin specs through `nvim/lua/plugins/init.lua` and domain folders below
-  `nvim/lua/plugins/`.
-- Extend language tooling through `nvim/lua/plugins/mason.lua`, language packs through
-  `astrocommunity.pack.*` imports in `nvim/lua/community.lua`, and Treesitter parser
-  coverage through `opts.treesitter.ensure_installed` in `nvim/lua/plugins/astrocore.lua`.
-- Add AstroCommunity imports in `nvim/lua/community.lua` while preserving its section order.
+  `nvim/lua/plugins/`; AstroCommunity imports go in `nvim/lua/community.lua` (preserve its
+  section order), language tooling in `nvim/lua/plugins/mason.lua`, Treesitter parsers in
+  `opts.treesitter.ensure_installed` in `nvim/lua/plugins/astrocore.lua`.
 - Add tmux plugins with `set -g @plugin` entries in `tmux/tmux.conf`.
-- Add Stow-managed home-level Zsh entrypoint behavior in `bootstrap/.zshenv`.
 - Add Homebrew package bootstrap entries in `mac-setup/Brewfile`.
-- Add Zsh symlink/install behavior in `zsh/bootstrap.zsh` and startup behavior in tracked
-  Zsh startup files.
-- Add prompt modules or display modules in `starship.toml`.
-- Add terminal-specific behavior in `alacritty/` or `zellij/`.
+- Shell entrypoints: home-level behavior in `bootstrap/.zshenv`, symlink/install behavior in
+  `zsh/bootstrap.zsh`, startup behavior in tracked Zsh startup files.
 - Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile
   variables in CodeCompanion config, and tool-specific paths for Zellij and WezTerm.
 
 ## Further Reading
 
-- [README.md](README.md)
-- [bootstrap/.zshenv](bootstrap/.zshenv)
-- [scripts/install-ai-cli-dotfiles.sh](scripts/install-ai-cli-dotfiles.sh)
-- [scripts/render-codex-config.py](scripts/render-codex-config.py)
-- [scripts/check-ai-cli.sh](scripts/check-ai-cli.sh)
-- [ai-agents/.codex/config.shared.toml](ai-agents/.codex/config.shared.toml)
-- [llm/README.md](llm/README.md)
-- [llm/PROMPT_POLICY.md](llm/PROMPT_POLICY.md)
-- [mac-setup/Brewfile](mac-setup/Brewfile)
-- [nvim/README.md](nvim/README.md)
-- [nvim/lua/config/ai/codecompanion_profiles.lua](nvim/lua/config/ai/codecompanion_profiles.lua)
-- [nvim/lua/plugins/mason.lua](nvim/lua/plugins/mason.lua)
-- [tmux/tmux.conf](tmux/tmux.conf)
-- [zsh/.zshenv](zsh/.zshenv)
-- [zsh/.zshrc](zsh/.zshrc)
-- [zsh/bootstrap.zsh](zsh/bootstrap.zsh)
+- [README.md](README.md) - manual macOS setup notes.
+- [scripts/install-ai-cli-dotfiles.sh](scripts/install-ai-cli-dotfiles.sh) and
+  [scripts/render-codex-config.py](scripts/render-codex-config.py) - AI CLI install chain.
+- [llm/PROMPT_POLICY.md](llm/PROMPT_POLICY.md) - prompt-system policy.
+- [nvim/lua/config/ai/codecompanion_profiles.lua](nvim/lua/config/ai/codecompanion_profiles.lua) - AI profile selection.
 
 > TODO: Add deeper architecture docs such as `docs/ARCH.md` or ADRs when they exist.
