@@ -1,21 +1,8 @@
 ---
 name: wiki
 description: >-
-  Работа с корпоративным Confluence `wiki.tcsbank.ru` через dpWiki MCP (Spirit CLI plugin wixie):
-  поиск, чтение и выгрузка страниц, а также создание и изменение страниц.
-  Инструменты: `dp_wixie_get` (читать или скачать), `dp_wixie_search` (искать по тексту или CQL),
-  `dp_wixie_create` (создать), `dp_wixie_edit` (переименовать или заменить содержимое).
-  Используй этот skill всякий раз, когда пользователь хочет что-то сделать с вики или Confluence:
-  «найди в вики ...», «открой или прочитай страницу Confluence», «сделай саммари страницы wiki.tcsbank.ru»,
-  «скачай страницу вики», «найди страницу по заголовку или в спейсе», «создай страницу в вики»,
-  «обнови или переименуй страницу Confluence», ссылки вида
-  `wiki.tcsbank.ru/pages/viewpage.action?pageId=...` или `wiki.tcsbank.ru/display/SPACE/Title`,
-  голый pageId, имя space, заголовок страницы.
-  Срабатывает, даже если слово «wiki» или «confluence» не названо явно, но речь про страницу
-  на `wiki.tcsbank.ru`, pageId, space или публикацию документации во внутреннюю вики.
-  Записи (`create`, `edit`) выполняются только после подтверждения.
-  НЕ используй для правки стиля русского текста как такового (это `writing-russian-editor`)
-  и для фиксации итогов сессии в дейли-заметку (это `work-daily-log`, он лишь обогащает ссылки на вики).
+  Работа с Confluence wiki.tcsbank.ru через dpWiki/wixie MCP: искать, читать, выгружать, создавать и заменять страницы. Используй только когда пользователь явно просит действие с wiki/Confluence/pageId/space или вызывает $wiki. Запись через create/edit только после подтверждения; редактура русского текста - writing-russian-editor.
+disable-model-invocation: true
 ---
 
 # Wiki / Confluence через dpWiki MCP

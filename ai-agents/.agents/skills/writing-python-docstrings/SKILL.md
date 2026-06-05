@@ -1,6 +1,6 @@
 ---
 name: writing-python-docstrings
-description: Редактирует docstrings и очевидные type annotations в Python-файлах по переданному пути без изменения логики. Используй только при явном вызове для массовой документирующей правки Python-кода.
+description: Редактирует docstrings и очевидные type annotations в Python-файлах по переданному пути без изменения логики. Используй только при явном вызове $writing-python-docstrings для массовой документирующей правки Python-кода.
 disable-model-invocation: true
 argument-hint: '<path> [дополнительные ограничения]'
 allowed-tools:

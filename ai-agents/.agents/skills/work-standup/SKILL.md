@@ -1,12 +1,8 @@
 ---
 name: work-standup
 description: >-
-  Публикует ответ на daily-бот в канале dws-ai-team (TiMe).
-  Читает вчерашний и сегодняшний daily notes из vault, формирует черновик standup
-  (что сделано вчера + что планируется сегодня), показывает пользователю для подтверждения
-  и публикует в тред к последнему сообщению от dws_ai_bot.
-  Используй Mon/Tue/Wed/Fri утром.
-  Триггеры: «заполни стендап», «напиши daily в Time», «отправь standup», «стендап на сегодня».
+  Публикует standup в thread daily-бота dws-ai-team в TiMe: читает yesterday/today daily notes, готовит yesterday/today/blockers draft, спрашивает подтверждение и постит. Use only when user explicitly asks to send or fill standup, or invokes $work-standup. Never post without confirmation.
+disable-model-invocation: true
 ---
 
 # Work Standup

@@ -1,20 +1,8 @@
 ---
 name: work-daily-log
 description: >-
-  Записывает работу текущей сессии Claude/Codex в дейли-заметку Obsidian
-  (`1_Planning/Daily/<год>/<YYYY-MM-DD>.md`) и обогащает ссылки на артефакты через MCP:
-  заголовок и статус задачи JIRA (dpJira), MR и pipeline GitLab (dpGitlab), страницы WIKI (dpWiki).
-  Пишет в схему секций work-daily-note (Done / Decisions / Jira / Artifacts / In progress / Learn / Research / Attention),
-  чтобы work-weekly-review consolidate подхватил их как поля дня. Сохраняет frontmatter, обновляет только `updated`,
-  не выдумывает работу, idempotent при повторном запуске.
-  Используй этот skill всякий раз, когда нужно зафиксировать сделанное за сессию в дейли:
-  «сохрани в daily log», «запиши в дейли», «зафиксируй что сделали сегодня», «обнови дейлик»,
-  «log this session», «add to daily note», «допиши в заметку за сегодня», «закрой сессию в дейли».
-  Срабатывает, даже если слово «daily» не названо явно,
-  но речь про фиксацию итогов сессии, что было сделано, какие задачи и MR трогали.
-  НЕ используй для нормализации одной заметки (это skill work-daily-note) и для недельной консолидации
-  и обзора (это skill work-weekly-review). Этот skill - write-сторона одной дейли-заметки из рабочей сессии.
-  Рабочий skill: домен work- (планирование и рефлексия по работе: daily log, weekly review, OKR).
+  Записывает итоги текущей сессии в daily note Obsidian vault и обогащает ссылки на Jira/GitLab/Wiki через MCP. Используй только когда пользователь явно просит сохранить, записать или зафиксировать сессию в daily log либо вызывает $work-daily-log. Не использовать для weekly review или нормализации заметки.
+disable-model-invocation: true
 ---
 
 # Daily Log

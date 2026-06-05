@@ -1,21 +1,7 @@
 ---
 name: incident-triage
 description: >-
-  Разбор production-инцидента в стеке DWSAI от начала до сводки: первичный триаж,
-  сбор подтверждающих фактов и короткое заключение. Читает реестр сервисов
-  `.claude/context/services.yaml`, проверяет логи и метрики через dp_sage_*,
-  состояние подов через dp_kube_*, deploy-пайплайны через dp_gitlab_*. Жестко
-  разделяет симптом, механизм сбоя и первопричину, требует факты до выводов,
-  корректно соотносит время деплоя по release-тегам, работает только на чтение.
-  Используй этот skill, когда пользователь хочет разобрать инцидент или понять, что
-  сломалось на проде: «разбери инцидент», «почему упало в проде», «что сломалось»,
-  «триаж инцидента», «алерт сработал», «сервис отдает 5xx», «найди причину инцидента»,
-  «почему сервис лежит», «вырос latency на проде», «сервис в crashloop», «разбери
-  деградацию». Срабатывает, даже если слово «инцидент» не названо явно, но речь про
-  поломку, деградацию, алерт или 5xx в production у сервиса из реестра. НЕ используй
-  для проектирования мониторинга и SLO (это observability-designer), для написания
-  операционного runbook (это runbook-generator) и для проведения релиза и
-  пострелизного мониторинга (это work-release-manager).
+  Read-only triage of DWSAI production incidents: collect facts from service registry, dp_sage logs/metrics, dp_kube pods, and dp_gitlab deploy pipelines; separate symptom, failure mechanism, and root cause. Use for «разбери инцидент», production outage, degradation, alert, 5xx, crashloop, latency рост. Do not use for SLO design, runbooks, or release monitoring.
 ---
 
 # Incident Triage (разбор инцидента)

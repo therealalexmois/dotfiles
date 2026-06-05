@@ -1,7 +1,8 @@
 ---
 name: spirit-deploy
 description: >-
-  Помогает деплоить приложения в Spirit Deploy (DaaS) через `dp deploy` CLI — плагин spirit-deploy для `dp`. Готовит и валидирует `application.yaml`, выстраивает правильную последовательность команд (create → do → watch → status), объясняет ключевые концепции (service.yaml vs application.yaml, environmentType/--env, serviceId, isModified, placement/clusters, режимы --file/--local/API) и предупреждает о типичных ошибках. Используй этот skill всякий раз, когда пользователь работает со Spirit Deploy или `dp deploy`: «задеплоить через spirit deploy», «dp deploy do/create/watch», «собери/заполни application.yaml», «обнови образ и задеплой», «daas», «откати ревизию», «почему не применилась переменная окружения», «какой кластер указать» — даже если слово «spirit-deploy» не прозвучало явно, но речь про application.yaml, тенант, ревизию или деплой в этой платформе. Skill работает в режиме advisory: готовит YAML и точные команды, но не запускает изменяющие команды без явного подтверждения пользователя.
+  Работа со Spirit Deploy (DaaS) через dp deploy: подготовить и валидировать application.yaml, выбрать create/do/watch/get/rollback sequence, объяснить serviceId, isModified, clusters и file/local/API modes. Используй только при явном $spirit-deploy или просьбе «задеплой», «откати», update image, dp deploy. Changing commands только после подтверждения.
+disable-model-invocation: true
 ---
 
 # Spirit Deploy CLI

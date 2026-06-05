@@ -1,16 +1,7 @@
 ---
 name: gitlab-mcp-workflow
 description: >-
-  Как работать с GitLab через dpGitlab MCP (Spirit CLI) и git push options в проекте dwsai-data-agent (tenant dwsai):
-  создать merge request, обновить его заголовок и описание, посмотреть MR, pipeline, job и CI-логи.
-  Главное: dpGitlab MCP не умеет создавать MR и issues (только чтение и правка существующего MR).
-  MR создается инструментом create_merge_request сервера dpMR за один вызов; git push -o merge_request.create остается как fallback.
-  Используй этот skill, когда пользователь хочет: «создай MR», «открой merge request», «запушь и сделай MR»,
-  «обнови описание или заголовок MR», «посмотри MR / pipeline / job», «почему CI красный», «статус пайплайна»,
-  «GitLab MCP не создает MR, как тогда», «правила имен веток в репо». Срабатывает, даже если слово «MCP» не названо,
-  но речь про создание или инспекцию MR и CI в этом GitLab.
-  Оформление текста MR по шаблону репозитория делает отдельный skill gitlab-mr-author;
-  этот skill про механику создания и инспекции через MCP и push options.
+  Работа с GitLab для dwsai-data-agent через dpGitlab/dpMR MCP и git push options: создать MR, обновить заголовок или описание существующего MR, посмотреть MR, pipeline, job или CI logs. Используй только когда пользователь явно просит GitLab/MR/CI действие или вызывает $gitlab-mcp-workflow; оформление текста MR делает gitlab-mr-author.
 ---
 
 # GitLab через dpGitlab MCP и push options
