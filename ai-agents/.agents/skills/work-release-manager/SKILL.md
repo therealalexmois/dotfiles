@@ -1,7 +1,7 @@
 ---
 name: work-release-manager
 description: >-
-  Production release manager for dwsai-data-agent: changelog, release tag, GitLab tag pipeline, Spirit Deploy, monitoring, smoke checks, thermostat flags, TiMe announcement and rollback guardrails. Use only for explicit $work-release-manager or «сделай релиз», «выкати в прод», «продолжи релиз», production release. Changing actions require confirmation.
+  Production release manager for dwsai-data-agent: changelog, release tag, GitLab tag pipeline, Spirit Deploy, monitoring, smoke checks, thermostat flags, wiki release manifest, TiMe announcement and rollback guardrails. Use only for explicit $work-release-manager or «сделай релиз», «выкати в прод», «продолжи релиз», production release. Changing actions require confirmation.
 disable-model-invocation: true
 ---
 
@@ -25,6 +25,7 @@ disable-model-invocation: true
 - `git push <tag>`;
 - `dp deploy do` (production deploy);
 - `dp deploy rollback`;
+- создание/правка wiki Release manifest;
 - публикация сообщения в Time.
 
 Read-only шаги (git log/diff, `dp deploy get/watch`, `dp kube get`, `dp sage query`, инспекция pipeline) выполняются без подтверждения. Production - повышенная осторожность: всегда показывай команду целиком и dry-run перед изменяющим действием.
@@ -156,39 +157,32 @@ RELEASE_TAG=release-YYMMDD.HHMM scripts/release_smoke.sh
 - Не-`Done` задачи переводи в `Done` (поток `RELEASE PREPARATION → DONE`) только после подтверждения через `AskUserQuestion`.
 - MR без связанного тикета отметь как наблюдение (изменение без задачи), тикет не выдумывай.
 
-### 10. Анонс в Time (2 аудитории, 2 канала)
+Анонсы релиза - четыре артефакта: wiki Release manifest (полная запись), Time post (инженерам), thread к нему (операционные детали), user announcement (пользователям). Общие правила (status taxonomy, распределение информации, язык, ссылки, неизвестные данные, секреты) - [references/announcement-rules.md](references/announcement-rules.md). Manifest идет первым: Time post на него ссылается.
 
-Авто-постинга нет: готовь текст, публикует инженер или ты только после **`AskUserQuestion`**. Перед постом в канал сделай тест-доставку себе в личку (`dm` на свой username) и проверь, как пришло форматирование (Mattermost-markdown).
+### 10. Release manifest (wiki)
 
-Лимит сообщения Time - 4000 символов. Если release note длиннее, уменьшай его, а длинные Sage deep-ссылки (`message=`) выноси отдельно: в реальном канале - в тред к основному посту (`create_post` с `root_id`), не в тело сообщения.
+Полная техническая запись релиза. Собери из данных шагов 1-9 и создай/обнови через dpWiki дочернюю страницу к `04 – Release Manifest` (id `8451788585`, space DW). Заголовок: `YYYY-MM-DD - data-agent - <release-tag>` (дефисы). Формат - [references/release-manifest-template.md](references/release-manifest-template.md): 8 секций (Summary, Links, Ops, Changelog, Ownership, Known issues, Post-release observation, Follow-ups). Сохрани URL созданной страницы - он нужен Time post (шаг 11).
 
-Каналы и аудитории:
+Создание/правка manifest - изменяющее действие (публикация на корпоративный wiki): покажи draft и **`AskUserQuestion`** перед записью. Секреты в manifest не рендери.
 
-- **Инженерам** - канал `dws-ai-agent` (https://time.tbank.ru/tinkoff/channels/dws-ai-agent): технический отчет о релизе.
-- **Пользователям** - канал `~dwsai-announcement` (public, id `dspn99zritbs7duks3g4skjc6r`): анонс на языке пользователя. Приложение называй user-facing именем **Nessy Data Agent**, а не внутренними `data-agent` / `data-agent-prod`.
+### 11. Time post (инженеры, канал dws-ai-agent)
 
-Правило аудитории по feature flags (шаг 3): фичу за выключенным в prod флагом в пользовательский анонс НЕ включай, она идет только инженерам. Если включенных user-facing изменений нет (релиз внутренний), не выдумывай их: дай пользователям минимальную строку или согласуй пропуск user-анонса.
+Короткий технический анонс, без таблиц, со ссылкой на manifest. Формат - [references/time-post-template.md](references/time-post-template.md).
 
-Инженерный анонс делай по полному формату из [references/engineer-release-note-template.md](references/engineer-release-note-template.md) - 12 секций: заголовок `## Production release: data-agent <tag>`, предыдущая версия и статус, Links, Поставка, Runtime impact, Health-check, Feature ownership, Feature flags, Environment variables, Changelog, Known issues / follow-ups, Логи. Кратко:
+- Compact links одной строкой: Pipeline, Compare, Deploy, Logs, **Manifest** (URL из шага 10).
+- `Status` (одно значение из taxonomy), `User impact` и `Rollback target` - отдельными строками.
+- Changelog с owner-ами в буллетах (`@login`). Длинные Sage deep-ссылки и post-release observation - в тред ([references/thread-template.md](references/thread-template.md)), не в тело.
+- Лимит Time 4000 символов. Перед постом в канал - DM-self-test (`dm` на свой username), проверь Mattermost-markdown. Публикация - только после **`AskUserQuestion`**.
 
-- Ссылки кликабельные: pipeline, compare `<prev>...<cur>`, tags, Spirit Deploy (revision), Sage, Grafana.
-- Таблицы Feature ownership (Area / Change / Jira / MR / Contact / Runtime action) и Feature flags заполняй реальными данными: MR и авторы через `dp_gitlab_merge-requests` (match по заголовку коммита), assignee через `dp_jira_issue`. Пробелы помечай `TODO` / `не указано`, не выдумывай MR, владельцев, флаги и env.
-- Known issues: ошибки списком, каждая со ссылкой на свой тип в Sage (фильтр `message=` с экранированием, `env:"prod"`, `start=-1d`).
+Канал `dws-ai-agent`: https://time.tbank.ru/tinkoff/channels/dws-ai-agent.
 
-Шаблон пользователям (канал `~dwsai-announcement`):
+### 12. User announcement (канал ~dwsai-announcement)
 
-```
-**Nessy Data Agent - обновление**
+Только при наличии user impact. Формат - [references/user-announcement-template.md](references/user-announcement-template.md): «Что изменилось / Что это даёт / Нужно ли что-то сделать / Ограничения». Язык - русский, приложение - **Nessy Data Agent** (не `data-agent` / `data-agent-prod`).
 
-Что нового:
-- <user-facing изменение, только если флаг включен в prod>
-- <...>
+Правило аудитории по feature flags (шаг 3): изменение за выключенным в prod флагом в user announcement НЕ включай - оно идет только инженерам. Если включенных user-facing изменений нет, не выдумывай: выведи строку `User-facing announcement is not required: no user impact` (в чат, в канал не постим) или согласуй пропуск. Публикация в канал `~dwsai-announcement` (public, id `dspn99zritbs7duks3g4skjc6r`) - после **`AskUserQuestion`**.
 
-<если включенных user-facing изменений нет:>
-В этом обновлении - внутренние улучшения надежности и наблюдаемости. Заметных изменений в работе агента нет.
-```
-
-### 11. Rollback guardrail
+### 13. Rollback guardrail
 
 При провале деплоя или критической регрессии - не откатывай молча. Подготовь план, покажи команду, спроси через **`AskUserQuestion`**, и только потом:
 
@@ -200,7 +194,7 @@ dp deploy rollback --tenant dwsai --app data-agent-prod
 
 ## Итоговый отчет
 
-В конце релиза верни: release-тег, changelog, статус pipeline, статус deploy (ревизия), результат мониторинга, результат smoke, проверенные FF, статусы задач JIRA (все ли Done), путь к анонсам, оставшиеся ручные действия.
+В конце релиза верни: release-тег, **release status** (одно значение из taxonomy), changelog, статус pipeline, статус deploy (ревизия), результат мониторинга, результат smoke, проверенные FF, статусы задач JIRA (все ли Done), URL wiki manifest, ссылки на Time post и user announcement, оставшиеся ручные действия.
 
 ## Константы проекта
 
@@ -212,3 +206,4 @@ dp deploy rollback --tenant dwsai --app data-agent-prod
 - CI tag-регулярка: `^(release|dev)-\d{6}\.\d{4}$`
 - Time-каналы: инженерам `dws-ai-agent` (https://time.tbank.ru/tinkoff/channels/dws-ai-agent); пользователям `~dwsai-announcement` (id `dspn99zritbs7duks3g4skjc6r`, public)
 - User-facing имя приложения для анонсов: `Nessy Data Agent` (внутренние имена `data-agent` / `data-agent-prod` в user-анонс не выносить)
+- Wiki Release manifest parent: `04 – Release Manifest` (id `8451788585`, space DW); на релиз - дочерняя страница, заголовок `YYYY-MM-DD - data-agent - <release-tag>`
