@@ -1,54 +1,51 @@
-# services.example.yaml - ШАБЛОН реестра сервисов для разбора инцидентов.
+# services.example.yaml - реестр сервисов для разбора инцидентов.
 #
-# Это пример. Скопируй файл в `.claude/context/services.yaml` своего проекта
-# и заполни реальными значениями. Реальные cluster, namespace, sage_group
-# и gitlab project здесь намеренно НЕ указаны - смотри их в своей инфраструктуре
-# (dp_sage_groups, dp_sage_systems, манифесты Spirit Deploy, настройки GitLab).
+# Здесь заполнен реальный реестр для dwsai-data-agent (prod). Чтобы активировать,
+# скопируй файл в `.claude/context/services.yaml` своего проекта (skill incident-triage
+# читает именно его). Значения взяты из work-release-manager (release_smoke.sh, SKILL.md).
 #
-# Skill incident-triage читает этот реестр как источник истины: по имени или
-# alias находит сервис и берет из него sage_group, k8s_cluster, k8s_namespace,
-# gitlab_project, gitlab_tenant для проверок в dp_sage_*, dp_kube_*, dp_gitlab_*.
+# Skill читает реестр как источник истины: по имени или alias находит сервис и берет
+# из него sage_group, sage_system, k8s_cluster, k8s_namespace, gitlab_project,
+# gitlab_tenant для проверок в dp_sage_*, dp_kube_*, dp_gitlab_*.
 
 services:
-  # Иллюстративный пример - значения-заглушки, замени на реальные.
   - name: dwsai-data-agent
     # Под какими именами сервис могут назвать в алерте, тикете или чате.
     aliases:
       - data-agent
       - дата-агент
-      - dwsai-agent
+      - nessy
+      - Nessy Data Agent
 
-    # Sage: группа логов. Берется из dp_sage_groups.
-    # ЗАГЛУШКА - подставь реальную группу.
-    sage_group: <sage-group-placeholder>
+    # Sage: группа логов (dp_sage_groups).
+    sage_group: dwsai
+    # Sage: система внутри группы. На этом стеке НЕ совпадает с namespace.
+    sage_system: data-agent
+    # Sage: окружение.
+    sage_env: prod
 
-    # Kubernetes: кластеры, где крутится сервис. Список - проверяй все.
-    # ЗАГЛУШКИ - подставь реальные кластеры.
+    # Kubernetes: кластеры, где крутится сервис (prod). Проверяй все.
     k8s_cluster:
-      - <cluster-a-placeholder>
-      - <cluster-b-placeholder>
+      - bm-ix-m5-inside-wl1.prod
+      - bm-ix-m5-inside-wl4.prod
 
-    # Kubernetes: namespace(ы) сервиса. Может быть списком - проверяй все.
-    # В Sage namespace обычно совпадает с `system` для dp_sage_logs.
-    # ЗАГЛУШКА - подставь реальный namespace.
+    # Kubernetes: namespace(ы) сервиса (prod).
     k8s_namespace:
-      - <namespace-placeholder>
+      - dwsai-data-agent-prod-prod-daas
 
     # GitLab: проект и tenant для проверки deploy-пайплайнов.
-    # ЗАГЛУШКИ - подставь реальные.
-    gitlab_project: <gitlab-project-placeholder>
-    gitlab_tenant: <gitlab-tenant-placeholder>
+    gitlab_project: dwsai-data-agent
+    gitlab_tenant: dwsai
 
-    # Опционально: путь к YAML с индикаторами (метрики, SLO, пороги),
-    # относительно `.claude/context/`. Удали, если индикаторов нет.
-    # Формат файла индикаторов: список записей с полями name/description
-    # и search_request (готовый MageQL для dp_sage_logs/dp_sage_query).
-    indicators_file: indicators/dwsai-data-agent.yaml
+    # Опционально: путь к YAML с индикаторами (метрики, SLO, пороги) относительно
+    # `.claude/context/`. Файла индикаторов пока нет, поэтому строка закомментирована.
+    # indicators_file: indicators/dwsai-data-agent.yaml
 
   # Добавляй остальные свои сервисы по той же схеме.
   # - name: <service>
   #   aliases: [...]
   #   sage_group: <...>
+  #   sage_system: <...>
   #   k8s_cluster: [<...>]
   #   k8s_namespace: [<...>]
   #   gitlab_project: <...>

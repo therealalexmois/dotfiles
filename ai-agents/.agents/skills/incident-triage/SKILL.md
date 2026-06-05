@@ -49,7 +49,7 @@ description: >-
 ## Источник истины
 
 Всегда читай `.claude/context/services.yaml`. Это реестр сервисов и источник истины для:
-service name, aliases, sage_group, k8s_cluster, k8s_namespace, gitlab_project, gitlab_tenant.
+service name, aliases, sage_group, sage_system, k8s_cluster, k8s_namespace, gitlab_project, gitlab_tenant.
 
 Если файла нет - не выдумывай инфраструктуру. Попроси пользователя завести его по
 шаблону `references/services.example.yaml` (скопировать в `.claude/context/services.yaml`
@@ -84,7 +84,7 @@ service name, aliases, sage_group, k8s_cluster, k8s_namespace, gitlab_project, g
 ### Фаза 1. Триаж
 
 1. Прочитай `.claude/context/services.yaml`, найди сервис по `name` или `aliases`.
-2. Возьми `sage_group`, `k8s_cluster`, `k8s_namespace`, `gitlab_project`,
+2. Возьми `sage_group`, `sage_system`, `k8s_cluster`, `k8s_namespace`, `gitlab_project`,
    `gitlab_tenant`, `indicators_file` (если есть).
 3. Запусти проверки параллельно, где можно:
    - Sage-логи за окно инцидента (см. «Sage»);
@@ -139,7 +139,7 @@ service name, aliases, sage_group, k8s_cluster, k8s_namespace, gitlab_project, g
 `dp_sage_completion` (промпт в MageQL). При необходимости `dp_sage_groups` / `dp_sage_systems`
 для разведки, но если group и system известны из реестра - не вызывай их зря.
 
-- `dp_sage_logs` с `group` = `sage_group` из реестра и `system` = namespace из `k8s_namespace`.
+- `dp_sage_logs` с `group` = `sage_group` из реестра и `system` = `sage_system` из реестра (если задан), иначе namespace из `k8s_namespace`.
 - Если namespace несколько - проверяй каждый отдельно.
 - Всегда задавай узкое окно `from`/`to` в ISO 8601 по окну инцидента (не полагайся на
   дефолтные `hours`).
