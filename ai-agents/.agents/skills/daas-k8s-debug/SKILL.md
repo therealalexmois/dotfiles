@@ -1,6 +1,7 @@
 ---
 name: daas-k8s-debug
-description: Триаж и дебаг rollout-а DaaS / Spirit Deploy в Kubernetes после выката приложения dwsai-data-agent. Триггеры: «под не поднимается», «CrashLoopBackOff», «ImagePullBackOff», «почему упал роллаут в k8s», «dp deploy watch показывает ошибку», «вебхук SPIRE/MSA отклоняет ресурс», «деплой завис», «не доехал ConfigMap», «приехал не тот образ», «pod в Error», «rollout timeout», «namespace Forbidden», «дебаг деплоя в daas». Срабатывает, даже если слово «debug» не названо явно, но речь про разбор того, почему после деплоя в Kubernetes что-то не поднялось. Read-only по умолчанию: изменяющие команды только после явного подтверждения.
+description: >-
+  Триаж и дебаг rollout-а DaaS / Spirit Deploy в Kubernetes после выката приложения dwsai-data-agent. Триггеры: «под не поднимается», «CrashLoopBackOff», «ImagePullBackOff», «почему упал роллаут в k8s», «dp deploy watch показывает ошибку», «вебхук SPIRE/MSA отклоняет ресурс», «деплой завис», «не доехал ConfigMap», «приехал не тот образ», «pod в Error», «rollout timeout», «namespace Forbidden», «дебаг деплоя в daas». Срабатывает, даже если слово «debug» не названо явно, но речь про разбор того, почему после деплоя в Kubernetes что-то не поднялось. Read-only по умолчанию: изменяющие команды только после явного подтверждения.
 ---
 
 # DaaS / K8s Debug
