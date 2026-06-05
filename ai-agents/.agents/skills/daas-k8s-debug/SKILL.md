@@ -27,10 +27,11 @@ description: Триаж и дебаг rollout-а DaaS / Spirit Deploy в Kuberne
 ```text
 Tenant:      dwsai
 Application: dwsai-data-agent          # внутреннее имя; user-facing - Nessy Data Agent
-Component:   data-agent                # имя Deployment в k8s, EXAMPLE
-Namespace:   dwsai-data-agent-<env>-<env>-daas   # prod: dwsai-data-agent-prod-prod-daas
+Spirit app:  data-agent-prod           # для `dp deploy --app` (prod); dev: data-agent-dev
+Component:   data-agent-webservice-prod # имя Deployment в k8s и SPIRE component
+Namespace:   dwsai-data-agent-prod-prod-daas    # паттерн: dwsai-data-agent-<env>-<env>-daas
 Env:         dev | prod
-Cluster:     <cluster>                 # см. `dp kube get clusters` (prod-имена с суффиксом .prod)
+Cluster:     bm-ix-m5-inside-wl1.prod, bm-ix-m5-inside-wl4.prod   # prod; см. `dp kube get clusters`
 ```
 
 Инфраструктуру, которую не знаешь точно (имена кластеров, dev-namespace, имена component/ConfigMap, image stream), НЕ выдумывай. Бери из `dp kube get clusters` / `dp kube get namespaces`, из `dp deploy get` и из `deploy/service.yml`, либо помечай как `<placeholder>` и проси уточнить.
@@ -67,8 +68,8 @@ Raw `kubectl` - fallback, когда нужен `describe`, `events`, `rollout h
 Состояние rollout-а и rendered application config - первый слой. `dp deploy` в DWSAI БЕЗ `--env` (среда задана конфигом приложения); подкоманды `do`, `get`, `watch`, `rollback` (нет `status` - используй `get`/`watch`).
 
 ```bash
-dp deploy watch --tenant dwsai --app dwsai-data-agent        # дождаться/увидеть исход последней ревизии
-dp deploy get   --tenant dwsai --app dwsai-data-agent -f /tmp/dwsai-data-agent.yaml
+dp deploy watch --tenant dwsai --app data-agent-prod        # дождаться/увидеть исход последней ревизии
+dp deploy get   --tenant dwsai --app data-agent-prod -f /tmp/dwsai-data-agent.yaml
 grep -n "data-agent\|placement:\|clusters:\|image" /tmp/dwsai-data-agent.yaml
 ```
 
@@ -82,7 +83,7 @@ grep -n "data-agent\|placement:\|clusters:\|image" /tmp/dwsai-data-agent.yaml
 dp kube get clusters                                          # валидные имена кластеров для env
 dp kube get namespaces -e <env> -t dwsai                      # доступные namespaces
 dp kube get logs -n dwsai-data-agent-prod-prod-daas -e prod \
-  -c <cluster-a>,<cluster-b> -l 1                              # поды/образ/ready/restarts по кластерам
+  -c bm-ix-m5-inside-wl1.prod,bm-ix-m5-inside-wl4.prod -l 1                              # поды/образ/ready/restarts по кластерам
 ```
 
 Что проверяем: все контейнеры на ожидаемом теге, `ready=true`, `restarts` в норме, `status=Running`. Контейнер не на том теге, `ready=false` или растущие `restarts` указывают на проблемный pod.
@@ -120,9 +121,9 @@ kubectl get rs -n "$NS" --sort-by=.metadata.creationTimestamp | tail -n 30
 Rollout, deployment, pod, logs:
 
 ```bash
-kubectl rollout status  deploy/data-agent -n "$NS"
-kubectl rollout history deploy/data-agent -n "$NS"
-kubectl describe deploy data-agent -n "$NS"
+kubectl rollout status  deploy/data-agent-webservice-prod -n "$NS"
+kubectl rollout history deploy/data-agent-webservice-prod -n "$NS"
+kubectl describe deploy data-agent-webservice-prod -n "$NS"
 kubectl describe pod <pod-name> -n "$NS"
 kubectl get pod <pod-name> -n "$NS" -o jsonpath='{.spec.containers[*].name}'; echo
 kubectl logs <pod-name> -n "$NS" -c <container-name> --tail=120
@@ -137,7 +138,7 @@ kubectl logs <pod-name> -n "$NS" -c <container-name> --previous --tail=120
 kubectl get cm -n "$NS"
 kubectl get cm <configmap-name> -n "$NS" -o yaml
 kubectl get cm <configmap-name> -n "$NS" -o jsonpath='{.data.config\.yaml}' | sed -n '1,160p'
-kubectl get deploy <deployment> -n "$NS" -o jsonpath='{range .spec.template.spec.containers[*]}{.name}{" "}{.image}{"\n"}{end}'
+kubectl get deploy data-agent-webservice-prod -n "$NS" -o jsonpath='{range .spec.template.spec.containers[*]}{.name}{" "}{.image}{"\n"}{end}'
 kubectl get pod    <pod-name>   -n "$NS" -o jsonpath='{range .spec.containers[*]}{.name}{" "}{.image}{"\n"}{end}'
 ```
 
@@ -168,7 +169,7 @@ component "<component>" not found in Application "dwsai-data-agent"("dwsai.<env>
 Причина: имя workload или SPIRE label в k8s не совпадает с component name в Spirit application, либо остался orphaned deployment под старым именем. Проверка:
 
 ```bash
-kubectl get deploy <deployment> -n "$NS" -o yaml | grep -n \
+kubectl get deploy data-agent-webservice-prod -n "$NS" -o yaml | grep -n \
   "spire.k8s.tinkoff.ru/application\|spire.k8s.tinkoff.ru/component\|spire.k8s.tinkoff.ru/tenant"
 grep -n "<component>" /tmp/dwsai-data-agent.yaml
 kubectl get deploy,rs -n "$NS" | grep data-agent
@@ -178,11 +179,11 @@ kubectl get deploy,rs -n "$NS" | grep data-agent
 
 ```yaml
 spire.k8s.tinkoff.ru/application: dwsai-data-agent
-spire.k8s.tinkoff.ru/component: data-agent
+spire.k8s.tinkoff.ru/component: data-agent-webservice-prod
 spire.k8s.tinkoff.ru/tenant: dwsai
 ```
 
-Даже если MSA выключен (`trafficManagement.msaType: "off"`, `msaMode: DISABLE`), SPIRE labels могут оставаться на workload, и webhook все равно будет проверять существование component. Проверь старые orphaned deployments: если текущий component называется `data-agent`, но старый deployment под прежним именем остался, он продолжит ловить webhook errors.
+Даже если MSA выключен (`trafficManagement.msaType: "off"`, `msaMode: DISABLE`), SPIRE labels могут оставаться на workload, и webhook все равно будет проверять существование component. Проверь старые orphaned deployments: если текущий component называется `data-agent-webservice-prod`, но старый deployment под прежним именем остался, он продолжит ловить webhook errors.
 
 ### CrashLoopBackOff
 
@@ -221,7 +222,7 @@ parse config: missing required fields: <field-a>, <field-b>
 
 ```bash
 kubectl get cm <component-configmap> -n "$NS" -o yaml
-dp deploy get --tenant dwsai --app dwsai-data-agent -f /tmp/dwsai-data-agent.yaml
+dp deploy get --tenant dwsai --app data-agent-prod -f /tmp/dwsai-data-agent.yaml
 grep -n "<field-a>\|<field-b>" /tmp/dwsai-data-agent.yaml
 ```
 
@@ -229,11 +230,13 @@ grep -n "<field-a>\|<field-b>" /tmp/dwsai-data-agent.yaml
 
 ### Образ или tag не тот
 
+Ожидаемый образ: `docker-hosted.artifactory.tcsbank.ru/dwsai/dwsai-data-agent:<release-tag>`. Сверь префикс образа и тег.
+
 ```bash
 kubectl get pod    <pod-name>   -n "$NS" -o jsonpath='{range .spec.containers[*]}{.name}{" "}{.image}{"\n"}{end}'
-kubectl get deploy <deployment> -n "$NS" -o jsonpath='{range .spec.template.spec.containers[*]}{.name}{" "}{.image}{"\n"}{end}'
+kubectl get deploy data-agent-webservice-prod -n "$NS" -o jsonpath='{range .spec.template.spec.containers[*]}{.name}{" "}{.image}{"\n"}{end}'
 # Быстрее - срез по всем кластерам:
-dp kube get logs -n "$NS" -e <env> -c <cluster-a>,<cluster-b> -l 1   # сверь .image с ожидаемым тегом
+dp kube get logs -n "$NS" -e <env> -c bm-ix-m5-inside-wl1.prod,bm-ix-m5-inside-wl4.prod -l 1   # сверь .image с ожидаемым тегом
 ```
 
 Если деплой шел в API-режиме (`--tag`/`--sha`) - менялся только образ; rendered deployment должен ссылаться на ожидаемый тег. Если нет - проверь, что ревизия действительно применилась (`dp deploy watch`).
@@ -257,8 +260,8 @@ Tenant:      dwsai
 Application: dwsai-data-agent
 Environment: prod
 Namespace:   dwsai-data-agent-prod-prod-daas
-Cluster:     <cluster>
+Cluster:     bm-ix-m5-inside-wl1.prod | bm-ix-m5-inside-wl4.prod
 Revision ID: <revision-id>
-Component:   data-agent
+Component:   data-agent-webservice-prod
 Error:       admission webhook "msa-webhook.tcsbank.ru" denied the request...
 ```
