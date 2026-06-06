@@ -185,8 +185,8 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | `gitlab-` | GitLab workflows |
 | `spirit-deploy` | deploy (single-skill domain) |
 
-Third-party imported skills keep their upstream names and are exempt. In particular,
-`obsidian-*` skills are third-party vault tooling; do not confuse them with `work-*`.
+Third-party imported skills keep their upstream names and are exempt. The `obsidian-*`
+skills moved out of this repo to the work vault (`~/projects/work-vault/.claude/skills/`).
 Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored and not skills.
 
 > TODO: Rename the unprefixed first-party skills to follow the convention: `to-prd`,
