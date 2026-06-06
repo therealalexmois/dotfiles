@@ -67,3 +67,6 @@ ai-agents/.claude/.last-*
 ai-agents/.claude/plugins/cache/
 ai-agents/.claude/plugins/data/
 ai-agents/.claude/plugins/marketplaces/
+
+# Claude Code project-level local state (settings.local.json, wrong-path skill symlinks)
+.claude/
