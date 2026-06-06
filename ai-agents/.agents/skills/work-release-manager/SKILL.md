@@ -1,7 +1,7 @@
 ---
 name: work-release-manager
 description: >-
-  Production release manager for dwsai-data-agent: changelog, release tag, GitLab tag pipeline, Spirit Deploy, monitoring, smoke checks, thermostat flags, wiki release manifest, TiMe announcement and rollback guardrails. Use only for explicit $work-release-manager or «сделай релиз», «выкати в прод», «продолжи релиз», production release. Changing actions require confirmation.
+  Production release manager for dwsai-data-agent: changelog, release plan gate, release tag, GitLab tag pipeline, Spirit Deploy, monitoring, smoke checks, thermostat flags, wiki release manifest, TiMe announcement, rollback guardrails and hotfix roll-forward. Use only for explicit $work-release-manager or «сделай релиз», «выкати в прод», «продолжи релиз», «hotfix», production release. Changing actions require confirmation.
 disable-model-invocation: true
 ---
 
@@ -88,18 +88,26 @@ scripts/detect_db_migrations.sh <prev> <cur>           # миграции в mig
 scripts/detect_secrets_runtime_config.sh <prev> <cur>  # env в deploy/service.yml (только имена)
 ```
 
-Эти сигналы идут в секцию Operational impact тега (шаг 4) и в human-gates деплоя (шаг 6). Эквивалент детекта флагов вручную:
+Эти сигналы идут в план релиза (шаг 4), секцию Operational impact тега (шаг 5) и в human-gates деплоя (шаг 7). Эквивалент детекта флагов вручную:
 
 ```bash
 git diff <prev-release>..HEAD -- src/app/infrastructure/remote_config/params.py \
   | grep -E "^\+\s*key='release\." | sed -E "s/.*key='([^']+)'.*/\1/"
 ```
 
-Для каждого нового флага инженер должен проверить в thermostat, **включен он или выключен**, и что это соответствует замыслу релиза. У `dp` нет плагина thermostat: проверка идет через web-UI thermostat. Runtime-сигнал незарегистрированного флага - Sage `FLAG_NOT_FOUND` (шаг 8 и smoke).
+Для каждого нового флага инженер должен проверить в thermostat, **включен он или выключен**, и что это соответствует замыслу релиза. У `dp` нет плагина thermostat: проверка идет через web-UI thermostat. Runtime-сигнал незарегистрированного флага - Sage `FLAG_NOT_FOUND` (шаги 8-9: мониторинг и smoke).
 
-Затем - **явный gate через `AskUserQuestion`**: «Подтверди, что новые FF проверены в thermostat и выставлены как задумано (вкл/выкл)». Не двигайся к анонсу, пока инженер не подтвердил. Состояние флагов влияет на аудиторию анонса (шаг 9).
+Затем - **явный gate через `AskUserQuestion`**: «Подтверди, что новые FF проверены в thermostat и выставлены как задумано (вкл/выкл)». Не двигайся к анонсу, пока инженер не подтвердил. Состояние флагов влияет на аудиторию анонса (шаг 13).
 
-### 4. Annotated release-тег
+### 4. План релиза (гейт перед тегом)
+
+Собери план из фактов шагов 0-3 и покажи на approve ДО создания тега. Формат - [templates/release-plan-template.md](templates/release-plan-template.md). План живет в чате (в Time/wiki не публикуется), его итоги позже попадают в manifest и анонсы.
+
+Состав: scope (prev → candidate, commits, тикеты, краткий changelog), Operational impact из детекторов (шаг 3), риски, rollback target, какие анонсы будут, список предстоящих необратимых шагов.
+
+Approve через **`AskUserQuestion`**. Без approve тег не создавай; если после approve HEAD сдвинулся - перегенерируй план.
+
+### 5. Annotated release-тег
 
 Имя: `release-YYMMDD.HHMM` (текущее время выпуска). CI валидирует формат регуляркой `^(release|dev)-\d{6}\.\d{4}$` - 6-значная дата, 4-значное время. Сообщение тега (annotated, не lightweight) включает changelog и секцию Operational impact:
 
@@ -124,7 +132,7 @@ git cat-file -t release-YYMMDD.HHMM   # ожидаем: tag
 
 Перед `git push origin <tag>` - **`AskUserQuestion`**.
 
-### 5. GitLab tag-pipeline
+### 6. GitLab tag-pipeline
 
 После push найди pipeline через dpGitlab (branch == имя тега), дождись терминального статуса. На теге выполняются только build-job'ы (`build-test`, `build` - сборка образа `dwsai/dwsai-data-agent:<tag>`); тесты/линт/type-check привязаны к MR и default-branch, на тег не запускаются. Red → стоп, покажи логи упавшего job, предложи шаг. Удобно поллить в фоне:
 
@@ -132,7 +140,7 @@ git cat-file -t release-YYMMDD.HHMM   # ожидаем: tag
 dp gitlab pipeline -t dwsai -r dwsai-data-agent -i <pipeline-id>
 ```
 
-### 6. Deploy через spirit-deploy
+### 7. Deploy через spirit-deploy
 
 Прочитай skill **spirit-deploy** и кратко перескажи flow. Особенности установленного плагина (v0.0.14), отличные от общей документации:
 
@@ -158,7 +166,7 @@ rm -f application.yaml                                       # содержит 
 
 Перед `dp deploy do` (production) - **`AskUserQuestion`**.
 
-### 7. Мониторинг (dpKube + dpSage)
+### 8. Мониторинг (dpKube + dpSage)
 
 Поды, образ, готовность, рестарты по **обоим** кластерам:
 
@@ -181,7 +189,7 @@ dp sage query -q 'group="dwsai" system="data-agent" env="prod" version="<prev-ta
 
 Тяжелый сбор и группировку логов с подготовкой кликабельных deep-ссылок можно делегировать subagent `observability-agent` ([subagents/observability-agent.md](subagents/observability-agent.md)) через Agent tool - он возвращает регрессию, severity и ссылки; решение о rollback остается у main.
 
-### 8. Post-release smoke
+### 9. Post-release smoke
 
 ```bash
 RELEASE_TAG=release-YYMMDD.HHMM scripts/release_smoke.sh
@@ -189,7 +197,7 @@ RELEASE_TAG=release-YYMMDD.HHMM scripts/release_smoke.sh
 
 Скрипт (read-only, на `dp kube`/`dp sage`) проверяет: образ всех подов == release-тег, все ready, restarts в пределах порога (оба кластера); новые `release.*` флаги в диффе (предупреждение - проверить в thermostat); Sage error-delta (новые ERROR-сигнатуры против прошлого релиза). FAIL на error-delta = нужна ручная триажа: безобидное (как FLAG_NOT_FOUND → тикет) или реальная регрессия (→ rollback).
 
-### 9. Проверка задач в JIRA (Done)
+### 10. Проверка задач в JIRA (Done)
 
 После верификации релиза на проде сверь, что все задачи, вошедшие в релиз, в статусе `Done`.
 
@@ -200,30 +208,30 @@ RELEASE_TAG=release-YYMMDD.HHMM scripts/release_smoke.sh
 
 Анонсы релиза - четыре артефакта: wiki Release manifest (полная запись), Time post (инженерам), thread к нему (операционные детали), user announcement (пользователям). Общие правила (status taxonomy, распределение информации, язык, ссылки, неизвестные данные, секреты) - [references/announcement-rules.md](references/announcement-rules.md). Manifest идет первым: Time post на него ссылается.
 
-### 10. Release manifest (wiki)
+### 11. Release manifest (wiki)
 
-Полная техническая запись релиза. Собери из данных шагов 1-9 и создай/обнови через dpWiki дочернюю страницу к `04 – Release Manifest` (id `8451788585`, space DW). Заголовок: `YYYY-MM-DD - data-agent - <release-tag>` (дефисы). Формат - [templates/release-manifest-template.md](templates/release-manifest-template.md): 8 секций (Summary, Links, Ops, Changelog, Ownership, Known issues, Post-release observation, Follow-ups). Сохрани URL созданной страницы - он нужен Time post (шаг 11).
+Полная техническая запись релиза. Собери из данных шагов 1-10 и создай/обнови через dpWiki дочернюю страницу к `04 – Release Manifest` (id `8451788585`, space DW). Заголовок: `YYYY-MM-DD - data-agent - <release-tag>` (дефисы). Формат - [templates/release-manifest-template.md](templates/release-manifest-template.md): 8 секций (Summary, Links, Ops, Changelog, Ownership, Known issues, Post-release observation, Follow-ups). Сохрани URL созданной страницы - он нужен Time post (шаг 12).
 
 Создание/правка manifest - изменяющее действие (публикация на корпоративный wiki): покажи draft и **`AskUserQuestion`** перед записью. Секреты в manifest не рендери.
 
-### 11. Time post (инженеры, канал dws-ai-agent)
+### 12. Time post (инженеры, канал dws-ai-agent)
 
 Короткий технический анонс, без таблиц, со ссылкой на manifest. Формат - [templates/time-post-template.md](templates/time-post-template.md).
 
-- Compact links одной строкой: Pipeline, Compare, Deploy, Logs, **Manifest** (URL из шага 10).
+- Compact links одной строкой: Pipeline, Compare, Deploy, Logs, **Manifest** (URL из шага 11).
 - `Status` (одно значение из taxonomy), `User impact` и `Rollback target` - отдельными строками.
 - Changelog с owner-ами в буллетах (`@login`). Длинные Sage deep-ссылки и post-release observation - в тред ([templates/thread-template.md](templates/thread-template.md)), не в тело.
 - Лимит Time 4000 символов. Перед постом в канал - DM-self-test (`dm` на свой username), проверь Mattermost-markdown. Публикация - только после **`AskUserQuestion`**.
 
 Канал `dws-ai-agent`: https://time.tbank.ru/tinkoff/channels/dws-ai-agent.
 
-### 12. User announcement (канал ~dwsai-announcement)
+### 13. User announcement (канал ~dwsai-announcement)
 
 Только при наличии user impact. Формат - [templates/user-announcement-template.md](templates/user-announcement-template.md): «Что изменилось / Что это даёт / Нужно ли что-то сделать / Ограничения». Язык - русский, приложение - **Nessy Data Agent** (не `data-agent` / `data-agent-prod`).
 
 Правило аудитории по feature flags (шаг 3): изменение за выключенным в prod флагом в user announcement НЕ включай - оно идет только инженерам. Если включенных user-facing изменений нет, не выдумывай: выведи строку `User-facing announcement is not required: no user impact` (в чат, в канал не постим) или согласуй пропуск. Публикация в канал `~dwsai-announcement` (public, id `dspn99zritbs7duks3g4skjc6r`) - после **`AskUserQuestion`**.
 
-### 13. Rollback guardrail
+### 14. Rollback guardrail
 
 При провале деплоя или критической регрессии - не откатывай молча. Подготовь план, покажи команду, спроси через **`AskUserQuestion`**, и только потом:
 
@@ -232,6 +240,19 @@ dp deploy rollback --tenant dwsai --app data-agent-prod
 ```
 
 Лог-шум (как FLAG_NOT_FOUND с fallback на default) при здоровом сервисе - не повод для rollback, а кандидат на отдельный тикет.
+
+## Hotfix (roll-forward с master)
+
+Срочный фикс критической проблемы в prod. Сначала гейт rollback-vs-roll-forward (шаг 14): если безопасный фикс не готов быстро - сперва rollback на предыдущий релиз, hotfix следом без спешки.
+
+Roll-forward - тот же workflow с сокращенной церемонией; технические шаги и гейты не урезаются:
+
+- Фикс едет в `master` через MR (критические тесты обязательны). Отдельного формата тега нет: CI-регулярка допускает только `release-*`/`dev-*`, hotfix-тег - обычный `release-YYMMDD.HHMM`.
+- Обязательные шаги: 0-3 (preflight, previous release, сокращенный changelog, impact-детекторы) → 4 (короткий план) → 5-9 (тег, pipeline, deploy, мониторинг, smoke).
+- «Попутчики»: при trunk-based вместе с фиксом уедут все незарелиженные коммиты `master`. Покажи их явно в плане (`scripts/collect_release_diff.sh`) и подтверди через **`AskUserQuestion`**. Попутчики неприемлемы - это не roll-forward кейс: остановись и согласуй ручной cherry-pick от тега (вне default-процедуры).
+- Сообщение тега начинай с `Hotfix for <broken-release>: <причина>`, дальше обычный формат.
+- Коммуникация сокращенная, но не нулевая: manifest обязателен (компактный), Time post короткий (Status, причина hotfix, ссылка на manifest), thread со ссылками Sage по инциденту, user announcement только при user impact.
+- Сломанный релиз: обнови Known issues / Status в его manifest и при необходимости в его Time-треде.
 
 ## Итоговый отчет
 

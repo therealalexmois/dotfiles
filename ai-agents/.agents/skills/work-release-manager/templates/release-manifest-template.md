@@ -99,7 +99,7 @@ parent-страницы.
 
 ## Где брать данные
 
-Из шагов 1-9 релизного workflow: tags (`git tag`), pipeline (dpGitlab), compare и
+Из шагов 1-10 релизного workflow: tags (`git tag`), pipeline (dpGitlab), compare и
 tags (GitLab URL), deploy/revision (`dp deploy do`), MR и авторы
 (`dp_gitlab_merge-requests`), Jira и assignee (`dp_jira_issue`), ops (dpKube),
 Sage (dpSage). Секреты не рендерить.
