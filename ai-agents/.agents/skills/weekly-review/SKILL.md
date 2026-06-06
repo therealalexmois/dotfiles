@@ -1,5 +1,6 @@
 ---
 name: weekly-review
+disable-model-invocation: true
 description: Manage a weekly planning-and-review workflow inside an Obsidian vault for a Staff/Staff-candidate engineer. Use whenever the user wants to start a work week, keep a weekly log, generate a daily status message for their team, consolidate daily notes into a weekly log, draft a weekly review, check whether quarterly goals/OKR are attainable, collect Staff promotion evidence, or carry unfinished work forward. Trigger on phrases like "начать неделю", "weekly review", "weekly log", "подведи итоги недели", "daily status", "консолидируй daily", "собери evidence", "start week", or when the user references a weekly workspace folder, a `YYYY-Www` week, or quarterly goal attainability. This skill is markdown-only, evidence-first, and never invents impact, metrics, or Staff coverage.
 ---
 
