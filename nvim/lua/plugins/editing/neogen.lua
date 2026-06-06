@@ -1,4 +1,4 @@
--- lua/plugins/neogen.lua
+---@type LazySpec
 return {
   "danymat/neogen",
   opts = function(_, opts)

@@ -1,3 +1,7 @@
+[terminal.shell]
+program = "/bin/zsh"
+args = ["--login"]
+
 [general]
 import = [
   "~/.config/alacritty/key_bindings.toml",
@@ -45,6 +49,7 @@ decorations = "full"
 dynamic_padding = false
 dynamic_title = true
 opacity = 0.7
+option_as_alt = "OnlyLeft"
 
 dimensions = { columns = 160, lines = 48 }
 

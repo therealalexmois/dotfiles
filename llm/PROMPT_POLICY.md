@@ -34,7 +34,7 @@
 
 2. **One prompt identity**  
    Один и тот же сценарий должен иметь одну логическую identity независимо от profile.  
-   Пример: `commit-message` остаётся `commit-message`, а не превращается в `commit-home` и `commit-work`.
+   Пример: `commit` остаётся `commit`, а не превращается в `commit-home` и `commit-work`.
 
 3. **Global first, project override when needed**  
    Общие сценарии живут в global library.  
@@ -89,16 +89,20 @@
 ## Prompt taxonomy
 
 ### Operational prompts
-Стабильные повседневные сценарии:
+Стабильные повседневные сценарии, которые сейчас реально есть в `prompts/`:
 
-- `ask`
-- `explain`
-- `refactor`
-- `tests`
-- `commit-message`
-- `branch-name`
-- `docstring`
-- `better-name`
+- `commit` (`commit.md` + `commit.lua`)
+- `branch-name` (`branch-name.md`)
+- `branch-from-diff` (`branch-from-diff.md` + `branch.lua`)
+- `explain` (`explain.md`)
+- `fix` (`fix.md`)
+- `lsp` (`lsp.md` + `lsp.lua`)
+- `review` (`review.md`, chat)
+- `refactor` (`refactor.md`, inline + `placement: replace`)
+- `docstring` (`docstring.md`)
+- `unit-tests` (`unit-tests.md`)
+- `inline-prompt` (`inline-prompt.md`)
+- `code-workflow` (`code-workflow.md`, `interaction: workflow`)
 
 ### Project prompts
 Специализации под конкретный репозиторий:
@@ -142,46 +146,79 @@ Prompts и repo-rules нельзя смешивать в один слой.
 
 ## Metadata contract
 
-Каждый prompt должен содержать metadata contract.
+Каждый prompt — это markdown-файл нативного формата CodeCompanion: YAML frontmatter +
+тело с ролями `## system` / `## user`. Загрузчик
+`codecompanion/prompt_library/markdown.lua` читает frontmatter и требует как минимум
+`name` и `interaction` (иначе prompt игнорируется с предупреждением).
 
-### Minimal fields
+### Frontmatter fields
 
-- `name` — уникальное имя prompt’а; нужно для идентификации и выбора в prompt picker
-- `description` — короткое описание назначения prompt’а; нужно для понимания, когда его использовать
-- `kind` — тип сценария (`ask`, `explain`, `refactor` и т.д.); нужен для классификации prompt’ов
-- `scope` — область действия (`global` или `project`); нужна для разделения общих и проектных prompt’ов
-- `interaction` — способ взаимодействия (`chat`, `inline`, `prompt`); нужен для выбора UX-поверхности выполнения
-- `requires` — какой входной контекст нужен (`selection`, `diff`, `file` и т.д.); нужен для валидации, можно ли запускать prompt в текущем состоянии
-- `profiles` — в каких профилях prompt допустим (`home_local`, `work_proxy`, `both`); нужно для контроля совместимости с backend/profile
-- `review_mode` — нужен ли review результата перед применением (`none`, `diff`, `replace`); нужен для безопасного выполнения destructive-сценариев
+- `name` — отображаемое имя в action palette; единственное обязательное поле идентификации.
+  Если не задано, CodeCompanion берёт имя файла, но мы всегда задаём `name` явно
+- `description` — короткое описание; видно в палитре и помогает понять назначение
+- `interaction` — UX-поверхность выполнения: `chat | inline | workflow`
+- `opts` — поведение prompt’а:
+  - `alias` — короткое имя для slash-команды и палитры (`commit`, `branch`, `explain`)
+  - `is_slash_cmd` — регистрировать ли как `/alias` slash-команду
+  - `auto_submit` — отправлять ли запрос сразу, без ручного редактирования
+  - `modes` — режимы, в которых prompt доступен, например `[v]` (visual)
+  - `placement` — для `inline`: куда писать ответ (`replace | new | add | before | chat`)
+  - `user_prompt` — запросить ввод у пользователя (`true`) или строка-подсказка
+  - `ignore_system_prompt` — не подмешивать глобальный system prompt адаптера
+  - `stop_context_insertion` — не автодобавлять контекст буфера
+  - `is_workflow` — пометить prompt как multi-turn workflow
+- `tools` — доступные tools (`none`, если не нужны)
+- `mcp_servers` — доступные MCP-серверы (`none`, если не нужны)
 
-### Suggested values
+### Body and variables
 
-- `kind`: `ask | explain | refactor | tests | commit | branch | docstring | naming`
-- `scope`: `global | project`
-- `interaction`: `chat | inline | prompt`
-- `requires`: `selection | file | diff | staged_git | text_input`
-- `profiles`: `home_local | work_proxy | both`
-- `review_mode`: `none | diff | replace`
+- Тело состоит из секций `## system` и `## user` (роли чата CodeCompanion).
+- Переменные `${...}` подставляются при выполнении:
+  - `${context.*}` — встроенный контекст CodeCompanion (`code`, `filetype`, `bufnr`,
+    `start_line`, `end_line` и т.д.)
+  - `${ns.fn}` — значение из соседнего резолвера `ns.lua` (по namespace, не по имени
+    `.md`). Файл `ns.lua` возвращает таблицу функций; например `${commit.input}` →
+    `commit.lua`, `${branch.status}` → `branch.lua`, `${lsp.diagnostics}` → `lsp.lua`.
 
 ---
 
 ## Metadata example
 
+Реальный frontmatter из `prompts/commit.md`:
+
 ```yaml
 ---
-name: commit-message
-description: Generate a concise commit message from staged git diff
-kind: commit
-scope: global
-interaction: prompt
-requires:
-  - staged_git
-profiles:
-  - both
-review_mode: none
+name: Commit Message
+interaction: chat
+description: Generate a Conventional Commit message from selected diff or staged git changes
+opts:
+  alias: commit
+  auto_submit: true
+  is_slash_cmd: true
+  ignore_system_prompt: true
+  stop_context_insertion: true
+tools: none
+mcp_servers: none
 ---
 ```
+
+---
+
+## Planned / not yet implemented
+
+Поля ниже описывались в ранних версиях этой политики, но **не используются**
+загрузчиком CodeCompanion и отсутствуют в реальных промптах. Оставлены как ориентир на
+будущее; вводить их в frontmatter имеет смысл только вместе с кодом, который их читает.
+
+- `kind` — тип сценария (`ask | explain | refactor | tests | commit | ...`) для классификации
+- `scope` — `global | project` для разделения общих и проектных промптов
+- `requires` — требуемый входной контекст (`selection | diff | staged_git | ...`) для валидации
+- `profiles` — допустимые профили (`home_local | work_proxy | both`)
+- `review_mode` — режим review результата (`none | diff | replace`)
+
+Сейчас эти аспекты выражаются иначе: `scope` — расположением файла (global vs `<repo>/.prompts`),
+входной контекст — переменными `${...}`, профиль-независимость — самим устройством адаптеров,
+а review — поведением `interaction`/`placement` (см. Execution rules).
 
 ---
 
@@ -190,19 +227,19 @@ review_mode: none
 ### File names
 Использовать короткие, предсказуемые имена в kebab-case.
 
-Примеры:
-- `commit-message.md`
+Примеры (реальные файлы):
+- `commit.md`
 - `branch-name.md`
+- `branch-from-diff.md`
 - `docstring.md`
-- `explain-code.md`
-- `refactor-selection.md`
-- `generate-tests.md`
+- `explain.md`
+- `unit-tests.md`
 
 ### Prompt names
-`name` должен:
+Frontmatter `name` (отображаемое имя в палитре) должен:
 - быть стабильным
 - быть уникальным в пределах библиотеки
-- совпадать по смыслу с файлом
+- совпадать по смыслу с файлом и с `opts.alias`
 
 ---
 
@@ -227,24 +264,36 @@ review_mode: none
 
 ## Execution rules
 
-### Non-destructive prompts
-Могут возвращать результат без review:
+Безопасность определяется связкой `interaction` + `opts.placement`, а не отдельным полем
+`review_mode`.
 
-- `ask`
+### Chat prompts (non-destructive)
+`interaction: chat` пишет ответ в chat-буфер и ничего не меняет в коде. Здесь `auto_submit: true`
+безопасен:
+
+- `commit` (`commit.md`)
+- `branch-name`, `branch-from-diff`
 - `explain`
-- `commit-message`
-- `branch-name`
-- `better-name`
+- `fix`
+- `lsp`
+- `review`
 
-### Review-required prompts
-Должны возвращать результат только через reviewable surface:
+### Inline prompts (через reviewable surface)
+`interaction: inline` управляется `opts.placement`:
 
-- `refactor`
-- `tests`
-- `docstring` / `comments`, если это insertion/replacement
+- `placement: replace` (`docstring.md`, `refactor.md`) перезаписывает выделение, но при
+  `display.diff.enabled` (включено по умолчанию) CodeCompanion открывает diff-UI с
+  accept/reject. Diff-UI и есть reviewable surface: применение требует явного accept.
+  `docstring` использует `auto_submit: true`; `refactor` — `auto_submit: false`, чтобы
+  запрос можно было отредактировать перед отправкой.
+- `placement: new` (`unit-tests.md`) пишет результат в новый буфер и не трогает
+  существующий код — неразрушающе по построению.
 
 ### Safety rule
-Ничего, что меняет код, не должно применяться автоматически по умолчанию.
+Inline-prompt не должен молча перезаписывать существующий код. Для destructive placement
+(`replace`) полагаемся на diff-UI CodeCompanion (accept/reject); отключать `display.diff`
+для таких промптов нельзя. Additive placement (`new`, `add`, `before`) допустим без diff,
+так как не уничтожает существующий код.
 
 ---
 
@@ -264,22 +313,31 @@ Profile **не влияет** на logical identity prompt’а.
 
 ---
 
-## First-iteration prompt pack
+## Current prompt pack
 
-### Global
-- `ask-selected`
-- `explain-code`
-- `refactor-selection`
-- `commit-message`
+### Global (реально существуют)
+- `commit`
 - `branch-name`
+- `branch-from-diff`
+- `explain`
+- `fix`
+- `lsp`
+- `review`
+- `refactor`
 - `docstring`
+- `unit-tests`
+- `inline-prompt`
+- `code-workflow`
+
+### Planned (пока нет)
+- `ask-selected`
 - `better-name`
 
-### Project
+### Project (пока нет, создавать только при реальной необходимости)
 - `generate-tests`
 - `project-refactor`
 - `project-docstring`
-- `project-commit-style` — только если это реально нужно
+- `project-commit-style`
 
 ---
 
@@ -288,10 +346,10 @@ Profile **не влияет** на logical identity prompt’а.
 Перед добавлением нового prompt проверь:
 
 - это новый сценарий, а не вариант существующего
-- prompt действительно нужен как `global` или как `project`
-- metadata заполнена полностью
-- имя короткое и стабильное
-- destructive output помечен правильным `review_mode`
+- prompt действительно нужен как global или как project
+- frontmatter заполнен: есть `name` и `interaction`, при необходимости `opts`
+- имя файла короткое, стабильное, в kebab-case
+- destructive inline-prompt использует `placement: replace` поверх diff-UI, а не молчаливую запись
 - prompt не дублирует repo-rules
 - prompt не split’ится на home/work без необходимости
 

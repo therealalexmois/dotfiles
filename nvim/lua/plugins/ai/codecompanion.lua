@@ -45,6 +45,12 @@ return {
         desc = "AI add selection to chat",
         mode = "v",
       },
+      {
+        "<leader>Al",
+        "<cmd>CodeCompanionChat claude_code<cr>",
+        desc = "AI Claude chat (ACP)",
+        mode = { "n", "v" },
+      },
     },
     opts = function()
       local profiles = require "config.ai.codecompanion_profiles"
@@ -52,6 +58,18 @@ return {
 
       return {
         adapters = {
+          acp = {
+            claude_code = function()
+              return require("codecompanion.adapters").extend("claude_code", {
+                commands = {
+                  default = { "claude-code-acp" },
+                },
+                env = {
+                  CLAUDE_CODE_OAUTH_TOKEN = "CLAUDE_CODE_OAUTH_TOKEN",
+                },
+              })
+            end,
+          },
           http = {
             opts = profiles.get_http_opts(),
             ollama = function()
@@ -88,7 +106,7 @@ return {
         },
         interactions = {
           chat = {
-            adapter = interaction_adapter,
+            adapter = profiles.get_chat_adapter(),
           },
           inline = {
             adapter = interaction_adapter,

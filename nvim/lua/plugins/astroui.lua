@@ -8,7 +8,6 @@ return {
   opts = {
     colorscheme = "catppuccin-macchiato",
     highlights = {
-      init = {},
       astrodark = {
         LspReferenceText = { bold = true, underline = true },
         LspReferenceRead = { bold = true, underline = true },

@@ -28,6 +28,8 @@ brew "mise"
 brew "neovim"
 brew "nmap"
 brew "ollama"
+# keg-only JDK; exposed via PATH in zsh/.zprofile (no `brew link`).
+brew "openjdk"
 brew "pnpm"
 brew "postgresql@14"
 brew "ripgrep"

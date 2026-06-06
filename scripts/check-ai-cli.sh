@@ -35,7 +35,7 @@ else
 fi
 
 note "codex config render check (no write)"
-if python3 "${repo_dir}/scripts/render-codex-config.py" --check; then
+if "${repo_dir}/scripts/render-codex-config.py" --check; then
   :
 else
   fail "render --check failed"

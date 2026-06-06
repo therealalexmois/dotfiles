@@ -1,5 +1,6 @@
 ---
 name: work-daily-note
+disable-model-invocation: true
 description: Normalize, clean, or structure a single daily note in a Markdown file while preserving frontmatter, links, block references, tags, embeds, and plugin-managed metadata. Use when tidying one daily note into clear sections without changing its meaning or inventing work. Pairs with the work-weekly-review skill — work-daily-note is the write side for one daily note; work-weekly-review reads daily notes read-only and consolidates them. Do not use for coding tasks, broad multi-file rewrites, weekly logs, or weekly review generation. Part of the work-* planning skill set (work-daily-log, work-weekly-review, future work-okr).
 ---
 

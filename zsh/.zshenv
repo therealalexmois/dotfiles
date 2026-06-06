@@ -25,9 +25,6 @@ export STARSHIP_CONFIG="${XDG_CONFIG_HOME}/starship.toml"
 export GOPATH="$XDG_DATA_HOME/go"
 export PATH="$GOPATH/bin:$PATH"
 
-# Zellij
-export ZELLIJ_CONFIG_DIR="$XDG_CONFIG_HOME/zellij"
-
 # Default editor (Claude Code Ctrl+G uses $VISUAL, then $EDITOR)
 if command -v nvim >/dev/null 2>&1; then
   export EDITOR="nvim"

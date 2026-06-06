@@ -1,7 +1,7 @@
 [keyboard]
 
 bindings = [
-  { key = "Right", mods = "Alt", chars = "F" },
-  { key = "Left",  mods = "Alt", chars = "B" },
-  { key = "Return", mods = "Shift", chars = "\x1b[13;2u" },
+  { key = "Right", mods = "Alt", chars = "\u001BF" },
+  { key = "Left",  mods = "Alt", chars = "\u001BB" },
+  { key = "Return", mods = "Shift", chars = "\u001B[13;2u" },
 ]
