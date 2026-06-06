@@ -1,5 +1,6 @@
 ---
 name: data-quality-auditor
+disable-model-invocation: true
 description: Audit datasets for completeness, consistency, accuracy, and validity. Profile data distributions, detect anomalies and outliers, surface structural issues, and produce an actionable remediation plan.
 ---
 
