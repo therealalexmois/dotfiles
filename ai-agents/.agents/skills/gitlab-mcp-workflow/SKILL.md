@@ -115,3 +115,4 @@ git push origin HEAD:fix/my-bug
 ## Связь с другими skill
 
 - `gitlab-mr-author` сочиняет заголовок и описание MR по шаблону репозитория `.gitlab/merge_request_templates/default.md`. Этот skill про механику create и inspect. Текст бери из `gitlab-mr-author`, создание и обновление делай отсюда.
+- `work-task-delivery` оркеструет полный цикл доставки задачи (Jira -> ветка -> MR -> зеленый pipeline -> Review) и использует этот skill для всех GitLab-действий.
