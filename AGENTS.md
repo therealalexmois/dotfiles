@@ -19,7 +19,9 @@ settings so one laptop can reproduce a consistent interactive development enviro
   into repo config.
 - `scripts/` - Repo tooling: `install-ai-cli-dotfiles.sh` (Stow + skill/profile symlinks),
   `render-codex-config.py` (merge shared + local Codex TOML into `~/.codex/config.toml`),
-  and `check-ai-cli.sh` (lint/smoke for the AI CLI tooling).
+  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), and `audit-skills.sh` (security
+  audit of all skills via skill-security-auditor; compares with the committed
+  `skills-audit-baseline.json`).
 - `lazydocker/` - lazydocker configuration.
 - `llm/` - Global AI prompt library and prompt-system policy used by Neovim.
 - `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
@@ -78,6 +80,10 @@ zsh -n bootstrap/.zshenv zsh/.zshenv zsh/.zprofile zsh/.zshrc zsh/bootstrap.zsh
 # Lint + smoke the AI CLI tooling (zsh -n, shellcheck, py_compile, render --check,
 # TOML parse of shared/profile configs). Performs no writes to ~/.codex or ~/.claude.
 scripts/check-ai-cli.sh
+
+# Security-audit all agent skills (skips *-workspace scratch dirs) and compare the
+# verdicts with scripts/skills-audit-baseline.json; --update-baseline rewrites it.
+scripts/audit-skills.sh
 ```
 
 Type-check:

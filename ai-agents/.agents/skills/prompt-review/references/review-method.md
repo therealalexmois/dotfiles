@@ -45,7 +45,7 @@ Walk each axis explicitly; record findings or `OK` / `NOT_APPLICABLE`.
 - **H. Batch / partial input protocol** — for large/partial inputs there's an explicit protocol, a ledger of received parts, and a "final is assembled only from the ledger" rule.
 - **I. Final answer format** — unambiguous (structure predictable); required vs optional sections separated; a short form for trivial cases (e.g. BLOCKED); no noise on simple tasks.
 - **J. Constraints and anti-patterns** — explicitly lists what the model must NOT do; covers the task's main failure modes; doesn't contradict positive instructions above.
-- **K. Best-practice conformance** — uses appropriate practices from major providers' guides (Anthropic, OpenAI, Google); avoids outdated/harmful patterns ("pretend you are", "ignore previous instructions", excess jailbreak language).
+- **K. Best-practice conformance** — uses appropriate practices from major providers' guides (Anthropic, OpenAI, Google); avoids outdated/harmful patterns ("pretend you are", "ignore previous instructions", excess jailbreak language). <!-- noqa: SEC-AUDITOR: quoted anti-pattern example, not a directive -->
 - **L. Platform specifics (if known)** — accounts for the target model (context length, instruction-following style, structured-tag support, tool use, reasoning mode); compatible with the interface (chat, API, agent, batch).
 
 ## Problem taxonomy
