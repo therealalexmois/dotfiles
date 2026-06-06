@@ -1,0 +1,74 @@
+{
+  "skill_name": "work-release-manager",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Используя skill work-release-manager, подготовь план релиза dwsai-data-agent по текущему master в dry-run режиме: дойди до шага 4 (план релиза) включительно и остановись. Никаких изменяющих действий: тег не создавать, ничего не пушить и не постить. Репозиторий: /Users/al.a.moiseenko/work/dwsai-data-agent.",
+      "expected_output": "План релиза по templates/release-plan-template.md, собранный из фактов скриптов (preflight, collect_release_diff, детекторы), без единого изменяющего действия.",
+      "files": [],
+      "expectations": [
+        "План содержит секции Scope, Operational impact, Риски, Анонсы и список необратимых шагов (структура release-plan-template.md)",
+        "Previous release и Rollback target равны последнему валидному тегу формата release-NNNNNN.NNNN из git",
+        "Данные Scope приведены явной строкой в секции Scope (commits, files, +ins/-del, тикеты) и совпадают с выводом scripts/collect_release_diff.sh",
+        "Для изменений env приведены только имена переменных, значения секретов не выводятся",
+        "Не выполнено ни одной изменяющей команды: git tag/push, dp deploy do, посты в Time, правки wiki",
+        "Неизвестные факты помечены unknown/не проверялось, а не выданы за подтвержденные"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "По skill work-release-manager сгенерируй draft технического Time post для релиза release-260604.2203 (предыдущий release-260603.1639) проекта dwsai-data-agent. Только текст в чат, в Time не отправляй. Репозиторий: /Users/al.a.moiseenko/work/dwsai-data-agent.",
+      "expected_output": "Короткий Time post по templates/time-post-template.md: статус из таксономии, ссылки, плотная верстка с --- разделителями, без таблиц и длинных Sage-ссылок.",
+      "files": [],
+      "expectations": [
+        "Пост короткий и без markdown-таблиц",
+        "Status - ровно одно значение из таксономии (Delivered / Healthy, Delivered / Known issue, Delivered / Degraded, Rollback in progress, Rolled back, Delivery failed)",
+        "Previous release и Rollback target оформлены ссылками на tag-страницы GitLab",
+        "Есть строка compact links: Pipeline, Compare, Deploy, Logs, Manifest",
+        "Крупные секции разделены ---, групповые заголовки Features/Fixes/Docs-Chore стоят вплотную к своим буллетам",
+        "Owner в буллетах changelog оформлен как @login, вводные метки перед двоеточием жирные",
+        "Длинных Sage deep-ссылок (message=) в теле поста нет",
+        "Пункты changelog соответствуют реальному git-диапазону между тегами (git log prev..cur), без выдуманных изменений",
+        "Сообщение в Time не отправлялось"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Прод dwsai-data-agent сломан после последнего релиза, фикс уже смержен в master. Действуй по skill work-release-manager: предложи процедуру, но не выполняй изменяющих действий без подтверждения.",
+      "expected_output": "Процедура hotfix: гейт rollback-vs-roll-forward, полный технический цикл с сокращенной коммуникацией, явная обработка попутчиков master.",
+      "files": [],
+      "expectations": [
+        "Первым шагом предложен выбор rollback vs roll-forward с гейтом подтверждения",
+        "Roll-forward описан как полный технический цикл (preflight, тег, pipeline, deploy, мониторинг, smoke) с сокращенной коммуникацией",
+        "Явно упомянуты попутчики - незарелиженные коммиты master, которые уедут вместе с фиксом и требуют подтверждения",
+        "Формат тега обычный release-YYMMDD.HHMM, сообщение тега начинается с Hotfix for <broken-release>",
+        "Изменяющие действия не выполнены"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Проверь здоровье текущего production-релиза dwsai-data-agent: поды, образ, и нет ли новых ошибок после выката. Используй skill work-release-manager. Репозиторий: /Users/al.a.moiseenko/work/dwsai-data-agent.",
+      "expected_output": "Read-only проверка через release_smoke.sh либо dp kube/dp sage: образ и готовность подов на обоих кластерах, регрессия ERROR-сигнатур против прошлого релиза.",
+      "files": [],
+      "expectations": [
+        "Использован scripts/release_smoke.sh либо эквивалент на dp kube и dp sage (read-only)",
+        "Анализ ошибок регрессионный с конкретной методикой: нормализация сигнатур (logger + message) и вычисление дельты против предыдущего релиза (как sig() + comm -23 в release_smoke.sh), а не голый счетчик ERROR",
+        "Проверены оба кластера (bm-ix-m5-inside-wl1.prod и wl4.prod)",
+        "Rollback не предложен без явного гейта; лог-шум при здоровом сервисе классифицирован как кандидат на тикет, а не повод для отката"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "В master с прошлого релиза dwsai-data-agent добавились новые переменные окружения в deploy/service.yml. Объясни по skill work-release-manager, как это влияет на ближайший деплой, и подготовь нужные проверки. Изменяющих действий не выполняй. Репозиторий: /Users/al.a.moiseenko/work/dwsai-data-agent.",
+      "expected_output": "Детект новых env через скрипт (только имена), объяснение что image-only deploy недостаточен (isModified: true, полный конфиг) и какие гейты сработают.",
+      "files": [],
+      "expectations": [
+        "Запущен scripts/detect_secrets_runtime_config.sh, перечислены имена новых переменных без значений",
+        "Объяснено, что image-only deploy недостаточен: нужен полный конфиг application.yaml с isModified: true",
+        "Назван явный human-gate перед деплоем при изменении secrets/runtime config",
+        "Упомянуто удаление application.yaml после деплоя, потому что файл содержит значения env",
+        "Изменяющие действия не выполнены"
+      ]
+    }
+  ]
+}
