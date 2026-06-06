@@ -1,7 +1,7 @@
 # User-facing announcement (канал ~dwsai-announcement)
 
 Только user-видимые изменения. Генерировать, только если user impact не «none».
-Общие правила - [announcement-rules.md](announcement-rules.md).
+Общие правила - [announcement-rules.md](../references/announcement-rules.md).
 
 Язык - русский. Приложение - `Nessy Data Agent` (не внутренние `data-agent` /
 `data-agent-prod`). Продуктовые имена, знакомые пользователю (Helicopter,

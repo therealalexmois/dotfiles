@@ -2,7 +2,7 @@
 
 Полная техническая запись production-релиза. Создается на каждый релиз дочерней
 страницей к `04 – Release Manifest` (id `8451788585`, space DW). Общие правила -
-[announcement-rules.md](announcement-rules.md).
+[announcement-rules.md](../references/announcement-rules.md).
 
 Заголовок страницы (дефисы, не em dash):
 

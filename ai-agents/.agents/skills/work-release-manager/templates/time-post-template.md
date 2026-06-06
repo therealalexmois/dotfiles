@@ -2,7 +2,7 @@
 
 Главный анонс релиза в инженерном канале. Короткий, без таблиц, ссылается на
 wiki manifest. Общие правила (status, язык, ссылки) -
-[announcement-rules.md](announcement-rules.md). Длинные Sage-ссылки и
+[announcement-rules.md](../references/announcement-rules.md). Длинные Sage-ссылки и
 post-release observation - в thread ([thread-template.md](thread-template.md)).
 
 Отвечает быстро: что выпущено, healthy ли prod, есть ли user impact, что

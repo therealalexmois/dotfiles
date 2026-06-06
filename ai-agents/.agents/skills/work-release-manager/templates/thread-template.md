@@ -1,7 +1,7 @@
 # Thread message (тред к Time post)
 
 Операционные детали, слишком длинные или шумные для основного Time post. Общие
-правила - [announcement-rules.md](announcement-rules.md).
+правила - [announcement-rules.md](../references/announcement-rules.md).
 
 ## Когда создавать
 
