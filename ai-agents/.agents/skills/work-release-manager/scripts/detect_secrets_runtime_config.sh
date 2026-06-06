@@ -30,10 +30,10 @@ if [ -z "$diff" ]; then
 fi
 
 # Extract only variable NAMES from changed (+/-) lines. Never values.
-# Matches both "- name: FOO" and bare "FOO:" style keys under envs.
+# Matches "- name: FOO", bare "FOO:" keys and bare list items "- FOO" under envs.
 names_json="$(printf '%s\n' "$diff" \
   | grep -E '^[+-]' | grep -vE '^[+-]{3}' \
-  | sed -nE 's/^[+-][[:space:]]*-?[[:space:]]*name:[[:space:]]*"?([A-Za-z_][A-Za-z0-9_]*)"?.*/\1/p; s/^[+-][[:space:]]*([A-Z][A-Z0-9_]+):.*/\1/p' \
+  | sed -nE 's/^[+-][[:space:]]*-?[[:space:]]*name:[[:space:]]*"?([A-Za-z_][A-Za-z0-9_]*)"?.*/\1/p; s/^[+-][[:space:]]*([A-Z][A-Z0-9_]+):.*/\1/p; s/^[+-][[:space:]]*-[[:space:]]+([A-Z][A-Za-z0-9_]*)[[:space:]]*$/\1/p' \
   | sort -u | jq -R . | jq -s 'map(select(length>0))')"
 
 jq -n --argjson v "${names_json:-[]}" '{secrets_runtime_config:"changed", changed_vars:$v}'
