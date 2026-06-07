@@ -72,3 +72,9 @@ DISABLE_AUTO_TITLE="true"
 
 # --- Prompt: clean multi-line rendering ---
 setopt PROMPT_SUBST
+
+# t-invest MCP: токен из macOS Keychain
+export TINVEST_TOKEN=$(security find-generic-password -a "$USER" -s tinvest-token -w)
+
+# Russian Trusted CA (Минцифры) для *.tbank.ru
+export NODE_EXTRA_CA_CERTS="$HOME/.claude/certs/russian_trusted_bundle.pem"
