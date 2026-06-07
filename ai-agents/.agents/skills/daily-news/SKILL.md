@@ -8,6 +8,12 @@ description: "Get today's relevant news headlines from the web, based on configu
 Search for today's most relevant news headlines based on configured topics. Web-only —
 no vault, Notion, or calendar required, so it is fully portable across machines.
 
+## Setup (per machine)
+
+This skill is web-only — no vault or paths to configure. The single setup step is
+editing the topic list below to this machine's interests. Web search must be available
+in the environment.
+
 ## Config — topics
 Search for news related to these subjects. Edit this list to match your interests:
 

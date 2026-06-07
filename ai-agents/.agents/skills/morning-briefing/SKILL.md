@@ -78,6 +78,17 @@ Write the file to `OUT_DIR/morning-briefing.html` and open it in the browser.
 On the Claude mobile app (no browser): output the briefing as formatted text in the
 conversation instead.
 
+## Setup (per machine)
+
+When installing on a new machine, configure before first run:
+
+1. **Vault paths** — verify the `Conventions / Paths` table matches this machine's
+   active vault. Adjust `DAILY_SRC`, `WEEKLY_SRC`, `CAL_SECTION`, and `OUT_DIR` if the
+   layout differs. This is the only place paths live.
+2. **obsidian-cli** — confirm the CLI is installed (`obsidian help`). If absent, the
+   skill falls back to direct file reads; no action needed beyond knowing it's slower.
+3. **News topics** — edit the Config block below to this machine's interests.
+
 ## Config — news topics
 Edit this list to match the user's interests:
 - Artificial intelligence and AI tools

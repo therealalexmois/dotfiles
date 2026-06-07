@@ -31,6 +31,18 @@ Named conventions, not hardcoded magic. Edit this table only if the vault layout
 
 Derive dates from today. Use today's date for the `✅ <DATE>` stamp.
 
+## Setup (per machine)
+
+When installing on a new machine, configure before first run:
+
+1. **Vault paths** — verify the `Conventions / Paths` table matches this machine's
+   active vault. Adjust `DAILY_SRC`, `DAILY_NEXT`, `TASK_DONE`, and `CAL_SECTION` if the
+   layout or completion convention differs. This is the only place paths live.
+2. **obsidian-cli** — confirm the CLI is installed (`obsidian help`). If absent, the
+   skill falls back to direct file edits; no action needed beyond knowing it's slower.
+3. **Completion format** — confirm `TASK_DONE` matches how this vault marks done tasks
+   (e.g. `- [x] … ✅ <DATE>`) so writes stay consistent with the vault's other tooling.
+
 ## What to do
 
 ### Step 1: Read today's open tasks

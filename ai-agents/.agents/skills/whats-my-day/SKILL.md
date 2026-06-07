@@ -31,6 +31,16 @@ Named conventions, not hardcoded magic. Edit this table only if the vault layout
 
 Derive `<year>`, `<YYYY-MM-DD>`, `<YYYY-Www>` from today's date (ISO week).
 
+## Setup (per machine)
+
+When installing on a new machine, configure before first run:
+
+1. **Vault paths** — verify the `Conventions / Paths` table matches this machine's
+   active vault. Adjust `DAILY_SRC`, `WEEKLY_SRC`, `CAL_SECTION`, and `OUT_DIR` if the
+   layout differs. This is the only place paths live.
+2. **obsidian-cli** — confirm the CLI is installed (`obsidian help`). If absent, the
+   skill falls back to direct file reads; no action needed beyond knowing it's slower.
+
 ## What to do
 
 1. **Tasks** — collect `TASK_OPEN` lines from `DAILY_SRC` and `WEEKLY_SRC`. Preserve any
