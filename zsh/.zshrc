@@ -23,6 +23,16 @@ fpath+=("${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-completions/src")
 # --- Aliases ---
 alias n='nvim .'
 alias anki='open -a Anki'
+diag-lang() {
+  echo "=== Input Source ==="
+  defaults read ~/Library/Preferences/com.apple.HIToolbox.plist AppleSelectedInputSources 2>/dev/null | grep -E "Name|Bundle"
+  echo "=== Tmux Panes ==="
+  tmux list-panes -a -F "#{pane_id} active=#{pane_active} cmd=#{pane_current_command} pid=#{pane_pid}" 2>/dev/null
+  echo "=== TextInputMenuAgent ==="
+  ps -p "$(pgrep TextInputMenuAgent)" -o pid,etime,stat 2>/dev/null
+  echo "=== Recent HID events ==="
+  log show --predicate 'subsystem == "com.apple.HIToolbox"' --last 15s --style compact 2>/dev/null | grep -i "input\|source\|switch" | tail -15
+}
 
 # --- Starship prompt ---
 if command -v starship >/dev/null; then
