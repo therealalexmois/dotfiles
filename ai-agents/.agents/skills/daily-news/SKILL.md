@@ -1,5 +1,6 @@
 ---
 name: daily-news
+disable-model-invocation: true
 description: "Get today's relevant news headlines from the web, based on configured topics. Returns 3-5 recent stories, each with a one-sentence summary, source, and link. Use when the user asks: daily news, headlines, what's happening, news briefing. Web-only, no vault or external accounts required."
 ---
 
