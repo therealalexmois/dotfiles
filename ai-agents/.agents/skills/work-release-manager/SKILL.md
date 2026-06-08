@@ -39,6 +39,7 @@ Read-only шаги (git log/diff, `dp deploy get/watch`, `dp kube get`, `dp sage
 - Доступны: `dp` CLI (плагины deploy, kube, sage, gitlab), `jq`, `git`; MCP dpGitlab, dpSage, dpKube, time.
 - Если чего-то нет - остановись и попроси подключить, не выдумывай.
 - Предполетную проверку автоматизирует `scripts/preflight_release.sh` (шаг 0).
+- **Пути к скриптам относятся к каталогу самого skill, не к проекту.** Из cwd проекта `scripts/preflight_release.sh` не найдется. Запускай по полному пути от base directory skill (например `<skill-base>/scripts/preflight_release.sh`); удобно один раз сохранить базовый путь в переменную.
 
 ## Workflow
 
@@ -160,7 +161,18 @@ dp deploy watch --tenant dwsai --app data-agent-prod        # ждет Running/F
 rm -f application.yaml                                       # содержит значения env, не в .gitignore - удалить
 ```
 
-Случай новых env (в `deploy/service.yml` добавились переменные): image-only недостаточно. Добавь переменную в `application.yaml` со значением и **`isModified: true`** (без него сервер игнорирует значение), деплой полным конфигом (`--local`), список env в `application.yaml` держи в соответствии со `service.yml`.
+Случай новых env (в `deploy/service.yml` добавились переменные): image-only недостаточно, нужен полный конфиг (`--local`). Ключевые факты, которые легко упустить:
+
+- `dp deploy get` отдает значения **всех существующих секретов как `value: ""`** (маскирует). Сервер хранит их у себя. Поэтому при `--local` держи старые env на `isModified: false` (тогда сервер сохранит свои значения), а `isModified: true` ставь **только новым** переменным с реальным значением. Поставишь `isModified: true` на старый секрет с пустым значением - затрешь его.
+- Список env в `application.yaml` держи в соответствии со `service.yml`.
+- Порядок для секрета, от которого зависит включенная фича (например Vault `enabled=true`): значение должно существовать в окружении **до** выката нового образа, иначе сервис поднимется без секрета и упадет.
+
+Новый **секретный** env (Vault role/secret, токены) - два пути, выбирай осознанно:
+
+1. **UI (DaaS) + image-only деплой** - инженер заводит значение секрета через Deploy-as-a-Service UI (создает ревизию), затем ты делаешь image-only день-2 деплой. Сервер сохраняет env, заданные в UI. Значение секрета не попадает ни в локальный файл, ни в контекст ассистента. **Секрет-безопасный путь по умолчанию.**
+2. **`--local` со значением в файле** - значение секрета кладется в `application.yaml`. Контринтуитивная ловушка: когда пользователь сам редактирует файл, **harness присылает ассистенту diff файла через system-reminder, и значение секрета все равно попадает в контекст ассистента**. То есть «пусть юзер сам впишет» не защищает секрет. Используй этот путь, только если инженер осознанно согласен с этим; после деплоя предложи ротацию.
+
+В обоих путях `application.yaml` содержит конфиг (а в пути 2 - и значения секретов), не в `.gitignore`: **`rm -f application.yaml` сразу после деплоя**. Удобно работать с файлом во временном каталоге вне рабочего дерева.
 
 Если детекторы (шаг 3) дали DB migrations `present` или Secrets/runtime config `changed` - перед деплоем явный **`AskUserQuestion`** с перечислением, что меняется (имена env без значений). Это в дополнение к общему gate.
 
@@ -185,6 +197,8 @@ dp sage query -q 'group="dwsai" system="data-agent" env="prod" version="<new-tag
 dp sage query -q 'group="dwsai" system="data-agent" env="prod" version="<prev-tag>" level="ERROR"' --hours 24
 ```
 
+Значение поля env - ровно `prod` (не `production`). Это важно: неверный фильтр (`env="production"`) вернет **пустой результат**, который выглядит как ложное «ошибок нет». Прежде чем верить пустому ERROR-ответу, сделай sanity-check - тот же версионный запрос без `level`: если он тоже пуст, фильтр неверный, а не логов нет.
+
 Сравни сигнатуры: фейли только на ERROR, которых не было на прошлом релизе. Фон (ошибки трафика, давние FLAG_NOT_FOUND) не должен валить вывод. Наблюдай короткое окно после деплоя.
 
 Тяжелый сбор и группировку логов с подготовкой кликабельных deep-ссылок можно делегировать subagent `observability-agent` ([subagents/observability-agent.md](subagents/observability-agent.md)) через Agent tool - он возвращает регрессию, severity и ссылки; решение о rollback остается у main.
@@ -203,6 +217,7 @@ RELEASE_TAG=release-YYMMDD.HHMM scripts/release_smoke.sh
 
 - Собери тикеты релиза: `git log --format='%s%n%b' <prev>..<cur> | grep -oiE '(DWSAI|DGP|DC)-[0-9]+' | sort -u`; при необходимости добавь тикеты из веток и описаний MR (`dp_gitlab_merge-requests`).
 - Для каждого тикета проверь статус через `dp_jira_issue` (skill `jira-team-workflow`).
+- **Сверь, что summary тикета соответствует реальному изменению.** Коммит может ссылаться на тикет по опечатке (например `DWSAI-678` вместо `DWSAI-768`). Если summary не про это изменение - **не переводи тикет в Done**, отметь как наблюдение (ошибочная ссылка) и при возможности найди верный тикет (по ветке `feat/dwsai-NNN-...`, описанию MR). Не двигай задачу в Done только потому, что коммит ее упомянул.
 - Не-`Done` задачи переводи в `Done` (поток `RELEASE PREPARATION → DONE`) только после подтверждения через `AskUserQuestion`.
 - MR без связанного тикета отметь как наблюдение (изменение без задачи), тикет не выдумывай.
 
@@ -224,6 +239,12 @@ RELEASE_TAG=release-YYMMDD.HHMM scripts/release_smoke.sh
 - Лимит Time 4000 символов. Перед постом в канал - DM-self-test (`dm` на свой username), проверь Mattermost-markdown. Публикация - только после **`AskUserQuestion`**.
 
 Канал `dws-ai-agent`: https://time.tbank.ru/tinkoff/channels/dws-ai-agent.
+
+Lookup канала - частые грабли:
+
+- URL-слаг в ссылке `time.tbank.ru/.../channels/<slug>` может **не совпадать** с внутренним именем канала. Резолвь канал и сверяй фактическое `name`/`channel_id` перед постом.
+- Приватный канал не находится `search_channels`; lookup через `get_channel_info` по `channel_name` + `team_id` (team_id бери из ресурса `time://teams`) либо напрямую по `channel_id`.
+- Auto-mode классификатор может заблокировать исходящий пост при рассинхроне слаг/имя назначения. Сними блок явным подтверждением **конкретного** `channel_id` через `AskUserQuestion`.
 
 ### 13. User announcement (канал ~dwsai-announcement)
 
