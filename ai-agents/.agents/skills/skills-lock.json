@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "human-architect-mindset": {
+      "source": "bencium/bencium-claude-code-design-skill",
+      "sourceType": "github",
+      "skillPath": "human-architect-mindset/skills/human-architect-mindset/SKILL.md",
+      "computedHash": "139adb3502314490b7b2d191b4c97c7c568c1f64fb60ec25d7005a1568e38319"
+    },
     "python-design-patterns": {
       "source": "wshobson/agents",
       "sourceType": "github",
