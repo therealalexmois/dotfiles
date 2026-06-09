@@ -1,0 +1,41 @@
+{
+  "skill_name": "skill-param-auditor",
+  "notes": "Fixtures live in the skill's examples/ directory. For a full eval run, copy the referenced example skill(s) into each eval's input set so the subagent has something to audit.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "single-skillmd-hardcoded-bot-id",
+      "prompt": "Analyze examples/messenger-sender/SKILL.md for parameterization problems. It hardcodes a bot id and a thread id. Give me the audit report.",
+      "expected_output": "Analyze-only audit report. Flags the Bearer token as Critical (secret), the bot id / channel id / thread id as Major (thread id should be a per-run argument, not static), the chat.internal host as Major. Recommends argument for thread/channel, config or env for the bot alias, secret/env for the token. No files modified.",
+      "files": ["examples/messenger-sender/SKILL.md"]
+    },
+    {
+      "id": 2,
+      "name": "release-skill-k8s-namespaces",
+      "prompt": "Audit examples/release-manager/SKILL.md for hardcoded runtime values and brittle environment assumptions.",
+      "expected_output": "Report flags payments-prod hardcoded in destructive commands (set image, scale --replicas=0) as Critical, the absolute path /Users/ci/... as Major, the manual prod->stage edit as a fail-closed/Major issue. Recommends required --namespace argument with no default and/or label-selector discovery; warns against silent prod default. Analyze-only.",
+      "files": ["examples/release-manager/SKILL.md"]
+    },
+    {
+      "id": 3,
+      "name": "folder-of-multiple-skills",
+      "prompt": "Audit all skills under examples/ for hardcoded runtime values and report findings per skill.",
+      "expected_output": "One report covering all four fixture skills. Summary counts add up across skills. messenger-sender, release-manager, report-fetcher get findings; commit-formatter is reported as clean / contract value (the commit-type list must NOT be flagged as a problem). Analyze-only.",
+      "files": ["examples/messenger-sender/SKILL.md", "examples/release-manager/SKILL.md", "examples/report-fetcher/SKILL.md", "examples/commit-formatter/SKILL.md"]
+    },
+    {
+      "id": 4,
+      "name": "analyze-only-no-modification",
+      "prompt": "Review examples/report-fetcher/SKILL.md and tell me what is wrong with how it is parameterized. Do not change anything, just analyze.",
+      "expected_output": "Report flags the hardcoded BASE_URL https://api.internal.acme.corp/v1 as Major and recommends an env var (no silent default) or named argument. No file is edited; the report explicitly stays in analyze-only mode.",
+      "files": ["examples/report-fetcher/SKILL.md"]
+    },
+    {
+      "id": 5,
+      "name": "explicit-fix-request-safe-refactor",
+      "prompt": "Audit and fix the parameterization issues in examples/report-fetcher/SKILL.md. Apply the safe changes.",
+      "expected_output": "Enters implementation mode: shows the plan first, then applies a safe mechanical edit replacing the hardcoded BASE_URL with an env-var read (os.environ[...] with fail-closed behavior, no invented host) and documents the new variable. Does not fabricate any unknown value; leaves an Open question if the real host is unknown. Shows a concise diff summary.",
+      "files": ["examples/report-fetcher/SKILL.md"]
+    }
+  ]
+}

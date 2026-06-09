@@ -198,6 +198,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | Python code, docstrings, tests | `python-conventions` | yes |
 | create, edit, or eval a skill | `skill-creator` | yes |
 | audit skill for security | `skill-security-auditor` | yes |
+| audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | isolate work in a git worktree | `using-git-worktrees` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
