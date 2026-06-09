@@ -1,12 +1,10 @@
 ---
-name: to-prd
-description: Turn current conversation context into a PRD draft and, only after explicit confirmation, publish it to the project issue tracker. Use only when the user invokes $to-prd or explicitly asks «создай PRD», «сделай PRD из контекста», or publish a PRD from this conversation.
+name: writing-prd-draft
+description: Turn current conversation context into a PRD draft and offer to save it to a file. Use only when the user invokes /writing-prd-draft or explicitly asks «создай PRD», «сделай PRD из контекста», or to draft a PRD from this conversation without an interview.
 disable-model-invocation: true
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a PRD. Do NOT interview the user — just synthesize what you already know.
-
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
 
 ## Process
 
@@ -18,7 +16,7 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-3. Write the PRD using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+3. Write the PRD using the template below. After presenting the draft, ask the user whether to save it to a file (suggest `<repo>/.prompts/prd-<feature>.md` as the default path).
 
 <prd-template>
 

@@ -195,8 +195,9 @@ Third-party imported skills keep their upstream names and are exempt. The `obsid
 skills moved out of this repo to the work vault (`~/projects/work-vault/.claude/skills/`).
 Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored and not skills.
 
-> TODO: Rename the unprefixed first-party skills to follow the convention: `to-prd`,
-> `wiki`, `daas-k8s-debug`, `incident-triage`, `time-messenger`.
+> TODO: Rename the unprefixed first-party skills to follow the convention: `wiki`,
+> `daas-k8s-debug`, `incident-triage`, `time-messenger`. (`to-prd` renamed to
+> `writing-prd-draft`.)
 
 Rename checklist (every step is required, the link layers break silently):
 
