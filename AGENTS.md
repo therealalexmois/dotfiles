@@ -136,48 +136,39 @@ Deploy:
 
 ## Architecture Notes
 
-The shell layer starts from `$HOME/.zshenv`, which is managed by Stow as a symlink to
-`bootstrap/.zshenv`. That bootstrap file sets `ZDOTDIR=$HOME/.dotfiles/zsh` and sources
-the repo-managed `zsh/.zshenv`; the repo-managed shell layer then sets XDG paths so
-application configs resolve from `~/.dotfiles`. Neovim loads `lazy_setup.lua`, which
-imports AstroNvim, AstroCommunity packs, and local plugin specs. CodeCompanion reads
-reusable prompt Markdown from `llm/prompts` and selects the adapter from `NVIM_AI_PROFILE`:
-the local Ollama adapter (`home`), the work proxy adapter (`work`), or the subscription
-`claude_code` ACP adapter (`claude`); inline/cmd edits stay on the HTTP adapters while the
-`claude` profile only routes chat to ACP. A second, independent surface, `claudecode.nvim`,
-drives the `claude` CLI over the official IDE protocol for agentic/research work with native
-diffs and inherits the CLI's MCP servers, subagents, skills, and rules with no nvim-side
-wiring. tmux uses `tmux.conf` as the source of truth and bootstraps TPM when the plugin
-manager is missing. `zsh/bootstrap.zsh` links startup files into `$HOME` and installs Oh My
-Zsh into an ignored local checkout when needed.
+```
+Shell:  ~/.zshenv (Stow) → bootstrap/.zshenv → ZDOTDIR=.dotfiles/zsh → zsh/.zshenv → XDG paths
+                                                                                 └→ .zshrc / .zprofile
 
-The AI CLI layer is one Stow package, `ai-agents/`, deliberately consolidated so Codex and
-Claude share one skill source of truth. `scripts/install-ai-cli-dotfiles.sh` backs up
-existing files, Stows `bootstrap` and `ai-agents`, renders the Codex config, and then
-creates child symlinks: each `~/.agents/skills/<skill>` is linked into both
-`~/.codex/skills/<skill>` and `~/.claude/skills/<skill>`, and each tracked
-`ai-agents/.codex/*.config.toml` profile is linked into `~/.codex/`. Stow also folds
-`ai-agents/.claude/agents` into `~/.claude/agents`, so the tracked Claude Code subagents
-resolve from the repo. The whole `~/.codex/skills` directory is never replaced, so
-`~/.codex/skills/.system` stays intact.
-`render-codex-config.py` recursively merges `config.shared.toml` with the local-only
-`~/.codex/config.local.toml` (local values win), validates via `tomllib`, and atomically
-writes `~/.codex/config.toml` with `0600`. Project trust entries (`[projects."..."]`) and
-machine state live only in the local config and are never tracked. The install script also
-sets `git update-index --skip-worktree` on `ai-agents/.claude/settings.json` so the runtime
-keys Claude rewrites (model, theme, effort) do not churn the tracked defaults.
+Neovim: init.lua → lazy_setup.lua → AstroNvim + community.lua + plugins/
+                               ├→ CodeCompanion  (NVIM_AI_PROFILE: home | work | claude)
+                               └→ claudecode.nvim (claude CLI over IDE protocol, no nvim wiring)
+
+AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
+                                               └→ ~/.codex/skills/
+        ai-agents/.claude/agents/ (Stow fold)  → ~/.claude/agents/
+        ai-agents/.codex/*.config.toml          → ~/.codex/ (child links)
+```
+
+- `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600).
+- `ai-agents/.claude/settings.json` uses `--skip-worktree`; to edit tracked defaults, temporarily `--no-skip-worktree`.
+- CodeCompanion `claude` profile requires the `claude-code-acp` bridge; `claudecode.nvim` needs only the `claude` CLI.
+- `~/.codex/skills/.system` is never replaced by the install script.
 
 ## Agent Skills: Naming and Layout
 
-Source of truth and symlink chain (two link layers on top of the repo, easy to break):
+Two link layers above the repo; both break silently if a rename is done halfway.
 
-- Real files live in `ai-agents/.agents/skills/<name>/` with `SKILL.md` at the skill root.
-- `~/.agents/skills/<name>` -> `../../.dotfiles/ai-agents/.agents/skills/<name>` (Stow side).
-- `~/.claude/skills/<name>` -> `../../.agents/skills/<name>`.
-- `~/.codex/skills/<name>` -> `../../.agents/skills/<name>`.
-- All three links are created by `scripts/install-ai-cli-dotfiles.sh` (idempotent). Skills
-  load only at CLI startup, so new or renamed skills appear after restarting Claude Code
-  and Codex.
+```
+ai-agents/.agents/skills/<name>/SKILL.md  ← source of truth
+
+scripts/install-ai-cli-dotfiles.sh creates:
+~/.agents/skills/<name>         → .dotfiles/ai-agents/.agents/skills/<name>  (Stow)
+    ├── ~/.claude/skills/<name> → ~/.agents/skills/<name>                    (child)
+    └── ~/.codex/skills/<name>  → ~/.agents/skills/<name>                    (child)
+```
+
+Skills load only at CLI startup. Restart Claude Code and Codex after adding or renaming.
 
 Naming convention for first-party skills: the directory name and the `name:` field in
 `SKILL.md` frontmatter must carry a domain prefix:
@@ -194,6 +185,43 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 Third-party imported skills keep their upstream names and are exempt. The `obsidian-*`
 skills moved out of this repo to the work vault (`~/Workspace/vault/.claude/skills/`).
 Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored and not skills.
+
+### Skill Routing
+
+Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" = explicitly invoked via `/skill-name`.
+
+| Trigger | Skill | Auto |
+| --- | --- | --- |
+| edit Russian text, убери воду, сократи | `writing-russian-editor` | yes |
+| write a plan or design document | `writing-plans` | yes |
+| write PRD | `writing-prd-draft` | manual |
+| Python code, docstrings, tests | `python-conventions` | yes |
+| create, edit, or eval a skill | `skill-creator` | yes |
+| audit skill for security | `skill-security-auditor` | yes |
+| 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
+| isolate work in a git worktree | `using-git-worktrees` | yes |
+| design a multi-agent workflow | `agent-workflow-designer` | yes |
+| build a Workflow script | `workflow-builder` | manual |
+| review API design | `api-design-reviewer` | yes |
+| CI/CD pipeline setup | `ci-cd-pipeline-builder` | yes |
+| database schema design | `database-schema-designer` | yes |
+| observability, SLO, metrics | `observability-designer` | yes |
+| improve code architecture | `improve-codebase-architecture` | yes |
+| security review | `security-guidance` | yes |
+| tech debt audit | `tech-debt-tracker` | yes |
+| review before completing a task | `review-before-completion` | yes |
+| generate a runbook | `runbook-generator` | yes |
+| write technical documentation | `documentation-writer` | yes |
+| changelog or release notes | `changelog-generator` | yes |
+| TDD, test-first development | `tdd` / `test-driven-development` | yes |
+| quick brainstorm | `brainstorm-lite` | yes |
+| structured brainstorm | `six-thinking-hats` | yes |
+| challenge and stress-test ideas | `grill-me` | yes |
+| productivity coaching | `productivity-coach` | yes |
+| execute a step-by-step plan | `executing-plans` | yes |
+| onboard to a codebase | `codebase-onboarding` | manual |
+
+Vault skills (`~/Workspace/vault/.claude/skills/`) are not listed here; they have their own routing in the vault's CLAUDE.md.
 
 > TODO: Rename the unprefixed first-party skills to follow the convention: `wiki`,
 > `daas-k8s-debug`, `incident-triage`, `time-messenger`. (`to-prd` renamed to
@@ -321,30 +349,22 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 
 ## Extensibility Hooks
 
-- Add reusable AI workflows as Markdown prompts in `llm/prompts/`; project overrides live
-  in `<repo>/.prompts`.
-- Add shared agent skills under `ai-agents/.agents/skills/<skill>/`; see "Agent Skills:
-  Naming and Layout" above for the convention, symlink chain, and rename checklist.
-- Add Claude Code subagents as `ai-agents/.claude/agents/<name>.md` (frontmatter `name`,
-  `description`, `tools`, `model`); they reach `~/.claude/agents` through the Stow fold and
-  are auto-discovered by the `claude` CLI and `claudecode.nvim` (`/agents`, Task tool).
-- Add Codex reasoning/mode profiles as `ai-agents/.codex/<name>.config.toml`; the install
-  script symlinks every `*.config.toml` into `~/.codex/`.
-- Adjust shared Codex settings in `ai-agents/.codex/config.shared.toml`; keep machine-specific
-  values in `~/.codex/config.local.toml` (see `config.local.toml.example`).
-- Add or adjust CodeCompanion profiles in `nvim/lua/config/ai/codecompanion_profiles.lua`.
-- Add Neovim plugin specs through `nvim/lua/plugins/init.lua` and domain folders below
-  `nvim/lua/plugins/`; AstroCommunity imports go in `nvim/lua/community.lua` (preserve its
-  section order), language tooling in `nvim/lua/plugins/mason.lua`, Treesitter parsers in
-  `opts.treesitter.ensure_installed` in `nvim/lua/plugins/astrocore.lua`.
-- Add tmux plugins with `set -g @plugin` entries in `tmux/tmux.conf`.
-- Add Homebrew package bootstrap entries in `mac-setup/Brewfile`.
-- Shell entrypoints: home-level behavior in `bootstrap/.zshenv`, symlink/install behavior in
-  `zsh/bootstrap.zsh`, startup behavior in tracked Zsh startup files.
-- Add prompt modules or display modules in `starship.toml`.
-- Add terminal-specific behavior in `alacritty/`.
-- Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile
-  variables in CodeCompanion config, and tool-specific paths for WezTerm.
+| Extension point | Location | Notes |
+| --- | --- | --- |
+| Reusable AI prompt | `llm/prompts/<name>.md` | Project overrides in `<repo>/.prompts` |
+| Agent skill | `ai-agents/.agents/skills/<name>/SKILL.md` | See "Agent Skills" section |
+| Claude subagent | `ai-agents/.claude/agents/<name>.md` | Stow-folded to `~/.claude/agents/` |
+| Codex reasoning profile | `ai-agents/.codex/<name>.config.toml` | Symlinked to `~/.codex/` |
+| Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |
+| CodeCompanion AI profile | `nvim/lua/config/ai/codecompanion_profiles.lua` | |
+| Neovim plugin | `nvim/lua/plugins/` domain subdir | AstroCommunity in `community.lua` |
+| tmux plugin | `tmux/tmux.conf` | `set -g @plugin ...` |
+| Homebrew package | `mac-setup/Brewfile` | |
+| Shell entrypoint | `bootstrap/.zshenv` / `zsh/bootstrap.zsh` | |
+| Starship module | `starship.toml` | |
+| Terminal config | `alacritty/` | |
+
+Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile variables in CodeCompanion config.
 
 ## Further Reading
 

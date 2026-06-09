@@ -83,6 +83,16 @@ host packages only if a specific plugin needs the `:python3` / `:node` provider.
 
 ## ![Installation](https://github.githubassets.com/images/icons/emoji/unicode/1f6e0.png) Installation
 
+```
+1. xcode-select --install
+2. brew bundle --file mac-setup/Brewfile
+3. stow --target "$HOME" bootstrap          → creates ~/.zshenv symlink
+4. zsh zsh/bootstrap.zsh                    → links Zsh startup files, installs Oh My Zsh
+5. scripts/install-ai-cli-dotfiles.sh       → Stow ai-agents, link skills/profiles
+6. nvim                                     → bootstraps Lazy.nvim on first start
+7. tmux source-file tmux/tmux.conf          → bootstraps TPM if missing
+```
+
 ## Macos misc
 
 - [macOS system monitor](https://github.com/exelban/stats)
