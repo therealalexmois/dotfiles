@@ -100,6 +100,8 @@ Avoid:
 - magic numbers that reduce readability;
 - full-structure assertions when only a meaningful subset is part of the contract.
 
+When a magic number hurts readability, extract a named constant instead of asserting against a bare literal.
+
 For error tests:
 
 - assert the error type;
@@ -126,6 +128,10 @@ Do not introduce a fixture when:
 - the fixture makes the test harder to read.
 
 Fixture names should describe the returned object, not the action. Avoid vague names like `data`, `obj`, `payload`, `result`, `mocked`.
+
+Use the smallest necessary scope. Do not widen scope to `module` or `session` without a proven need (performance or a genuinely shared, stable resource); a wider scope that leaks state between tests is a defect.
+
+Use a `yield` fixture only when there is real cleanup to run after the test. Do not add `yield` without a teardown.
 
 ### Test doubles
 

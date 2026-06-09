@@ -1,4 +1,4 @@
 interface:
-  display_name: "Engineering Review"
-  short_description: "Strict engineering code review"
-  default_prompt: "Use $engineering-review to review this diff with a strict engineering lens."
+  display_name: "Review Before Completion"
+  short_description: "Strict self-review of your diff before calling the work done"
+  default_prompt: "Use $review-before-completion to review this diff by the pyramid and gate the verdict on fresh verification evidence."

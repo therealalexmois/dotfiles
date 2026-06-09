@@ -170,7 +170,7 @@
   }
  },
  {
-  "skill": "engineering-review",
+  "skill": "review-before-completion",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
