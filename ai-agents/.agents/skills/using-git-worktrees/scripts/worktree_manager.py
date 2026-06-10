@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
-"""Create and prepare git worktrees with deterministic port allocation.
+"""Создание и подготовка git worktree с детерминированной раздачей портов.
 
 Vendored from alirezarezvani/claude-skills (engineering/git-worktree-manager).
-Kept close to upstream for correctness; modernize only as a deliberate task.
+Адаптировано под Python-конвенции репозитория: современные аннотации типов и
+русские docstrings. Поведение сохранено без изменений.
 
-Supports:
-- JSON input from stdin or --input file
-- Worktree creation from existing/new branch
-- .env file sync from main repo
-- Optional dependency installation
-- JSON or text output
+Возможности:
+- JSON-вход из stdin или файла --input
+- создание worktree от существующей или новой ветки
+- синхронизация .env-файлов из основного репозитория
+- опциональная установка зависимостей
+- вывод в формате text или json
 """
 
 import argparse
 import json
-import os
 import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 ENV_FILES = [".env", ".env.local", ".env.development", ".envrc"]
@@ -35,24 +35,42 @@ LOCKFILE_COMMANDS = [
 
 @dataclass
 class WorktreeResult:
+    """Результат подготовки worktree.
+
+    Attributes:
+        repo: Абсолютный путь к основному репозиторию.
+        worktree_path: Путь к созданному или существующему worktree.
+        branch: Имя ветки worktree.
+        created: True, если worktree создан этим запуском.
+        ports: Карта сервис -> порт (app, db, redis).
+        copied_env_files: Имена скопированных .env-файлов.
+        dependency_install: Текстовый статус установки зависимостей.
+    """
+
     repo: str
     worktree_path: str
     branch: str
     created: bool
-    ports: Dict[str, int]
-    copied_env_files: List[str]
+    ports: dict[str, int]
+    copied_env_files: list[str]
     dependency_install: str
 
 
 class CLIError(Exception):
-    """Raised for expected CLI errors."""
+    """Ожидаемая ошибка CLI с понятным пользователю сообщением."""
 
 
-def run(cmd: List[str], cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run(cmd: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess[str]:
+    """Запускает команду через subprocess и возвращает результат."""
     return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, check=check)
 
 
-def load_json_input(input_file: Optional[str]) -> Dict[str, Any]:
+def load_json_input(input_file: str | None) -> dict[str, Any]:
+    """Читает JSON-вход из файла --input или из stdin, если он передан по пайпу.
+
+    Raises:
+        CLIError: Если файл не читается или stdin содержит невалидный JSON.
+    """
     if input_file:
         try:
             return json.loads(Path(input_file).read_text(encoding="utf-8"))
@@ -69,10 +87,11 @@ def load_json_input(input_file: Optional[str]) -> Dict[str, Any]:
     return {}
 
 
-def parse_worktree_list(repo: Path) -> List[Dict[str, str]]:
+def parse_worktree_list(repo: Path) -> list[dict[str, str]]:
+    """Разбирает вывод `git worktree list --porcelain` в список записей."""
     proc = run(["git", "worktree", "list", "--porcelain"], cwd=repo)
-    entries: List[Dict[str, str]] = []
-    current: Dict[str, str] = {}
+    entries: list[dict[str, str]] = []
+    current: dict[str, str] = {}
     for line in proc.stdout.splitlines():
         if not line.strip():
             if current:
@@ -86,7 +105,12 @@ def parse_worktree_list(repo: Path) -> List[Dict[str, str]]:
     return entries
 
 
-def find_next_ports(repo: Path, app_base: int, db_base: int, redis_base: int, stride: int) -> Dict[str, int]:
+def find_next_ports(repo: Path, app_base: int, db_base: int, redis_base: int, stride: int) -> dict[str, int]:
+    """Подбирает свободный набор портов для нового worktree.
+
+    Читает `.worktree-ports.json` из существующих worktree и пропускает слоты,
+    где хотя бы один порт уже занят.
+    """
     used_ports = set()
     for entry in parse_worktree_list(repo):
         wt_path = Path(entry.get("worktree", ""))
@@ -110,7 +134,12 @@ def find_next_ports(repo: Path, app_base: int, db_base: int, redis_base: int, st
         index += 1
 
 
-def sync_env_files(src_repo: Path, dest_repo: Path) -> List[str]:
+def sync_env_files(src_repo: Path, dest_repo: Path) -> list[str]:
+    """Копирует известные .env-файлы из основного репозитория в worktree.
+
+    Returns:
+        Имена фактически скопированных файлов.
+    """
     copied = []
     for name in ENV_FILES:
         src = src_repo / name
@@ -122,6 +151,14 @@ def sync_env_files(src_repo: Path, dest_repo: Path) -> List[str]:
 
 
 def install_dependencies_if_requested(worktree_path: Path, install: bool) -> str:
+    """Устанавливает зависимости по первому найденному lock-файлу, если запрошено.
+
+    Returns:
+        Статус: "skipped", "no known lockfile found" или описание команды установки.
+
+    Raises:
+        CLIError: Если команда установки завершилась с ошибкой.
+    """
     if not install:
         return "skipped"
 
@@ -137,6 +174,13 @@ def install_dependencies_if_requested(worktree_path: Path, install: bool) -> str
 
 
 def ensure_worktree(repo: Path, branch: str, name: str, base_branch: str) -> Path:
+    """Создает worktree для ветки (новой или существующей) и возвращает путь.
+
+    Если worktree с таким путем уже есть, возвращает его без повторного создания.
+
+    Raises:
+        CLIError: Если git не смог создать worktree.
+    """
     wt_parent = repo.parent
     wt_path = wt_parent / name
 
@@ -157,6 +201,7 @@ def ensure_worktree(repo: Path, branch: str, name: str, base_branch: str) -> Pat
 
 
 def format_text(result: WorktreeResult) -> str:
+    """Форматирует результат подготовки worktree в человекочитаемый текст."""
     lines = [
         "Worktree prepared",
         f"- repo: {result.repo}",
@@ -171,6 +216,7 @@ def format_text(result: WorktreeResult) -> str:
 
 
 def parse_args() -> argparse.Namespace:
+    """Определяет и разбирает аргументы командной строки."""
     parser = argparse.ArgumentParser(description="Create and prepare a git worktree.")
     parser.add_argument("--input", help="Path to JSON input file. If omitted, reads JSON from stdin when piped.")
     parser.add_argument("--repo", default=".", help="Path to repository root (default: current directory).")
@@ -187,6 +233,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Создает и подготавливает worktree, печатает результат в выбранном формате.
+
+    Raises:
+        CLIError: При отсутствии обязательных значений или ошибке git.
+    """
     args = parse_args()
     payload = load_json_input(args.input)
 

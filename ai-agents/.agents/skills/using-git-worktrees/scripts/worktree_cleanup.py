@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Inspect and clean stale git worktrees with safety checks.
+"""Анализ и безопасная очистка устаревших git worktree с проверками.
 
 Vendored from alirezarezvani/claude-skills (engineering/git-worktree-manager).
-Kept close to upstream for correctness; modernize only as a deliberate task.
+Адаптировано под Python-конвенции репозитория: современные аннотации типов и
+русские docstrings. Поведение сохранено без изменений.
 
-Supports:
-- JSON input from stdin or --input file
-- Stale age detection
-- Dirty working tree detection
-- Merged branch detection
-- Optional removal of merged, clean stale worktrees
+Возможности:
+- JSON-вход из stdin или файла --input
+- определение устаревших worktree по возрасту
+- определение незакоммиченных изменений (dirty)
+- определение слитых веток
+- опциональное удаление слитых, чистых и устаревших worktree
 """
 
 import argparse
@@ -19,15 +20,27 @@ import sys
 import time
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class CLIError(Exception):
-    """Raised for expected CLI errors."""
+    """Ожидаемая ошибка CLI с понятным пользователю сообщением."""
 
 
 @dataclass
 class WorktreeInfo:
+    """Сводка по одному worktree для отчета очистки.
+
+    Attributes:
+        path: Абсолютный путь к worktree.
+        branch: Имя текущей ветки.
+        is_main: True для основного worktree (никогда не удаляется).
+        age_days: Возраст последнего коммита в днях.
+        stale: True, если возраст достиг порога stale_days.
+        dirty: True при наличии незакоммиченных изменений.
+        merged_into_base: True, если ветка слита в базовую.
+    """
+
     path: str
     branch: str
     is_main: bool
@@ -37,11 +50,17 @@ class WorktreeInfo:
     merged_into_base: bool
 
 
-def run(cmd: List[str], cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run(cmd: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess[str]:
+    """Запускает команду через subprocess и возвращает результат."""
     return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, check=check)
 
 
-def load_json_input(input_file: Optional[str]) -> Dict[str, Any]:
+def load_json_input(input_file: str | None) -> dict[str, Any]:
+    """Читает JSON-вход из файла --input или из stdin, если он передан по пайпу.
+
+    Raises:
+        CLIError: Если файл не читается или stdin содержит невалидный JSON.
+    """
     if input_file:
         try:
             return json.loads(Path(input_file).read_text(encoding="utf-8"))
@@ -57,10 +76,11 @@ def load_json_input(input_file: Optional[str]) -> Dict[str, Any]:
     return {}
 
 
-def parse_worktrees(repo: Path) -> List[Dict[str, str]]:
+def parse_worktrees(repo: Path) -> list[dict[str, str]]:
+    """Разбирает вывод `git worktree list --porcelain` в список записей."""
     proc = run(["git", "worktree", "list", "--porcelain"], cwd=repo)
-    entries: List[Dict[str, str]] = []
-    current: Dict[str, str] = {}
+    entries: list[dict[str, str]] = []
+    current: dict[str, str] = {}
     for line in proc.stdout.splitlines():
         if not line.strip():
             if current:
@@ -75,11 +95,13 @@ def parse_worktrees(repo: Path) -> List[Dict[str, str]]:
 
 
 def get_branch(path: Path) -> str:
+    """Возвращает имя текущей ветки worktree."""
     proc = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=path)
     return proc.stdout.strip()
 
 
 def get_last_commit_age_days(path: Path) -> int:
+    """Возвращает возраст последнего коммита worktree в днях (не меньше 0)."""
     proc = run(["git", "log", "-1", "--format=%ct"], cwd=path)
     timestamp = int(proc.stdout.strip() or "0")
     age_seconds = int(time.time()) - timestamp
@@ -87,11 +109,13 @@ def get_last_commit_age_days(path: Path) -> int:
 
 
 def is_dirty(path: Path) -> bool:
+    """Проверяет наличие незакоммиченных изменений в worktree."""
     proc = run(["git", "status", "--porcelain"], cwd=path)
     return bool(proc.stdout.strip())
 
 
 def is_merged(repo: Path, branch: str, base_branch: str) -> bool:
+    """Проверяет, является ли ветка предком базовой (то есть слита в нее)."""
     if branch in ("HEAD", base_branch):
         return False
     try:
@@ -101,7 +125,8 @@ def is_merged(repo: Path, branch: str, base_branch: str) -> bool:
         return False
 
 
-def format_text(items: List[WorktreeInfo], removed: List[str]) -> str:
+def format_text(items: list[WorktreeInfo], removed: list[str]) -> str:
+    """Форматирует отчет очистки в человекочитаемый текст."""
     lines = ["Worktree cleanup report"]
     for item in items:
         lines.append(
@@ -116,6 +141,7 @@ def format_text(items: List[WorktreeInfo], removed: List[str]) -> str:
 
 
 def parse_args() -> argparse.Namespace:
+    """Определяет и разбирает аргументы командной строки."""
     parser = argparse.ArgumentParser(description="Analyze and optionally cleanup stale git worktrees.")
     parser.add_argument("--input", help="Path to JSON input file. If omitted, reads JSON from stdin when piped.")
     parser.add_argument("--repo", default=".", help="Repository root path.")
@@ -128,6 +154,14 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Анализирует worktree и при --remove-merged удаляет безопасные кандидаты.
+
+    Удаляются только не-main worktree, которые stale, слиты и (без --force) чистые.
+
+    Raises:
+        CLIError: Если репозиторий или базовая ветка не найдены, нет worktree,
+            либо git не смог удалить worktree.
+    """
     args = parse_args()
     payload = load_json_input(args.input)
 
@@ -152,8 +186,8 @@ def main() -> int:
         raise CLIError("No worktrees found.")
 
     main_path = Path(entries[0].get("worktree", "")).resolve()
-    infos: List[WorktreeInfo] = []
-    removed: List[str] = []
+    infos: list[WorktreeInfo] = []
+    removed: list[str] = []
 
     for entry in entries:
         path = Path(entry.get("worktree", "")).resolve()
