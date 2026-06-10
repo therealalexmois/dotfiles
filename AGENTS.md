@@ -369,6 +369,8 @@ Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI
 
 ## Further Reading
 
+- [~/Workspace/vault/WHO_I_AM.md](~/Workspace/vault/WHO_I_AM.md) - who the user is, role,
+  and work activities (DWSAI project vs InnerSource). Local-only, not part of this repo.
 - [README.md](README.md) - manual macOS setup notes.
 - [scripts/install-ai-cli-dotfiles.sh](scripts/install-ai-cli-dotfiles.sh) and
   [scripts/render-codex-config.py](scripts/render-codex-config.py) - AI CLI install chain.
