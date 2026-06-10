@@ -1,5 +1,15 @@
 [
  {
+  "skill": "advanced-evaluation",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "agent-workflow-designer",
   "verdict": "PASS",
   "counts": {
@@ -21,6 +31,16 @@
  },
  {
   "skill": "autoresearch-agent",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "bdi-mental-states",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -100,16 +120,6 @@
   }
  },
  {
-  "skill": "cli-creator",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "codebase-onboarding",
   "verdict": "PASS",
   "counts": {
@@ -120,7 +130,47 @@
   }
  },
  {
-  "skill": "daas-k8s-debug",
+  "skill": "comprehensive-research-agent",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "context-compression",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "context-degradation",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "context-fundamentals",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "context-optimization",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -160,7 +210,7 @@
   }
  },
  {
-  "skill": "defuddle",
+  "skill": "dispatching-parallel-agents",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -170,37 +220,47 @@
   }
  },
  {
-  "skill": "review-before-completion",
+  "skill": "documentation-writer",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
    "high": 0,
    "info": 0,
    "total": 0
+  }
+ },
+ {
+  "skill": "evaluation",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "executing-plans",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "filesystem-context",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 1,
+   "info": 0,
+   "total": 1
   }
  },
  {
   "skill": "find-skills",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "gitlab-mcp-workflow",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "gitlab-mr-author",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -230,6 +290,26 @@
   }
  },
  {
+  "skill": "handoff",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "harness-engineering",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "helm-chart-builder",
   "verdict": "PASS",
   "counts": {
@@ -240,7 +320,17 @@
   }
  },
  {
-  "skill": "incident-triage",
+  "skill": "hosted-agents",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 1,
+   "info": 0,
+   "total": 1
+  }
+ },
+ {
+  "skill": "human-architect-mindset",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -250,17 +340,7 @@
   }
  },
  {
-  "skill": "jira-issue-author",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "jira-team-workflow",
+  "skill": "improve-codebase-architecture",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -271,6 +351,16 @@
  },
  {
   "skill": "karpathy-coder",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "latent-briefing",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -300,6 +390,26 @@
   }
  },
  {
+  "skill": "memory-systems",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "multi-agent-patterns",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "observability-designer",
   "verdict": "PASS",
   "counts": {
@@ -311,6 +421,26 @@
  },
  {
   "skill": "prd",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "productivity-coach",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "project-development",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -350,7 +480,7 @@
   }
  },
  {
-  "skill": "release-manager",
+  "skill": "review-before-completion",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -380,7 +510,27 @@
   }
  },
  {
+  "skill": "six-thinking-hats",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "skill-creator",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "skill-param-auditor",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -400,6 +550,16 @@
   }
  },
  {
+  "skill": "skill-template",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "slo-architect",
   "verdict": "PASS",
   "counts": {
@@ -410,7 +570,7 @@
   }
  },
  {
-  "skill": "spirit-deploy",
+  "skill": "tdd",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -430,7 +590,7 @@
   }
  },
  {
-  "skill": "time-messenger",
+  "skill": "test-driven-development",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -440,7 +600,7 @@
   }
  },
  {
-  "skill": "to-prd",
+  "skill": "tool-design",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -450,57 +610,7 @@
   }
  },
  {
-  "skill": "wiki",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "work-daily-log",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "work-daily-note",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "work-release-manager",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "work-standup",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "work-weekly-review",
+  "skill": "using-git-worktrees",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -511,6 +621,26 @@
  },
  {
   "skill": "workflow-builder",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "writing-plans",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "writing-prd-draft",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
