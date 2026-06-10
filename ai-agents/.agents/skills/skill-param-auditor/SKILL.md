@@ -1,5 +1,6 @@
 ---
 name: "skill-param-auditor"
+disable-model-invocation: true
 description: >
   Audit agent skills for poor parameterization: hardcoded runtime data, brittle
   environment assumptions, and config values that should not live inside SKILL.md.
