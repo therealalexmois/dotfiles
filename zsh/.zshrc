@@ -78,3 +78,9 @@ export TINVEST_TOKEN=$(security find-generic-password -a "$USER" -s tinvest-toke
 
 # Russian Trusted CA (Минцифры) для *.tbank.ru
 export NODE_EXTRA_CA_CERTS="$HOME/.claude/certs/russian_trusted_bundle.pem"
+
+# Puppeteer: использовать системный Chrome вместо встроенного headless-shell
+export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# Mermaid CLI: директория для сохранения диаграмм
+export MERMAID_OUTPUT_DIR="$HOME/Visuals/figures"
