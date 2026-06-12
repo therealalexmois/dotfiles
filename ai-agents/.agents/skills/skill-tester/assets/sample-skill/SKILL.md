@@ -1,16 +1,20 @@
+---
+name: sample-text-processor
+description: Demonstrates a BASIC text-processing skill used as a skill-tester fixture; not intended for normal task invocation.
+Name: sample-text-processor
+Tier: BASIC
+Category: Text Processing
+Dependencies: None (Python Standard Library Only)
+Author: Claude Skills Engineering Team
+Version: 1.0.0
+Last Updated: "2026-02-16"
+---
+
 # Sample Text Processor
 
----
+## Name
 
-**Name**: sample-text-processor
-**Tier**: BASIC
-**Category**: Text Processing
-**Dependencies**: None (Python Standard Library Only)
-**Author**: Claude Skills Engineering Team
-**Version**: 1.0.0
-**Last Updated**: 2026-02-16
-
----
+sample-text-processor
 
 ## Description
 
