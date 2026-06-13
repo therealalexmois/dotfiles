@@ -197,8 +197,9 @@ resolve from the repo. The whole `~/.codex/skills` directory is never replaced, 
 `~/.codex/config.local.toml` (local values win), validates via `tomllib`, and atomically
 writes `~/.codex/config.toml` with `0600`. Project trust entries (`[projects."..."]`) and
 machine state live only in the local config and are never tracked. The install script also
-sets `git update-index --skip-worktree` on `ai-agents/.claude/settings.json` so the runtime
-keys Claude rewrites (model, theme, effort) do not churn the tracked defaults.
+sets `git update-index --skip-worktree` on `ai-agents/.claude/settings.json` and tracked
+`ai-agents/.codex/*.config.toml` profiles so runtime rewrites (model, theme, effort, project
+trust, TUI NUX) do not churn the tracked defaults.
 
 ## Testing Strategy
 
@@ -236,8 +237,10 @@ keys Claude rewrites (model, theme, effort) do not churn the tracked defaults.
   `~/.codex/config.local.toml`. The `.gitignore` already excludes these under `ai-agents/`.
 - Codex project trust entries (`[projects."..."]`) belong only in `~/.codex/config.local.toml`;
   keep them out of `config.shared.toml` and the tracked `*.config.toml` profiles.
-- `ai-agents/.claude/settings.json` is held with `git update-index --skip-worktree`; to change
-  the tracked defaults, temporarily `--no-skip-worktree`, edit, commit, then re-apply.
+- `ai-agents/.claude/settings.json` and `ai-agents/.codex/*.config.toml` profiles are held with
+  `git update-index --skip-worktree` because Codex and Claude write runtime state (model choices,
+  project trust, TUI NUX) back into these files via their symlinks. To change tracked defaults:
+  temporarily `--no-skip-worktree`, edit, commit, then re-apply `--skip-worktree`.
 - `nvim/lazy-lock.json` pins Neovim plugin revisions; update it only through plugin update
   workflows, not hand edits.
 - Vendored upstream plugin directories may carry their own licenses, but they are ignored
