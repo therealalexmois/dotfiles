@@ -18,6 +18,9 @@ fontforge
 htop
 lazygit
 
+# openspec: config.json contains anonymousId (telemetry fingerprint) and runtime state
+openspec/config.json
+
 # GitHub CLI: hosts.yml holds auth tokens, config is machine state
 gh/
 
