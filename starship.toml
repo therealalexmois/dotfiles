@@ -1,5 +1,5 @@
 command_timeout = 300
-scan_timeout = 5
+scan_timeout = 50
 
 [aws]
 format = '\[[$symbol($profile)(\($region\))(\[$duration\])]($style)\]'

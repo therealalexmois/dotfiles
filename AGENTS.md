@@ -151,7 +151,7 @@ AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
 ```
 
 - `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600).
-- `ai-agents/.claude/settings.json` uses `--skip-worktree`; to edit tracked defaults, temporarily `--no-skip-worktree`.
+- `ai-agents/.claude/settings.json` and the tracked `ai-agents/.codex/*.config.toml` profiles use `--skip-worktree`, so runtime rewrites (model, theme, effort, project trust, TUI NUX) do not churn the tracked defaults; to edit them, temporarily `--no-skip-worktree`.
 - CodeCompanion `claude` profile requires the `claude-code-acp` bridge; `claudecode.nvim` needs only the `claude` CLI.
 - `~/.codex/skills/.system` is never replaced by the install script.
 
@@ -197,24 +197,24 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-conventions` | yes |
 | create, edit, or eval a skill | `skill-creator` | yes |
-| audit skill for security | `skill-security-auditor` | yes |
+| audit skill for security | `skill-security-auditor` | manual |
 | audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | isolate work in a git worktree | `using-git-worktrees` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
-| review API design | `api-design-reviewer` | yes |
-| CI/CD pipeline setup | `ci-cd-pipeline-builder` | yes |
-| database schema design | `database-schema-designer` | yes |
-| observability, SLO, metrics | `observability-designer` | yes |
-| improve code architecture | `improve-codebase-architecture` | yes |
+| review API design | `api-design-reviewer` | manual |
+| CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
+| database schema design | `database-schema-designer` | manual |
+| observability, SLO, metrics | `observability-designer` | manual |
+| improve code architecture | `improve-codebase-architecture` | manual |
 | security review | `security-guidance` | yes |
-| tech debt audit | `tech-debt-tracker` | yes |
+| tech debt audit | `tech-debt-tracker` | manual |
 | review before completing a task | `review-before-completion` | yes |
-| generate a runbook | `runbook-generator` | yes |
-| write technical documentation | `documentation-writer` | yes |
-| changelog or release notes | `changelog-generator` | yes |
-| TDD, test-first development | `tdd` / `test-driven-development` | yes |
+| generate a runbook | `runbook-generator` | manual |
+| write technical documentation | `documentation-writer` | manual |
+| changelog or release notes | `changelog-generator` | manual |
+| TDD, test-first development | `tdd` / `test-driven-development` | manual |
 | quick brainstorm | `brainstorm-lite` | yes |
 | structured brainstorm | `six-thinking-hats` | yes |
 | challenge and stress-test ideas | `grill-me` | yes |
@@ -273,8 +273,10 @@ Rename checklist (every step is required, the link layers break silently):
   `~/.codex/config.local.toml`. The `.gitignore` already excludes these under `ai-agents/`.
 - Codex project trust entries (`[projects."..."]`) belong only in `~/.codex/config.local.toml`;
   keep them out of `config.shared.toml` and the tracked `*.config.toml` profiles.
-- `ai-agents/.claude/settings.json` is held with `git update-index --skip-worktree`; to change
-  the tracked defaults, temporarily `--no-skip-worktree`, edit, commit, then re-apply.
+- `ai-agents/.claude/settings.json` and `ai-agents/.codex/*.config.toml` profiles are held with
+  `git update-index --skip-worktree` because Codex and Claude write runtime state (model choices,
+  project trust, TUI NUX) back into these files via their symlinks. To change tracked defaults:
+  temporarily `--no-skip-worktree`, edit, commit, then re-apply `--skip-worktree`.
 - `nvim/lazy-lock.json` pins Neovim plugin revisions; update it only through plugin update
   workflows, not hand edits.
 - Vendored upstream plugin directories may carry their own licenses, but they are ignored

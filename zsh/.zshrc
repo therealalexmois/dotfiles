@@ -23,6 +23,16 @@ fpath+=("${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-completions/src")
 # --- Aliases ---
 alias n='nvim .'
 alias anki='open -a Anki'
+diag-lang() {
+  echo "=== Input Source ==="
+  defaults read ~/Library/Preferences/com.apple.HIToolbox.plist AppleSelectedInputSources 2>/dev/null | grep -E "Name|Bundle"
+  echo "=== Tmux Panes ==="
+  tmux list-panes -a -F "#{pane_id} active=#{pane_active} cmd=#{pane_current_command} pid=#{pane_pid}" 2>/dev/null
+  echo "=== TextInputMenuAgent ==="
+  ps -p "$(pgrep TextInputMenuAgent)" -o pid,etime,stat 2>/dev/null
+  echo "=== Recent HID events ==="
+  log show --predicate 'subsystem == "com.apple.HIToolbox"' --last 15s --style compact 2>/dev/null | grep -i "input\|source\|switch" | tail -15
+}
 
 # --- Starship prompt ---
 if command -v starship >/dev/null; then
@@ -62,3 +72,15 @@ DISABLE_AUTO_TITLE="true"
 
 # --- Prompt: clean multi-line rendering ---
 setopt PROMPT_SUBST
+
+# t-invest MCP: токен из macOS Keychain
+export TINVEST_TOKEN=$(security find-generic-password -a "$USER" -s tinvest-token -w)
+
+# Russian Trusted CA (Минцифры) для *.tbank.ru
+export NODE_EXTRA_CA_CERTS="$HOME/.claude/certs/russian_trusted_bundle.pem"
+
+# Puppeteer: использовать системный Chrome вместо встроенного headless-shell
+export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# Mermaid CLI: директория для сохранения диаграмм
+export MERMAID_OUTPUT_DIR="$HOME/Visuals/figures"

@@ -1,5 +1,6 @@
 ---
 name: "database-schema-designer"
+disable-model-invocation: true
 description: "Use when the user asks to create ERD diagrams, normalize database schemas, design table relationships, or plan schema migrations."
 ---
 

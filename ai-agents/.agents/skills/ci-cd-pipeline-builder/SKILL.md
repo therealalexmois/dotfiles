@@ -1,5 +1,6 @@
 ---
 name: "ci-cd-pipeline-builder"
+disable-model-invocation: true
 description: "Generate pragmatic CI/CD pipelines from detected project stack signals — fast baseline generation, repeatable checks, environment-aware deployment stages. Use when setting up CI for a new project, refactoring existing pipelines, or standardizing deployment workflows across multiple repos."
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: "skill-security-auditor"
+disable-model-invocation: true
 description: >
   Security audit and vulnerability scanner for AI agent skills before installation.
   Use when: (1) evaluating a skill from an untrusted source, (2) auditing a skill
