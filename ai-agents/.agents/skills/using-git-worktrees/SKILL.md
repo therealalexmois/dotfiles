@@ -128,12 +128,62 @@ if [ -f package.json ]; then npm install; fi
 # Rust
 if [ -f Cargo.toml ]; then cargo build; fi
 
-# Python
-if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-if [ -f pyproject.toml ]; then poetry install; fi
-
 # Go
 if [ -f go.mod ]; then go mod download; fi
+```
+
+### Python: isolate the environment inside the worktree
+
+Python is a special case worth calling out, because the failure is silent.
+
+A worktree is a fresh checkout, but your shell's active interpreter is not. If a
+virtualenv was activated in the parent checkout, `$VIRTUAL_ENV` still points at the
+*main* repo's `.venv` - it does not follow you into the worktree. So a bare
+`pip install` / `uv pip install` here either mutates the main checkout's environment
+(polluting the very workspace you wanted to isolate) or installs against the wrong
+Python. The whole point of the worktree leaks away.
+
+So before installing anything, create a dedicated environment **inside the worktree**,
+then install into it. Detect the toolchain and use the project's own mechanism, don't
+impose one the project doesn't use. Priority (first match wins):
+
+```bash
+# Drop any inherited venv so it can't capture the install.
+deactivate 2>/dev/null || true
+
+if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
+  if command -v uv >/dev/null 2>&1 && { [ -f uv.lock ] || grep -q '\[tool\.uv\]' pyproject.toml 2>/dev/null || [ -f pyproject.toml ]; }; then
+    # uv: creates .venv in the worktree, then installs into it.
+    uv venv
+    if [ -f uv.lock ] || grep -q '\[project\]' pyproject.toml 2>/dev/null; then
+      uv sync                                   # lockfile / PEP 621 project
+    else
+      uv pip install -r requirements.txt        # uv present, only requirements.txt
+    fi
+  elif [ -f poetry.lock ] || { command -v poetry >/dev/null 2>&1 && [ -f pyproject.toml ]; }; then
+    poetry install                              # poetry manages its own per-path venv
+  elif [ -f Pipfile ]; then
+    pipenv install --dev                        # pipenv manages its own per-path venv
+  else
+    python -m venv .venv                        # plain requirements.txt
+    .venv/bin/pip install -r requirements.txt
+  fi
+fi
+```
+
+**Project-specific installers.** If the repo wraps setup in its own command - a
+`justfile` with an `install` recipe, a `Makefile` `install` target, a `setup.sh` -
+prefer that command, since it encodes steps the heuristics above miss (extra dependency
+groups, codegen, pre-commit hooks). It still needs a venv to install into: create the
+venv first (the `uv venv` / `python -m venv .venv` step above), then run the project's
+installer. For example, a `uv`-based repo typically wants `uv venv` followed by its own
+`just install`.
+
+**Verify the venv is local.** After setup, confirm the environment lives in the
+worktree and not the parent:
+
+```bash
+test -d .venv && echo ".venv created in worktree" || echo "no local .venv (poetry/pipenv manage theirs elsewhere)"
 ```
 
 ## Step 4: Verify Clean Baseline
@@ -243,6 +293,9 @@ Before claiming a concurrent-worktree setup complete:
 | Stale / merged worktrees pile up | Cleanup script (`--stale-days`, `--remove-merged`) |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
+| Python project (pyproject/requirements) | Create venv INSIDE the worktree first, then install (Step 3) |
+| Inherited active venv from parent checkout | `deactivate` before installing so it can't capture the install |
+| Repo has justfile/Makefile install target | Create the venv, then run the project's own installer |
 
 ## Decision Matrix
 
@@ -306,6 +359,7 @@ Before claiming a concurrent-worktree setup complete:
 - Skip baseline test verification
 - Proceed with failing tests without asking
 - Force-remove a dirty worktree unless the changes are intentionally discarded
+- Run `pip install` / `uv pip install` in a Python worktree without first creating a venv inside it - the install silently lands in the parent checkout's environment
 
 **Always:**
 - Run Step 0 detection first

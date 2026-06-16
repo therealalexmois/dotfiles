@@ -29,7 +29,13 @@ LOCKFILE_COMMANDS = [
     ("yarn.lock", ["yarn", "install"]),
     ("package-lock.json", ["npm", "install"]),
     ("bun.lockb", ["bun", "install"]),
-    ("requirements.txt", [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]),
+    # Python: each command provisions its own isolated environment inside the worktree.
+    # `uv sync` and `poetry install` create a worktree-local .venv; the plain pip path
+    # builds one explicitly first so the install never leaks into the parent checkout.
+    ("uv.lock", ["uv", "sync"]),
+    ("poetry.lock", ["poetry", "install"]),
+    ("Pipfile.lock", ["pipenv", "install", "--dev"]),
+    ("requirements.txt", ["sh", "-c", f"{sys.executable} -m venv .venv && .venv/bin/pip install -r requirements.txt"]),
 ]
 
 
