@@ -6,24 +6,56 @@
 «терминал → research → markdown-заметка».
 
 Examples:
-    python arxiv_search.py "retrieval augmented generation" --max-papers 5
-    python arxiv_search.py "agentic llm" --format jsonl > papers_raw.jsonl
+    python3 arxiv_search.py "retrieval augmented generation" --max-papers 5
+    python3 arxiv_search.py "agentic llm" --format jsonl > papers_raw.jsonl
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
+import ssl
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
+from pathlib import Path
 
 ARXIV_API = "http://export.arxiv.org/api/query"
 ATOM = "{http://www.w3.org/2005/Atom}"
 ARXIV = "{http://arxiv.org/schemas/atom}"
+
+
+def _ssl_context() -> ssl.SSLContext:
+    """Создаёт SSL-контекст с полной проверкой и локальными корпоративными CA.
+
+    Доверяет стандартным CA плюс любым `.pem` из каталога `ARXIV_EXTRA_CA_DIR`
+    (по умолчанию `~/.claude/certs`). Это нужно в сетях с MITM-прокси, который
+    переподписывает TLS своей цепочкой: достаточно положить корневой CA в этот
+    каталог. Проверка цепочки и hostname остаётся включённой
+    (`verify_mode=CERT_REQUIRED`). Если корпоративные CA подгружены, снимается
+    только строгая проверка расширений RFC 5280 (`VERIFY_X509_STRICT`), которую
+    не проходят некоторые корпоративные CA и которую не применяют curl и браузеры.
+
+    Returns:
+        Готовый к использованию `ssl.SSLContext`.
+    """
+    ctx = ssl.create_default_context()
+    ca_dir = Path(os.environ.get("ARXIV_EXTRA_CA_DIR", Path.home() / ".claude" / "certs"))
+    loaded = 0
+    if ca_dir.is_dir():
+        for pem in sorted(ca_dir.glob("*.pem")):
+            try:
+                ctx.load_verify_locations(cafile=str(pem))
+                loaded += 1
+            except ssl.SSLError:
+                continue
+    if loaded:
+        ctx.verify_flags &= ~ssl.VerifyFlags.VERIFY_X509_STRICT
+    return ctx
 
 SORT_BY = {"relevance", "lastUpdatedDate", "submittedDate"}
 SORT_ORDER = {"ascending", "descending"}
@@ -140,7 +172,7 @@ def search(query: str, max_papers: int, sort_by: str, sort_order: str) -> list[P
     url = f"{ARXIV_API}?{params}"
     request = urllib.request.Request(url, headers={"User-Agent": "arxiv-search-skill/1.0"})
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
+        with urllib.request.urlopen(request, timeout=30, context=_ssl_context()) as response:
             payload = response.read()
     except urllib.error.URLError as exc:  # сеть/таймаут/HTTP
         sys.exit(f"arXiv request failed: {exc}")

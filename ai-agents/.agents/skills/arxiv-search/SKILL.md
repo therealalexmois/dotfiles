@@ -26,7 +26,7 @@ The bundled script uses only the Python standard library (no `pip install` neede
 Run the bundled script. It accepts a query plus optional flags:
 
 ```bash
-python .claude/skills/arxiv-search/scripts/arxiv_search.py "QUERY" --max-papers N
+python3 .claude/skills/arxiv-search/scripts/arxiv_search.py "QUERY" --max-papers N
 ```
 
 Flags:
@@ -44,13 +44,13 @@ The query supports arXiv field prefixes: `au:` (author), `ti:` (title),
 Human-readable summary:
 
 ```bash
-python .claude/skills/arxiv-search/scripts/arxiv_search.py "agentic llm" --max-papers 5
+python3 .claude/skills/arxiv-search/scripts/arxiv_search.py "agentic llm" --max-papers 5
 ```
 
 Structured JSONL for a pipeline (one paper per line, like `papers_raw.jsonl`):
 
 ```bash
-python .claude/skills/arxiv-search/scripts/arxiv_search.py \
+python3 .claude/skills/arxiv-search/scripts/arxiv_search.py \
   "cat:cs.CL AND abs:retrieval augmented generation" \
   --max-papers 20 --sort-by submittedDate --format jsonl > papers_raw.jsonl
 ```
@@ -69,6 +69,11 @@ Each JSON record contains: `arxiv_id`, `title`, `authors`, `summary`,
 
 - The arXiv API is public and rate-limited; keep `--max-papers` reasonable.
 - `relevance` sorting is best for topic search; `submittedDate` for fresh preprints.
+- Use `python3` (the bundled scripts require Python 3); a bare `python` may resolve
+  to Python 2 on some machines.
+- Behind a TLS-intercepting corporate proxy, drop the proxy root CA (PEM) into
+  `~/.claude/certs/` (or set `ARXIV_EXTRA_CA_DIR`). The script trusts those CAs in
+  addition to the system store; chain and hostname verification stay enabled.
 
 ## Resources
 

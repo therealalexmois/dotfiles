@@ -27,7 +27,7 @@ The bundled script uses only the Python standard library (no `pip install` neede
 ## Usage
 
 ```bash
-python .claude/skills/arxiv-doc-builder/scripts/arxiv_doc_builder.py ARXIV_ID
+python3 .claude/skills/arxiv-doc-builder/scripts/arxiv_doc_builder.py ARXIV_ID
 ```
 
 The argument accepts any of: `2305.12345`, `2305.12345v2`, `arXiv:2305.12345`,
@@ -36,7 +36,7 @@ The argument accepts any of: `2305.12345`, `2305.12345v2`, `arXiv:2305.12345`,
 Write directly to a file with `--out`:
 
 ```bash
-python .claude/skills/arxiv-doc-builder/scripts/arxiv_doc_builder.py 2305.12345 \
+python3 .claude/skills/arxiv-doc-builder/scripts/arxiv_doc_builder.py 2305.12345 \
   --out "Notes/arxiv/2305.12345.md"
 ```
 
@@ -63,6 +63,11 @@ The generated note contains:
 - Naming convention for saved notes: use the `arxiv_id` (e.g. `2305.12345.md`) or
   `Author_Year_Title.md` if the user prefers descriptive filenames.
 - The arXiv API is public and rate-limited; this skill makes one request per paper.
+- Use `python3` (the bundled script requires Python 3); a bare `python` may resolve
+  to Python 2 on some machines.
+- Behind a TLS-intercepting corporate proxy, drop the proxy root CA (PEM) into
+  `~/.claude/certs/` (or set `ARXIV_EXTRA_CA_DIR`). The script trusts those CAs in
+  addition to the system store; chain and hostname verification stay enabled.
 
 ## Resources
 
