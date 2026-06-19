@@ -13,7 +13,7 @@ These are user-level instructions for coding tasks.
 These rules apply to all output: chat, code, comments, and documentation, in any language.
 
 - Do not use emoji unless the user explicitly asks for them.
-- Do not use the em dash `—` in generated text. Use a hyphen, comma, colon, or split the sentence instead.
+- Do not use the em dash `—` (U+2014) in generated text. Use the en dash `–` (U+2013) instead, or a hyphen, comma, colon, or split the sentence.
 - In Russian text, always write `е` instead of `ё`.
 
 ## Working Style
