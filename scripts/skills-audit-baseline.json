@@ -10,6 +10,16 @@
   }
  },
  {
+  "skill": "adversarial-advisor",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "agent-workflow-designer",
   "verdict": "PASS",
   "counts": {
@@ -20,7 +30,57 @@
   }
  },
  {
+  "skill": "analytics-tracking",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "api-design-reviewer",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "api-test-suite-builder",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "arxiv-doc-builder",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 2,
+   "info": 0,
+   "total": 2
+  }
+ },
+ {
+  "skill": "arxiv-search",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 2,
+   "info": 0,
+   "total": 2
+  }
+ },
+ {
+  "skill": "async-python-patterns",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -80,6 +140,26 @@
   }
  },
  {
+  "skill": "caveman-commit",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "caveman-review",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "changelog-generator",
   "verdict": "PASS",
   "counts": {
@@ -110,7 +190,27 @@
   }
  },
  {
+  "skill": "claude-automation-recommender",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "claude-coach",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "close-my-day",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -180,7 +280,37 @@
   }
  },
  {
+  "skill": "customer-research",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "daily-news",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "data-quality-auditor",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "database-designer",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -200,7 +330,27 @@
   }
  },
  {
+  "skill": "decision-cartesian-square",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "define-goal",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "defuddle",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -221,6 +371,26 @@
  },
  {
   "skill": "documentation-writer",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "env-secrets-manager",
+  "verdict": "FAIL",
+  "counts": {
+   "critical": 1,
+   "high": 0,
+   "info": 0,
+   "total": 1
+  }
+ },
+ {
+  "skill": "error-handling-patterns",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -261,6 +431,36 @@
  },
  {
   "skill": "find-skills",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "git-worktree-manager",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "github-actions-docs",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "github-actions-templates",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -350,6 +550,16 @@
   }
  },
  {
+  "skill": "interview-system-designer",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "karpathy-coder",
   "verdict": "PASS",
   "counts": {
@@ -390,7 +600,57 @@
   }
  },
  {
+  "skill": "mcp-builder",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "mcp-server-builder",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "memory-systems",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "mermaid-diagram",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 2,
+   "info": 0,
+   "total": 2
+  }
+ },
+ {
+  "skill": "migration-architect",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "morning-briefing",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -411,6 +671,26 @@
  },
  {
   "skill": "observability-designer",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "performance-profiler",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "pr-review-expert",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -470,6 +750,16 @@
   }
  },
  {
+  "skill": "python-code-style",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "python-conventions",
   "verdict": "PASS",
   "counts": {
@@ -480,7 +770,47 @@
   }
  },
  {
-  "skill": "review-before-completion",
+  "skill": "python-design-patterns",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "python-packaging",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "python-performance-optimization",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "python-project-structure",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "python-testing-patterns",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -500,7 +830,57 @@
   }
  },
  {
+  "skill": "secrets-vault-manager",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "security-guidance",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "self-eval",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "seo",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "seo-audit",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "ship-gate",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -550,7 +930,27 @@
   }
  },
  {
+  "skill": "skill-tester",
+  "verdict": "FAIL",
+  "counts": {
+   "critical": 13,
+   "high": 0,
+   "info": 0,
+   "total": 13
+  }
+ },
+ {
   "skill": "slo-architect",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "sql-database-assistant",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -601,6 +1001,26 @@
  },
  {
   "skill": "using-git-worktrees",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 1,
+   "info": 0,
+   "total": 1
+  }
+ },
+ {
+  "skill": "uv-package-manager",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "whats-my-day",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -651,6 +1071,36 @@
  },
  {
   "skill": "writing-russian-editor",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "xlsx",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "zotero-obsidian-bridge",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "zotero-paper-reader",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
