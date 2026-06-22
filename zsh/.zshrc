@@ -73,8 +73,11 @@ DISABLE_AUTO_TITLE="true"
 # --- Prompt: clean multi-line rendering ---
 setopt PROMPT_SUBST
 
-# Russian Trusted CA (Минцифры) для *.tbank.ru
-export NODE_EXTRA_CA_CERTS="$HOME/.claude/certs/russian_trusted_bundle.pem"
+# Корпоративный root CA (TINKOFFBANK-ROOTCA) для *.tbank.ru.
+# Экспортируем только если файл есть (на личной машине его нет — иначе Node ругается).
+if [[ -r "$HOME/.claude/certs/corporate-root-ca.pem" ]]; then
+  export NODE_EXTRA_CA_CERTS="$HOME/.claude/certs/corporate-root-ca.pem"
+fi
 
 # Puppeteer: использовать системный Chrome вместо встроенного headless-shell
 export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
