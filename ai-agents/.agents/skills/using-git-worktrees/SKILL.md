@@ -52,6 +52,25 @@ Honor any existing declared preference without asking. If the user declines cons
 
 ## Step 1: Create Isolated Workspace
 
+### Branch name (decide before creating anything)
+
+Every worktree needs a branch name, and how you name it matters: ad-hoc prefixes like `worktree-…` or `wt-feat+…` fail branch policies that expect `feat/…`, forcing a rename right after creation. Avoid that by naming the branch with **Conventional Branch** from the start:
+
+```
+<type>/<short-kebab-description>
+```
+
+- `<type>` — the nature of the work, from the Conventional Commits set: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci`, `chore`. Pick by the main purpose of the work, the same way you would pick a commit type. If the type is genuinely unclear, default to `chore`.
+- `<description>` — short, lowercase, hyphen-separated, derived from the task. No spaces, no `+`, no uppercase, no `worktree`/`wt` prefix. Examples: `feat/worktree-port-allocation`, `fix/login-redirect`, `docs/api-readme`.
+
+This is the default `$BRANCH_NAME` for every workspace you create — in both Mode A and Mode B, with native tools and with the git fallback. It is intrinsic to this skill: do not look for or depend on a repo policy file (e.g. `policy.yaml`) to decide the format, since this skill runs in repos that have no such file. Conventional Branch already satisfies the common `type/...` branch policies.
+
+Exceptions:
+- If the user gives an explicit branch name, use it as-is.
+- If a repository documents a stricter branch convention and you already know it, follow that instead — but never block on hunting for a policy file.
+
+In Mode B the worktree *directory* name still follows `wt-<topic>` (see [Concurrent Worktrees](#concurrent-worktrees-mode-b)); that is the `--name`, separate from the `--branch` value, which follows the Conventional Branch format above.
+
 **You have two mechanisms. Try them in this order.**
 
 ### 1a. Native Worktree Tools (preferred)
@@ -103,6 +122,8 @@ git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/d
 Global directories (`~/.config/superpowers/worktrees/`) need no verification.
 
 #### Create the Worktree
+
+`$BRANCH_NAME` follows the Conventional Branch format from [Branch name](#branch-name-decide-before-creating-anything) above (e.g. `feat/worktree-port-allocation`).
 
 ```bash
 project=$(basename "$(git rev-parse --show-toplevel)")
@@ -238,7 +259,7 @@ python scripts/worktree_manager.py --input config.json --format json
 
 **Docker Compose.** Map the allocated ports into per-worktree overrides or a unique compose project name to avoid container, network, and volume collisions. See [references/docker-compose-patterns.md](references/docker-compose-patterns.md).
 
-**Naming convention.** One branch per worktree, one agent per worktree. Use a deterministic `wt-<topic>` (or `wt-<task-id>-<topic>`) name so the path maps to the task.
+**Naming convention.** One branch per worktree, one agent per worktree. Two separate names: the `--branch` follows Conventional Branch (`<type>/<description>`, e.g. `feat/new-auth`) — see [Branch name](#branch-name-decide-before-creating-anything); the worktree *directory* `--name` follows a deterministic `wt-<topic>` (or `wt-<task-id>-<topic>`) so the path maps to the task. Do not mix the two — the branch is never `wt-…`.
 
 ## Lifecycle and Cleanup
 
@@ -277,6 +298,7 @@ Before claiming a concurrent-worktree setup complete:
 
 | Situation | Action |
 |-----------|--------|
+| Naming the branch | Conventional Branch `<type>/<description>`, e.g. `feat/...` (Step 1, Branch name) |
 | Already in linked worktree | Skip creation (Step 0) |
 | In a submodule | Treat as normal repo (Step 0 guard) |
 | Native worktree tool available | Use it (Step 1a) |
@@ -352,6 +374,7 @@ Before claiming a concurrent-worktree setup complete:
 ## Red Flags
 
 **Never:**
+- Name a branch with an ad-hoc prefix like `worktree-…` or `wt-feat+…` — use Conventional Branch `<type>/<description>` so it passes branch policies without a rename
 - Create a worktree when Step 0 detects existing isolation
 - Use `git worktree add` (or Mode B scripts) when you have a native worktree tool and only need task isolation. This is the #1 mistake — if you have it, use it.
 - Skip Step 1a by jumping straight to Step 1b's git commands
@@ -362,6 +385,7 @@ Before claiming a concurrent-worktree setup complete:
 - Run `pip install` / `uv pip install` in a Python worktree without first creating a venv inside it - the install silently lands in the parent checkout's environment
 
 **Always:**
+- Name branches with Conventional Branch `<type>/<description>` (Step 1, Branch name)
 - Run Step 0 detection first
 - Prefer native tools over git fallback
 - Follow directory priority: existing > global legacy > instruction file > default
