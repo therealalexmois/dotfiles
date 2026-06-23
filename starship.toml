@@ -1,4 +1,4 @@
-command_timeout = 300
+command_timeout = 1000
 scan_timeout = 50
 
 [aws]
@@ -63,6 +63,7 @@ format = '\[[$symbol$account(@$domain)(\($region\))]($style)\]'
 format = '\[[$symbol$branch]($style)\]'
 
 [git_status]
+disabled = true
 format = '([\[$all_status$ahead_behind\]]($style))'
 
 [golang]
