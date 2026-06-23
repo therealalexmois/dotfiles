@@ -34,28 +34,35 @@ diag-lang() {
   log show --predicate 'subsystem == "com.apple.HIToolbox"' --last 15s --style compact 2>/dev/null | grep -i "input\|source\|switch" | tail -15
 }
 
+# --- Cached tool init ---
+# Каждый `eval "$(<tool> init)"` это отдельный exec, а на рабочем Mac каждый exec
+# облагается налогом EDR (~0.1-0.4с, см. memory slow-exec-edr-startup). Вывод init
+# стабилен и меняется только при обновлении бинарника, поэтому кэшируем его в файл и
+# регенерируем лишь когда бинарник новее кэша. На тёплом старте остаётся `source`, без exec.
+_eval_cached() {
+  local name=$1 bin=$2; shift 2
+  local bin_path cache="${ZSH_CACHE_DIR:-$ZSH/cache}/init-$name.zsh"
+  bin_path=$(command -v "$bin") || return 0
+  if [[ ! -s "$cache" || "$bin_path" -nt "$cache" ]]; then
+    "$@" >| "$cache"
+  fi
+  source "$cache"
+}
+
 # --- Starship prompt ---
-if command -v starship >/dev/null; then
-  eval "$(starship init zsh)"
-fi
+_eval_cached starship starship starship init zsh
 
 # --- mise (runtime version manager: Node, etc.) ---
-if command -v mise >/dev/null; then
-  eval "$(mise activate zsh)"
-fi
+_eval_cached mise mise mise activate zsh
 
 # --- fzf ---
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
 # --- atuin (shell history, syncable across machines) ---
-if command -v atuin >/dev/null; then
-  eval "$(atuin init zsh)"
-fi
+_eval_cached atuin atuin atuin init zsh
 
 # --- zoxide (smarter cd: `z <dir>`) ---
-if command -v zoxide >/dev/null; then
-  eval "$(zoxide init zsh)"
-fi
+_eval_cached zoxide zoxide zoxide init zsh
 
 # --- History Options ---
 export HISTSIZE=200000
