@@ -33,6 +33,7 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 - Avoid bare collection annotations when element types are known.
 - Do not suppress lint or type-check violations without a narrow reason.
 - Add or update tests for behavior changes and important failure cases.
+- Separate logical blocks inside a function or method body with a single blank line; do not pack statements wall-to-wall. Blank lines mark paragraphs of intent (setup, the core step, the result) and make code scannable. Linters do not enforce this, so apply it by hand. See the `python-code-style` skill (vertical spacing) for rationale and examples.
 
 ## Python docstrings and tests
 

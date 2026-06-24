@@ -293,7 +293,40 @@ error_message = (
 )
 ```
 
-### Pattern 7: Project Documentation
+### Pattern 7: Vertical Spacing (Logical Paragraphs)
+
+Inside a function or method body, separate logical blocks with a single blank line. Read code like prose: a wall of statements packed line-to-line forces the reader to parse every line to find where one idea ends and the next begins. Blank lines turn a body into paragraphs of intent — setup, the core step, the result — so the structure is visible at a glance.
+
+Ruff and Black normalize blank lines *around* functions and classes, but they do not insert semantic blank lines *inside* a body. So this is a judgment call you make by hand, not something a formatter enforces.
+
+Group by intent, not by line count: a tight 3-line block that forms one idea stays together; a blank line goes between distinct steps (guard checks, the main computation, logging, the return). Avoid double blank lines inside a body and a blank line right after the `def`/docstring — one separator between ideas is enough.
+
+```python
+# Avoid: statements packed wall-to-wall — hard to scan
+def resolve(self, key: str) -> Value:
+    status = self._status()
+    if status is not Status.READY:
+        self._log_not_ready(key)
+        return self._default(key)
+    result = self._client.get(key)
+    self._log_if_error(result)
+    return result.value
+
+# Good: blank lines mark paragraphs of intent
+def resolve(self, key: str) -> Value:
+    status = self._status()
+
+    if status is not Status.READY:  # not warmed up yet → code default
+        self._log_not_ready(key)
+        return self._default(key)
+
+    result = self._client.get(key)
+    self._log_if_error(result)
+
+    return result.value
+```
+
+### Pattern 8: Project Documentation
 
 **README Structure:**
 
@@ -358,3 +391,4 @@ pytest
 8. **Keep docs updated** - Treat documentation as code
 9. **Automate in CI** - Run linters on every commit
 10. **Target Python 3.10+** - For new projects, Python 3.12+ is recommended for modern language features
+11. **Vertical spacing** - Separate logical blocks inside a function body with a blank line; formatters do not enforce this
