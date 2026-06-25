@@ -35,9 +35,9 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 - Add or update tests for behavior changes and important failure cases.
 - Separate logical blocks inside a function or method body with a single blank line; do not pack statements wall-to-wall. Blank lines mark paragraphs of intent (setup, the core step, the result) and make code scannable. Linters do not enforce this, so apply it by hand. See the `python-code-style` skill (vertical spacing) for rationale and examples.
 
-## Python docstrings and tests
+## Python code style, docstrings, and tests
 
-When writing or editing Python code, docstrings, or tests, use the `python-conventions` skill. It is the single source of truth for docstring style (Google style, Russian content, English section headers) and all test-writing rules: structure, docstrings, assertions, fixtures, test doubles, async, parameterization, typing, and observability. Do not duplicate those rules here.
+When writing or editing Python code, docstrings, or tests, use the `python-code-style` skill. It is the single source of truth for generic conventions: naming, imports, type annotations, formatting, vertical spacing, Google-style docstrings (English section headers; docstring language follows the project), and all test-writing rules (structure, assertions, fixtures, test doubles, async, parameterization, typing, observability). It carries the language-agnostic principles; project `AGENTS.md`/`CLAUDE.md` and `pyproject.toml` supply the specifics (documentation language, config values, test marker policy) and override its defaults. Do not duplicate those rules here.
 
 Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
 

@@ -470,7 +470,7 @@
   }
  },
  {
-  "skill": "python-conventions",
+  "skill": "python-code-style",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -631,16 +631,6 @@
  },
  {
   "skill": "writing-prd-draft",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "writing-python-docstrings",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
