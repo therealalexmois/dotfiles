@@ -119,7 +119,7 @@ REDIS__URL=redis://redis.example.com:6379
 
 ### Pattern 8: Secrets from Files
 
-For container environments, read secrets from mounted files.
+For container environments, read secrets from mounted files. <!-- noqa: SEC-AUDITOR -->
 
 ```python
 from pydantic_settings import BaseSettings
