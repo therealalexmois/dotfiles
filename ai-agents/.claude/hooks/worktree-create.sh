@@ -3,20 +3,16 @@
 # EnterWorktree, and subagent `isolation: worktree`.
 #
 # Goal: uniform worktrees everywhere.
-#   - branch follows conventionalbranch.org (default prefix `claude/`)
-#   - worktree lives in `<repo>/.worktrees/<branch>` (matches the
-#     using-git-worktrees skill, Mode A)
+#   - branch follows conventionalbranch.org, always with a type prefix
+#     (explicit `type/...` kept, otherwise `feature/` is prepended)
+#   - worktree lives in a flat `<repo>/.worktrees/<type>-<name>` dir (slashes in
+#     the branch become hyphens, so no nested type folder)
+#   - branched from origin/HEAD for a clean tree (falls back to local HEAD)
 #   - gitignored files listed in `<repo>/.worktreeinclude` are copied in
 #     (native .worktreeinclude is disabled once this hook is configured)
 #
 # Contract: read JSON on stdin, print the absolute worktree path on stdout,
 # exit 0 on success. Any non-zero exit aborts worktree creation.
-#
-# stdin JSON: field names vary across Claude Code docs/versions. Observed/known
-# candidates for the worktree name: .worktree_name, .name, .branch (the proposed
-# default branch, e.g. "worktree-<name>"). For the base ref: .base_ref. The repo
-# root may arrive as .base_path; otherwise derive it from .cwd. We read all
-# candidates defensively so a schema change does not silently blank the name.
 
 set -uo pipefail
 
@@ -30,11 +26,11 @@ debug_log="${XDG_STATE_HOME:-$HOME/.local/state}/claude/worktree-create.log"
 mkdir -p "$(dirname "$debug_log")" 2>/dev/null || true
 printf '%s\t%s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$INPUT" >>"$debug_log" 2>/dev/null || true
 
-# First non-empty of the known name fields. .branch may carry the default
-# "worktree-<name>" convention, so a leading "worktree-" is stripped below.
-worktree_name=$(printf '%s' "$INPUT" | jq -r '.worktree_name // .name // .branch // empty')
-base_ref=$(printf '%s' "$INPUT" | jq -r '.base_ref // empty')
-cwd=$(printf '%s' "$INPUT" | jq -r '.base_path // .cwd // empty')
+# Observed payload (Claude Code): { session_id, transcript_path, cwd,
+# hook_event_name, name }. The worktree name arrives in .name; there is no
+# base_ref field, so this hook chooses the base ref itself (see below).
+worktree_name=$(printf '%s' "$INPUT" | jq -r '.name // empty')
+cwd=$(printf '%s' "$INPUT" | jq -r '.cwd // empty')
 
 [ -n "$cwd" ] || { err "no cwd in hook input"; exit 1; }
 repo_root=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || {
@@ -51,26 +47,29 @@ sanitize() {
 }
 
 known_type='feature|feat|bugfix|fix|hotfix|release|chore|ai|copilot|cursor|claude|codex'
+default_type='feature'
 
-# If the name came from the default-branch field it may be "worktree-<name>";
-# strip that prefix so we don't get claude/worktree-<name>.
-worktree_name="${worktree_name#worktree-}"
 clean=$(sanitize "$worktree_name")
 
-# No meaningful name was passed (e.g. `claude -w` with no argument, or a
-# conversational "work in a worktree"). The native git path would generate a
-# name here, but this hook replaces it, so synthesize a unique timestamped one.
+# No meaningful name was passed (e.g. `claude -w` with no argument). The native
+# git path would generate a name here, but this hook replaces it, so synthesize
+# a unique timestamped one.
 case "$clean" in
   "" | worktree | wt) clean="wt-$(date '+%Y%m%d-%H%M%S')" ;;
 esac
 
+# Branch always carries a conventionalbranch.org type prefix. An explicit type
+# in the name is kept; otherwise the default type is prepended.
 if printf '%s' "$clean" | grep -qE "^(${known_type})/"; then
   branch="$clean"
 else
-  branch="claude/$clean"
+  branch="$default_type/$clean"
 fi
 
-path="$repo_root/.worktrees/$branch"
+# Flat worktree directory: no nested type folder. Slashes in the branch become
+# hyphens for the path, so `feature/auth` lives in `.worktrees/feature-auth`.
+dir_name=$(printf '%s' "$branch" | tr '/' '-')
+path="$repo_root/.worktrees/$dir_name"
 
 # Keep `.worktrees/` out of git status without touching the tracked .gitignore.
 git_common=$(git -C "$repo_root" rev-parse --git-common-dir 2>/dev/null)
@@ -82,17 +81,20 @@ if ! git -C "$repo_root" check-ignore -q .worktrees 2>/dev/null; then
   printf '.worktrees/\n' >>"$git_common/info/exclude" 2>/dev/null || true
 fi
 
+# Base ref: there is no base_ref in the payload, so branch from origin/HEAD for
+# a clean tree matching the remote (worktree.baseRef "fresh"). Fall back to the
+# local HEAD when no remote default is resolvable.
+base_ref=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
+[ -n "$base_ref" ] || base_ref=HEAD
+
 # Create the worktree. Send git's own output to stderr so stdout carries only
 # the path. Reuse the branch if it already exists, otherwise create it.
 mkdir -p "$(dirname "$path")"
 if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
   git -C "$repo_root" worktree add "$path" "$branch" >&2
   rc=$?
-elif [ -n "$base_ref" ]; then
-  git -C "$repo_root" worktree add "$path" -b "$branch" "$base_ref" >&2
-  rc=$?
 else
-  git -C "$repo_root" worktree add "$path" -b "$branch" >&2
+  git -C "$repo_root" worktree add "$path" -b "$branch" "$base_ref" >&2
   rc=$?
 fi
 [ "$rc" -eq 0 ] || { err "git worktree add failed (rc=$rc)"; exit 1; }
