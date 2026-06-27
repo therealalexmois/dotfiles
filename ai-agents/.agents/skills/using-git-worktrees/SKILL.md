@@ -140,6 +140,32 @@ cd "$path"
 
 ## Step 3: Project Setup
 
+**This step is not optional, and it runs even when a native tool created the worktree.**
+A native worktree tool (Step 1a) only runs `git worktree add` - it checks out tracked
+files and stops. It does not sync gitignored local files or build a venv. So after Step 1a
+hands you the worktree, you still come here and run the provisioning below by hand.
+
+### Sync gitignored local files (`.env*`)
+
+A worktree contains only tracked files. Gitignored local config - `.env`, `.env.local`,
+secrets, `.envrc` - does **not** travel with it, so a fresh worktree starts without the
+config the app needs to run. Copy these from the main checkout (only `.env*` here; `.venv`
+is gitignored too but must be *recreated*, not copied - see the Python section below,
+because a venv hardcodes absolute paths and breaks when moved):
+
+```bash
+# Find the main checkout (first entry of `git worktree list`) and copy local env files.
+MAIN=$(git worktree list --porcelain | awk '/^worktree /{print $2; exit}')
+for f in .env .env.local .env.development .envrc; do
+  if [ -f "$MAIN/$f" ] && [ ! -e "$f" ]; then
+    cp -p "$MAIN/$f" "$f" && echo "copied $f"
+  fi
+done
+```
+
+This is the Mode A inline equivalent of what the Mode B manager does in `sync_env_files`
+(same file list); Mode A copies inline so it needs no bundled script.
+
 Auto-detect and run appropriate setup:
 
 ```bash
@@ -301,7 +327,8 @@ Before claiming a concurrent-worktree setup complete:
 | Naming the branch | Conventional Branch `<type>/<description>`, e.g. `feat/...` (Step 1, Branch name) |
 | Already in linked worktree | Skip creation (Step 0) |
 | In a submodule | Treat as normal repo (Step 0 guard) |
-| Native worktree tool available | Use it (Step 1a) |
+| Native worktree tool available | Use it (Step 1a), then still run Step 3 setup by hand |
+| `.env*` / secrets missing in new worktree | Gitignored files don't travel - copy `.env*` from main checkout (Step 3) |
 | No native tool, single task | Git worktree fallback (Step 1b) |
 | 2+ concurrent branches / isolated servers | Mode B manager script |
 | `.worktrees/` exists | Use it (verify ignored) |
