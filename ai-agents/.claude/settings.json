@@ -10,6 +10,29 @@
   "includeCoAuthoredBy": false,
   "model": "claude-opus-4-8",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-skip-worktree.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/lint-on-edit.sh",
+            "statusMessage": "Linting edited file..."
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
@@ -17,6 +40,16 @@
             "type": "command",
             "command": "printf '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": %s}}' \"$(jq -Rs '.' ~/.claude/skills/claude-coach/SKILL.md)\"",
             "statusMessage": "Loading claude-coach..."
+          }
+        ]
+      },
+      {
+        "matcher": "resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/session-recap.sh",
+            "statusMessage": "Preparing session recap..."
           }
         ]
       }
