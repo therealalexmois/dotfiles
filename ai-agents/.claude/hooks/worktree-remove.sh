@@ -13,6 +13,11 @@ set -uo pipefail
 INPUT=$(cat)
 command -v jq >/dev/null 2>&1 || exit 0
 
+# Audit the raw payload so the actual stdin schema can be confirmed.
+debug_log="${XDG_STATE_HOME:-$HOME/.local/state}/claude/worktree-remove-raw.log"
+mkdir -p "$(dirname "$debug_log")" 2>/dev/null || true
+printf '%s\t%s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$INPUT" >>"$debug_log" 2>/dev/null || true
+
 worktree_path=$(printf '%s' "$INPUT" | jq -r '.worktree_path // empty')
 session_id=$(printf '%s' "$INPUT" | jq -r '.session_id // empty')
 

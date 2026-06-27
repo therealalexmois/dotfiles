@@ -12,7 +12,11 @@
 # Contract: read JSON on stdin, print the absolute worktree path on stdout,
 # exit 0 on success. Any non-zero exit aborts worktree creation.
 #
-# stdin JSON: { worktree_name, base_ref, cwd, session_id, ... }
+# stdin JSON: field names vary across Claude Code docs/versions. Observed/known
+# candidates for the worktree name: .worktree_name, .name, .branch (the proposed
+# default branch, e.g. "worktree-<name>"). For the base ref: .base_ref. The repo
+# root may arrive as .base_path; otherwise derive it from .cwd. We read all
+# candidates defensively so a schema change does not silently blank the name.
 
 set -uo pipefail
 
@@ -21,9 +25,16 @@ err() { printf 'worktree-create: %s\n' "$1" >&2; }
 INPUT=$(cat)
 command -v jq >/dev/null 2>&1 || { err "jq not found"; exit 1; }
 
-worktree_name=$(printf '%s' "$INPUT" | jq -r '.worktree_name // empty')
+# Audit the raw payload so the actual stdin schema can be confirmed.
+debug_log="${XDG_STATE_HOME:-$HOME/.local/state}/claude/worktree-create.log"
+mkdir -p "$(dirname "$debug_log")" 2>/dev/null || true
+printf '%s\t%s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$INPUT" >>"$debug_log" 2>/dev/null || true
+
+# First non-empty of the known name fields. .branch may carry the default
+# "worktree-<name>" convention, so a leading "worktree-" is stripped below.
+worktree_name=$(printf '%s' "$INPUT" | jq -r '.worktree_name // .name // .branch // empty')
 base_ref=$(printf '%s' "$INPUT" | jq -r '.base_ref // empty')
-cwd=$(printf '%s' "$INPUT" | jq -r '.cwd // empty')
+cwd=$(printf '%s' "$INPUT" | jq -r '.base_path // .cwd // empty')
 
 [ -n "$cwd" ] || { err "no cwd in hook input"; exit 1; }
 repo_root=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || {
@@ -40,6 +51,10 @@ sanitize() {
 }
 
 known_type='feature|feat|bugfix|fix|hotfix|release|chore|ai|copilot|cursor|claude|codex'
+
+# If the name came from the default-branch field it may be "worktree-<name>";
+# strip that prefix so we don't get claude/worktree-<name>.
+worktree_name="${worktree_name#worktree-}"
 clean=$(sanitize "$worktree_name")
 
 # No meaningful name was passed (e.g. `claude -w` with no argument, or a
