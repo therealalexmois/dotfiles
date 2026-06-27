@@ -41,7 +41,13 @@ sanitize() {
 
 known_type='feature|feat|bugfix|fix|hotfix|release|chore|ai|copilot|cursor|claude|codex'
 clean=$(sanitize "$worktree_name")
-[ -n "$clean" ] || clean="worktree"
+
+# No meaningful name was passed (e.g. `claude -w` with no argument, or a
+# conversational "work in a worktree"). The native git path would generate a
+# name here, but this hook replaces it, so synthesize a unique timestamped one.
+case "$clean" in
+  "" | worktree | wt) clean="wt-$(date '+%Y%m%d-%H%M%S')" ;;
+esac
 
 if printf '%s' "$clean" | grep -qE "^(${known_type})/"; then
   branch="$clean"
