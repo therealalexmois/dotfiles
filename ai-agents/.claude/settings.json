@@ -1,11 +1,45 @@
 {
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6"
+  "skillListingBudgetFraction": 0.03,
+  "includeCoAuthoredBy": false,
+  "model": "claude-opus-4-8",
+  "cleanupPeriodDays": 30,
+  "worktree": {
+    "baseRef": "fresh"
   },
-  "attribution": {
-    "commit": ""
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": %s}}' \"$(jq -Rs '.' ~/.claude/skills/claude-coach/SKILL.md)\"",
+            "statusMessage": "Loading claude-coach..."
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/worktree-create.sh",
+            "statusMessage": "Creating worktree..."
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/worktree-remove.sh"
+          }
+        ]
+      }
+    ]
   },
-  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "~/.dotfiles/ai-agents/.claude/statusline.sh",
@@ -13,16 +47,24 @@
     "refreshInterval": 5
   },
   "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
   },
-  "effortLevel": "xhigh",
-  "theme": "light-ansi",
-  "editorMode": "vim",
-  "includeCoAuthoredBy": false,
   "language": "russian",
+  "effortLevel": "high",
+  "advisorModel": "opus",
   "voice": {
     "enabled": true,
     "mode": "tap"
   },
-  "voiceEnabled": true
+  "skipWorkflowUsageWarning": true,
+  "theme": "light-ansi",
+  "editorMode": "vim",
+  "voiceEnabled": true,
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6"
+  },
+  "attribution": {
+    "commit": ""
+  }
 }
