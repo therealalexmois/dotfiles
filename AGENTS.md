@@ -199,6 +199,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | create, edit, or eval a skill | `skill-creator` | yes |
 | audit skill for security | `skill-security-auditor` | manual |
 | audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |
+| review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | isolate work in a git worktree | `using-git-worktrees` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
@@ -221,6 +222,13 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | productivity coaching | `productivity-coach` | yes |
 | execute a step-by-step plan | `executing-plans` | yes |
 | onboard to a codebase | `codebase-onboarding` | manual |
+
+The `skill-reviewer` subagent (`ai-agents/.claude/agents/skill-reviewer.md`, Claude-only)
+runs `skill-quality-reviewer` in a clean isolated context: it reads the skill's
+`SKILL.md` + `GLOSSARY.md` and applies them, so the doctrine stays a single source of
+truth in the skill. Use the skill directly (`/skill-quality-reviewer`, also from Codex)
+for an inline review; dispatch `@skill-reviewer` when you want fresh-eyes review off the
+current context.
 
 Vault skills (`~/Workspace/vault/.claude/skills/`) are not listed here; they have their own routing in the vault's CLAUDE.md.
 
