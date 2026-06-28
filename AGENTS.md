@@ -221,6 +221,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | challenge and stress-test ideas | `grill-me` | yes |
 | productivity coaching | `productivity-coach` | yes |
 | execute a step-by-step plan | `executing-plans` | yes |
+| execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
 | onboard to a codebase | `codebase-onboarding` | manual |
 
 The `skill-reviewer` subagent (`ai-agents/.claude/agents/skill-reviewer.md`, Claude-only)
