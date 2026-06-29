@@ -24,18 +24,5 @@ status_line_use_colors = true
 terminal_title = ["activity", "project-name", "model", "current-dir"]
 theme = "catppuccin-mocha"
 
-[plugins."atlassian-rovo@openai-curated"]
-enabled = true
-
-[plugins."google-calendar@openai-curated"]
-enabled = true
-
-[plugins."google-drive@openai-curated"]
-enabled = true
-
-[mcp_servers.context7]
-command = "npx"
-args = ["-y", "@upstash/context7-mcp"]
-
 [features]
 memories = true
