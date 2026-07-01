@@ -350,6 +350,16 @@
   }
  },
  {
+  "skill": "defuddle",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "dispatching-parallel-agents",
   "verdict": "PASS",
   "counts": {
@@ -990,6 +1000,16 @@
   }
  },
  {
+  "skill": "skill-quality-reviewer",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "skill-security-auditor",
   "verdict": "PASS",
   "counts": {
@@ -1021,6 +1041,16 @@
  },
  {
   "skill": "sql-database-assistant",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "subagent-driven-development",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -1131,6 +1161,16 @@
  },
  {
   "skill": "writing-russian-editor",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "writing-text-reviewer",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
