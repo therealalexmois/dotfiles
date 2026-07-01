@@ -139,6 +139,12 @@ return {
             end,
             desc = "Live Grep (hidden + ignored, no .git)",
           },
+
+          -- UI toggles
+          ["<Leader>um"] = {
+            function() require("render-markdown").buf_toggle() end,
+            desc = "Toggle Markdown render",
+          },
         },
       },
     })

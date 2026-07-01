@@ -74,5 +74,7 @@ ai-agents/.claude/plugins/cache/
 ai-agents/.claude/plugins/data/
 ai-agents/.claude/plugins/marketplaces/
 
-# Claude Code project-level local state (settings.local.json, wrong-path skill symlinks)
-.claude/
+# Claude Code project-level local state (settings.local.json, wrong-path skill symlinks).
+# Anchored to the repo root so it does not also swallow ai-agents/.claude/ (whose
+# runtime state is already enumerated above and whose tracked files include agents/).
+/.claude/

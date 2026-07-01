@@ -1,30 +1,14 @@
 {
+  "cleanupPeriodDays": 30,
+  "skillListingBudgetFraction": 0.03,
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6"
   },
   "attribution": {
     "commit": ""
   },
-  "model": "sonnet",
-  "statusLine": {
-    "type": "command",
-    "command": "~/.dotfiles/ai-agents/.claude/statusline.sh",
-    "padding": 0,
-    "refreshInterval": 5
-  },
-  "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true
-  },
-  "effortLevel": "xhigh",
-  "theme": "light-ansi",
-  "editorMode": "vim",
   "includeCoAuthoredBy": false,
-  "language": "russian",
-  "voice": {
-    "enabled": true,
-    "mode": "tap"
-  },
-  "voiceEnabled": true,
+  "model": "claude-opus-4-8",
   "hooks": {
     "SessionStart": [
       {
@@ -32,10 +16,55 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat \"$HOME/.claude/skills/claude-coach/coach-context.md\""
+            "command": "printf '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": %s}}' \"$(jq -Rs '.' ~/.claude/skills/claude-coach/coach-context.md)\"",
+            "statusMessage": "Loading claude-coach..."
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/worktree-create.sh",
+            "statusMessage": "Creating worktree..."
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/worktree-remove.sh"
           }
         ]
       }
     ]
-  }
+  },
+  "worktree": {
+    "baseRef": "fresh"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.dotfiles/ai-agents/.claude/statusline.sh",
+    "padding": 0,
+    "refreshInterval": 5
+  },
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "language": "russian",
+  "effortLevel": "high",
+  "voice": {
+    "enabled": true,
+    "mode": "tap"
+  },
+  "skipWorkflowUsageWarning": true,
+  "theme": "light-ansi",
+  "editorMode": "vim",
+  "voiceEnabled": true
 }
