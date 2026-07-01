@@ -17,6 +17,7 @@ This skill is optimized for:
 - Obsidian and personal knowledge-base notes;
 - RFCs, ADRs, technical specs, design and architecture notes;
 - internal documentation and product notes;
+- reports, audits, research summaries, and status updates;
 - meeting notes;
 - UI/UX text;
 - drafts and rough thoughts.
@@ -30,6 +31,7 @@ This skill restructures and clarifies an existing text. It does not author new d
 - Drafting a PRD from conversation context -> `writing-prd-draft`.
 - Writing an implementation plan before coding -> `writing-plans`.
 - Diátaxis-style documentation authoring -> `documentation-writer`.
+- Domain-specific audit execution -> use the domain skill first, then use this skill to restructure the report if the result is hard to scan.
 
 If the user wants both restructuring and deep Russian style editing, do the structural pass here and suggest a follow-up with `writing-russian-editor`.
 
@@ -120,6 +122,12 @@ Look for long sentences, overloaded paragraphs, unclear subject or action, abstr
 
 Fix by shortening sentences, using direct wording, moving the main point earlier, splitting complex ideas, replacing vague nouns with concrete terms, and making cause and effect explicit.
 
+Prefer short sentences. They read faster, are easier to maintain, and give a document fewer points of failure. When a sentence carries two ideas, split it.
+
+Name the actor and prefer active voice. "The backend does not expose a product story yet" beats "the target approach is not specified" – it is shorter and it shows who does what. Passive, actor-less phrasing hides responsibility and makes the reader guess.
+
+Write for the widest plausible audience. Product-facing RFCs, ADRs, and docs reach reviewers outside the immediate team, so drop jargon that does not earn its place and spell out an acronym on first use. Keep the domain terms that carry real meaning; cut the ones that only signal insider status.
+
 ### Legibility
 
 Look for very long paragraphs, dense blocks, poor spacing, excessive bold or emphasis, too many nested lists, and unreadable structure.
@@ -131,6 +139,8 @@ Fix by adding paragraph breaks, reducing visual noise, using short blocks, keepi
 Look for missing or weak headings, key points buried in prose, lists written as paragraphs, no visible entry points, and unclear document flow.
 
 Fix by adding useful headings, front-loading important words, using bullets for parallel items, making decisions and risks and next actions visible, and keeping one idea per block.
+
+Structure is navigation, not decoration. Headings and clear entry points let a busy reader decide in seconds what to read and what to skip; a document that must be read start to finish like a novel wastes the reader's time. Optimize for skimming: the reader should find what matters without reading everything.
 
 ### Visual hierarchy
 
@@ -180,6 +190,8 @@ Supporting explanation.
 ### RFC
 
 Check whether the proposal is reviewable. A good RFC makes context, problem, goals, non-goals, proposed solution, alternatives, trade-offs, risks, rollout, and open questions clear.
+
+An RFC exists to focus reviewers on the problem and the open decisions, not to prove every claim with code. It is not a final spec and not a forensic report on the codebase. When the draft drowns the decision in implementation detail, pull the problem and the proposed solution to the top and move code, logs, and exhaustive evidence into an appendix or a linked reference. The reviewer should reach the decision they are being asked to make within the first screen.
 
 ```markdown
 # RFC: Title
@@ -235,6 +247,29 @@ Check whether the reader can use the text to do something correctly. Start with 
 ## Troubleshooting
 ```
 
+### Reports and audits
+
+Check whether a busy reader can understand the main takeaway in seconds. Lead with conclusions, then show the findings and recommendations. Do not bury the verdict after tables or long background sections.
+
+```markdown
+# Title
+
+## Executive summary
+Main conclusion, top findings, and recommended action.
+
+## Key findings
+Findings ranked by importance. Each finding states evidence and impact.
+
+## Recommendations
+Specific actions in priority order.
+
+## Details
+Supporting data, tables, examples, or appendices.
+
+## Gaps and limitations
+Missing inputs, uncertainty, and follow-up checks.
+```
+
 ### Rough thoughts
 
 Do not over-polish. Extract the main idea, group related points, remove repetition, preserve uncertainty, and separate facts, assumptions, questions, and decisions.
@@ -257,8 +292,13 @@ Flag these when present:
 - hidden decision; hidden assumptions; unclear next action;
 - inconsistent terminology; duplicated ideas; excessive detail;
 - abstract corporate language; unnecessary passive voice; unclear "why now";
+- conclusions buried after details; no executive summary in long reports;
+- background before the reader knows why the report matters;
+- recommendations that are vague, unordered, or not tied to findings;
 - no separation between facts and opinions;
-- no explicit risks or trade-offs in decision documents.
+- no explicit risks or trade-offs in decision documents;
+- an RFC that proves everything with code, logs, or exhaustive evidence instead of focusing the reviewer on the problem and the decision;
+- unexplained jargon or acronyms in a product-facing document.
 
 ## Rewrite strategy
 
@@ -271,8 +311,9 @@ Apply fixes in this order:
 5. Add headings if useful.
 6. Group related ideas.
 7. Make decisions, assumptions, risks, and next actions explicit.
-8. Improve sentence clarity.
-9. Keep the final version compact.
+8. Move conclusions and recommendations before supporting details when the text is a report.
+9. Improve sentence clarity.
+10. Keep the final version compact.
 
 ## Scoring rubric
 
@@ -305,8 +346,11 @@ Before returning the answer, verify:
 
 - Is the main point visible immediately?
 - Can the reader scan the text in 3-5 seconds?
+- For reports, are conclusions and recommendations above supporting details?
 - Are paragraphs short enough and related ideas grouped together?
 - Are decisions, assumptions, risks, and trade-offs explicit when relevant?
 - Is the next action clear?
 - Is any text redundant?
+- For an RFC, does the problem and the proposed decision come before the supporting evidence?
+- Can a reviewer outside the immediate team follow it without hidden jargon?
 - Does the rewrite preserve the original meaning?
