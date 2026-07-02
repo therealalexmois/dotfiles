@@ -215,6 +215,8 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | review before completing a task | `review-before-completion` | yes |
 | generate a runbook | `runbook-generator` | manual |
 | write technical documentation | `documentation-writer` | manual |
+| generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
+| create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |
 | TDD, test-first development | `tdd` / `test-driven-development` | manual |
 | quick brainstorm | `brainstorm-lite` | yes |
