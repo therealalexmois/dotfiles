@@ -278,6 +278,12 @@ Rename checklist (every step is required, the link layers break silently):
 - Treat `.pyenv/`, `tmux/plugins/*`, ignored Zsh plugin checkouts, shell history, htop
   config, and local-only CLI configs as machine state unless the user explicitly asks to
   version them.
+- `ai-agents/.claude/rules/local/` is gitignored and holds machine- or workspace-specific
+  Claude rules, such as a symlink to a rule file that lives in another private repo.
+  `~/.claude/rules` is a whole-directory Stow link to `ai-agents/.claude/rules/`, so
+  anything placed under `local/` is still loaded by Claude without a machine-specific path
+  landing in this shared repo. Do not commit symlinks or machine-specific paths under
+  `ai-agents/.claude/rules/` outside of `local/`.
 - Never track Codex/Claude secrets or runtime state: `auth.json`, `*.sqlite*`, `history*`,
   `sessions/`, `cache/`, `logs/`, `~/.claude.json`, the rendered `~/.codex/config.toml`, or
   `~/.codex/config.local.toml`. The `.gitignore` already excludes these under `ai-agents/`.
