@@ -41,12 +41,6 @@ When writing or editing Python code, docstrings, or tests, use the `python-code-
 
 Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
 
-## Russian Technical Writing
-
-Write Russian technical text in Russian: short, direct, factual sentences. Preserve identifiers, API contracts, and established project terms. Avoid filler, bureaucratic wording, and anglicisms that have a precise Russian equivalent. Do not expand scope. These rules do not apply to git commit messages.
-
-For any non-trivial writing, editing, or shortening of Russian technical text — Jira, README, MR / RFC / ADR titles and descriptions, documentation, docstrings — use the `writing-russian-editor` skill. It is the single source of truth: full preserve-list, anglicism handling, compound-modifier and keep-list term policy, genre output formats, glossary, and the safety rule. Do not duplicate those rules here.
-
 ## Delivery
 
 - Do not include secrets or local-only values in committed files.

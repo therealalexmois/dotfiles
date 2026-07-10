@@ -176,7 +176,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | Prefix | Domain |
 | --- | --- |
 | `work-` | planning, reflection, and work processes |
-| `writing-` | text editing |
+| `writing` / `writing-` | Russian writing and text editing |
 | `python-` | Python coding conventions |
 | `jira-` | Jira workflows |
 | `gitlab-` | GitLab workflows |
@@ -192,8 +192,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 
 | Trigger | Skill | Auto |
 | --- | --- | --- |
-| edit Russian text, убери воду, сократи | `writing-russian-editor` | yes |
-| restructure text for readability/scannability | `writing-text-reviewer` | yes |
+| write, edit, shorten, or review Russian text | `writing` | yes |
 | write a plan or design document | `writing-plans` | yes |
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
@@ -202,7 +201,6 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |
 | review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
-| isolate work in a git worktree | `using-git-worktrees` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
 | review API design | `api-design-reviewer` | manual |

@@ -20,6 +20,16 @@
   }
  },
  {
+  "skill": "agent-instruction",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "agent-workflow-designer",
   "verdict": "PASS",
   "counts": {
@@ -690,6 +700,16 @@
   }
  },
  {
+  "skill": "plantuml-ascii",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "pr-review-expert",
   "verdict": "PASS",
   "counts": {
@@ -1100,13 +1120,13 @@
   }
  },
  {
-  "skill": "using-git-worktrees",
-  "verdict": "WARN",
+  "skill": "uml",
+  "verdict": "PASS",
   "counts": {
    "critical": 0,
-   "high": 1,
+   "high": 0,
    "info": 0,
-   "total": 1
+   "total": 0
   }
  },
  {
@@ -1140,6 +1160,16 @@
   }
  },
  {
+  "skill": "writing",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "writing-plans",
   "verdict": "PASS",
   "counts": {
@@ -1151,26 +1181,6 @@
  },
  {
   "skill": "writing-prd-draft",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "writing-russian-editor",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "writing-text-reviewer",
   "verdict": "PASS",
   "counts": {
    "critical": 0,

@@ -12,6 +12,7 @@ skills=()
 for skill_dir in "${repo_dir}/ai-agents/.agents/skills/"*/(N); do
   skill_name="${skill_dir:t}"
   [[ "$skill_name" == *-workspace ]] && continue
+  [[ -f "${skill_dir}/SKILL.md" ]] || continue
   skills+=("$skill_name")
 done
 

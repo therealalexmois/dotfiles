@@ -10,6 +10,11 @@
 #   - branched from origin/HEAD for a clean tree (falls back to local HEAD)
 #   - gitignored files listed in `<repo>/.worktreeinclude` are copied in
 #     (native .worktreeinclude is disabled once this hook is configured)
+#   - provisioned best-effort: runs a setup script if present - personal
+#     `<repo>/.worktree-setup.sh` (gitignored override) or the team-tracked
+#     `<repo>/scripts/worktree-setup.sh` - else `uv venv && uv sync` for uv
+#     projects; provisioning failure never aborts the worktree (the branch/tree
+#     are already created)
 #
 # Contract: read JSON on stdin, print the absolute worktree path on stdout,
 # exit 0 on success. Any non-zero exit aborts worktree creation.
@@ -109,6 +114,12 @@ if [ -f "$include" ]; then
     line="${line%"${line##*[![:space:]]}"}"
     [ -z "$line" ] && continue
     case "$line" in \#*) continue ;; esac
+    # A venv hardcodes absolute paths and breaks when copied; it must be recreated
+    # (uv venv / uv sync in the provisioning step below), never carried via .worktreeinclude.
+    case "$line" in
+      .venv | .venv/ | */.venv | */.venv/)
+        err "skipping $line (recreate venv with uv, not copyable)"; continue ;;
+    esac
     src="$repo_root/$line"
     [ -e "$src" ] || continue
     git -C "$repo_root" check-ignore -q "$line" 2>/dev/null || continue
@@ -116,6 +127,25 @@ if [ -f "$include" ]; then
     mkdir -p "$(dirname "$dest")"
     cp -a "$src" "$dest" 2>/dev/null || err "could not copy $line"
   done <"$include"
+fi
+
+# Provision the new worktree (best-effort: never changes this hook's exit code, so a
+# failed install leaves a valid worktree - the branch/tree are already created). Order:
+# a repo setup script wins, otherwise a uv default for uv projects. Two setup-script
+# candidates, first match wins: a personal `.worktree-setup.sh` at the repo root
+# (gitignored override) or a team-tracked `scripts/worktree-setup.sh`. Read from
+# repo_root (main checkout) so a gitignored, local-only override still applies - a
+# fresh worktree carries only tracked files.
+setup=""
+for cand in "$repo_root/.worktree-setup.sh" "$repo_root/scripts/worktree-setup.sh"; do
+  [ -x "$cand" ] && { setup="$cand"; break; }
+done
+if [ -n "$setup" ]; then
+  ( cd "$path" && "$setup" ) >>"$debug_log" 2>&1 \
+    || err "worktree setup script failed (see $debug_log); provision venv manually"
+elif [ -f "$path/uv.lock" ] && command -v uv >/dev/null 2>&1; then
+  ( cd "$path" && uv venv && uv sync ) >>"$debug_log" 2>&1 \
+    || err "uv provisioning failed (see $debug_log); run 'uv venv && uv sync' manually"
 fi
 
 printf '%s\n' "$path"

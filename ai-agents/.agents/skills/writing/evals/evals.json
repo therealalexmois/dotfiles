@@ -1,0 +1,116 @@
+{
+  "skill_name": "writing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Напиши короткое сообщение команде: релиз перенесен на пятницу, потому что интеграционные тесты падают. Верни только сообщение.",
+      "expected_output": "Короткое готовое сообщение, которое сохраняет новую дату и причину переноса.",
+      "files": [],
+      "expectations": [
+        "Output states that the release moved to Friday",
+        "Output states that failing integration tests are the reason",
+        "Output contains no heading, analysis, or invented recovery plan"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Сократи без потери смысла и без объяснения правок: На текущий момент компонент SuggestDashboardTitleUseCase осуществляет выполнение проверки входного payload перед тем, как отправить POST /public/v1/assist/dashboards/title, после чего производится запись метрики ai_title_latency_seconds.",
+      "expected_output": "Одна естественная фраза или две короткие фразы без канцелярита с сохранением порядка действий и всех идентификаторов.",
+      "files": [],
+      "expectations": [
+        "Output preserves SuggestDashboardTitleUseCase exactly",
+        "Output preserves POST /public/v1/assist/dashboards/title exactly",
+        "Output preserves ai_title_latency_seconds exactly",
+        "Output keeps validation before the request and metric recording after it",
+        "Output removes bureaucratic phrases and does not explain the edit"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Проверь текст, но не переписывай его: Сервис всегда отвечает не дольше 100 мс. При высокой нагрузке ответ может занимать до 2 секунд. SLA пока не согласован.",
+      "expected_output": "Короткий review, который находит противоречие и не выбирает одно утверждение без данных.",
+      "files": [],
+      "expectations": [
+        "Output identifies the conflict between 100 ms and 2 seconds",
+        "Output notes that the SLA is not agreed",
+        "Output does not silently rewrite the source or invent a valid latency target"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Предложи один заголовок для заметки. Содержание: после включения cache число запросов к PostgreSQL снизилось с 1200 до 430 в минуту, но p95 latency не изменилась. Заголовок не должен обещать ускорение.",
+      "expected_output": "Один конкретный заголовок о снижении нагрузки на PostgreSQL без ложного обещания latency improvement.",
+      "files": [],
+      "expectations": [
+        "Output contains exactly one heading candidate",
+        "Output reflects fewer PostgreSQL requests or lower database load",
+        "Output does not claim that latency or response speed improved",
+        "Output contains no explanation unless it is part of the heading"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Собери короткую фактическую историю для внутреннего поста. Факты: отчеты готовили вручную в Zeppelin; подготовка занимала два рабочих дня; команда перенесла расчет в Airflow; теперь пайплайн запускается по расписанию; точных данных о сэкономленном времени после миграции нет. Не добавляй вымышленные детали.",
+      "expected_output": "Связный non-fiction нарратив об исходной проблеме, изменении и наблюдаемом результате без выдуманной экономии времени.",
+      "files": [],
+      "expectations": [
+        "Output includes the manual Zeppelin process and its two-day preparation time",
+        "Output includes the migration to scheduled Airflow execution",
+        "Output does not invent post-migration time savings, people, quotes, or metrics",
+        "Output avoids theatrical or motivational framing"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Напиши убедительное сообщение руководителю с предложением выделить один день на автоматизацию release checklist. Факты: checklist содержит 18 ручных шагов; за последние четыре релиза два шага пропускали три раза; автоматизация покроет 11 шагов; оценка разработки - один день. Не обещай устранить все ошибки.",
+      "expected_output": "Короткое рабочее предложение с проблемой, доказательством, ограниченной пользой и ясным запросом решения.",
+      "files": [],
+      "expectations": [
+        "Output preserves 18 manual steps, three omissions across four releases, 11 automated steps, and one day estimate",
+        "Output asks for a concrete decision or allocation",
+        "Output does not promise to eliminate all release errors",
+        "Output persuades with facts rather than hype"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Напиши короткий продуктовый блок для страницы сервиса. Аудитория - команды, которые вручную проверяют качество SQL перед merge. Факты: сервис запускает 12 статических проверок в MR, показывает замечания рядом со строкой и поддерживает PostgreSQL. Данных о снижении числа дефектов нет. Нужны заголовок, один абзац и простой следующий шаг.",
+      "expected_output": "Продуктовый блок, который связывает свойства со сценарием пользователя и не выдумывает business impact.",
+      "files": [],
+      "expectations": [
+        "Output has a heading, one concise body paragraph, and one next step",
+        "Output preserves 12 checks, inline MR feedback, and PostgreSQL support",
+        "Output does not claim fewer defects, guaranteed quality, or unsupported customer results",
+        "Output addresses teams that review SQL before merge"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Отредактируй файл как рабочую техническую заметку. Сохрани все факты, ссылки, идентификаторы, ограничения и Markdown, но убери стену текста, повторы, канцелярит и AI-стиль. Верни только полный обновленный текст.",
+      "expected_output": "Сканируемая сокращенная заметка, в которой сохранены технический контракт, числа, ссылки и незавершенные вопросы.",
+      "files": [
+        "evals/fixtures/long-technical-draft.md"
+      ],
+      "expectations": [
+        "Output preserves DWSAI-1042, POST /v1/reports, report_generation_seconds, ENABLE_REPORT_CACHE, both URLs, 15 minutes, 24 hours, 320, and 1.8 seconds",
+        "Output preserves the unresolved ownership and TTL questions",
+        "Output clearly separates decision, behavior, risks, and open questions",
+        "Output is materially shorter and contains no added implementation claims"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Проведи review длинного текста из файла. Не переписывай текст. Дай общий диагноз и только приоритетные проблемы с несколькими показательными примерами.",
+      "expected_output": "Приоритетный review, который замечает противоречия, недоказанные claims, слабые заголовки и повторы, но не возвращает полную переписанную статью.",
+      "files": [
+        "evals/fixtures/long-review-draft.md"
+      ],
+      "expectations": [
+        "Output identifies the contradiction between guaranteed 30 percent savings and missing measurements",
+        "Output identifies the conflict between no migration risk and a possible 20 minute outage",
+        "Output flags vague or duplicated structure and unsupported promotional claims",
+        "Output does not provide a full rewritten version of the source"
+      ]
+    }
+  ]
+}

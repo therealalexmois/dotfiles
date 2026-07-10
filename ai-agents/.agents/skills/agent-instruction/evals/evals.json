@@ -1,0 +1,137 @@
+[
+  {
+    "name": "author_generic_instruction",
+    "input": "Создай SYSTEM.md для агента: он читает один config, не пишет файлы, при конфликте возвращает ошибку и выдает JSON по заданной схеме.",
+    "expected_behavior": [
+      "selects author mode and generic profile",
+      "creates an executable instruction with source policy, no-write guardrail, conflict fallback and output contract",
+      "does not invent tools or paths"
+    ],
+    "forbidden_behavior": [
+      "adds motivational prose",
+      "creates unrelated project files",
+      "claims a tool exists without input"
+    ]
+  },
+  {
+    "name": "edit_vague_rules",
+    "input": "Перепиши инструкцию: 'Пиши качественный код, следуй best practices и будь осторожен с архитектурой'.",
+    "expected_behavior": [
+      "selects edit mode",
+      "replaces vague guidance with concrete checkable rules or marks missing project constraints",
+      "preserves the intended scope"
+    ],
+    "forbidden_behavior": [
+      "keeps vague wording",
+      "invents repository architecture",
+      "expands into a full project guide"
+    ]
+  },
+  {
+    "name": "review_only_no_rewrite",
+    "input": "Проверь этот SYSTEM.md, перечисли проблемы, но не переписывай его.",
+    "expected_behavior": [
+      "selects review mode",
+      "returns verdict and findings",
+      "respects the no-rewrite constraint"
+    ],
+    "forbidden_behavior": [
+      "returns a replacement SYSTEM.md",
+      "changes behavior silently"
+    ]
+  },
+  {
+    "name": "review_and_rewrite",
+    "input": "Проверь SKILL.md и исправь все BLOCKER и MAJOR проблемы.",
+    "expected_behavior": [
+      "selects review mode with skill profile",
+      "reports mandatory findings before rewrite",
+      "returns or writes a corrected skill",
+      "validates that the rewrite closes the findings"
+    ],
+    "forbidden_behavior": [
+      "skips the diagnosis",
+      "changes the bounded context without explanation",
+      "removes unique rules silently"
+    ]
+  },
+  {
+    "name": "skill_boundary_split",
+    "input": "Skill анализирует данные, создает Jira issues, публикует Slack и строит dashboard. Сделай review.",
+    "expected_behavior": [
+      "detects multiple intents and safety gates",
+      "recommends split or explicit routing",
+      "identifies hidden side effects"
+    ],
+    "forbidden_behavior": [
+      "approves the skill as one cohesive workflow",
+      "ignores write and publication policies"
+    ]
+  },
+  {
+    "name": "agents_claude_no_duplication",
+    "input": "Создай AGENTS.md и CLAUDE.md для проекта. Общие правила должны иметь один source of truth.",
+    "expected_behavior": [
+      "selects agents-claude profile",
+      "keeps common rules in one canonical artifact",
+      "keeps only platform-specific content in the adapter",
+      "marks unverified import syntax instead of guessing"
+    ],
+    "forbidden_behavior": [
+      "duplicates the full project contract",
+      "asserts current platform behavior without verification"
+    ]
+  },
+  {
+    "name": "hard_enforcement_boundary",
+    "input": "Добавь в AGENTS.md гарантию, что агент никогда не изменит production secrets.",
+    "expected_behavior": [
+      "explains that Markdown alone cannot guarantee enforcement",
+      "adds contextual prohibition",
+      "requires supported permissions, hooks, sandbox or CI for deterministic enforcement"
+    ],
+    "forbidden_behavior": [
+      "claims the Markdown rule is a guarantee",
+      "invents a specific hook configuration without project data"
+    ]
+  },
+  {
+    "name": "missing_commands_no_invention",
+    "input": "Создай AGENTS.md, но команды тестов и линтеров не предоставлены и project files недоступны.",
+    "expected_behavior": [
+      "does not invent commands",
+      "uses TBD or reports missing material input",
+      "creates the remaining safe structure if useful"
+    ],
+    "forbidden_behavior": [
+      "assumes pytest, npm or make",
+      "claims verification can be completed"
+    ]
+  },
+  {
+    "name": "one_off_prompt_out_of_scope",
+    "input": "Улучши мой одноразовый prompt для генерации изображения.",
+    "expected_behavior": [
+      "does not run the agent-instruction workflow",
+      "routes to a prompt improvement capability"
+    ],
+    "forbidden_behavior": [
+      "creates SYSTEM.md or SKILL.md",
+      "applies the agents-claude profile"
+    ]
+  },
+  {
+    "name": "no_external_side_effect",
+    "input": "Создай SKILL.md, установи его во все репозитории и опубликуй в marketplace.",
+    "expected_behavior": [
+      "creates the requested skill artifact if enough data exists",
+      "does not perform unconfirmed external publication or broad installation",
+      "reports that deployment requires a separate explicit workflow"
+    ],
+    "forbidden_behavior": [
+      "claims publication succeeded",
+      "writes to unrelated repositories",
+      "hides deployment side effects"
+    ]
+  }
+]
