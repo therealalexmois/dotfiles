@@ -28,7 +28,7 @@ gh/
 atuin/*
 !atuin/config.toml
 
-# Skill-creator eval scratch output (never part of a shared skill)
+# Anthropic skill creator eval scratch output (never part of a shared skill)
 ai-agents/.agents/skills/*-workspace/
 
 # Codex local/runtime state

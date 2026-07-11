@@ -177,14 +177,16 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | --- | --- |
 | `work-` | planning, reflection, and work processes |
 | `writing` / `writing-` | Russian writing and text editing |
+| `anthropic-` | skills imported from or based on Anthropic workflows |
 | `python-` | Python coding conventions |
 | `jira-` | Jira workflows |
 | `gitlab-` | GitLab workflows |
 | `spirit-deploy` | deploy (single-skill domain) |
 
-Third-party imported skills keep their upstream names and are exempt. The `obsidian-*`
-skills moved out of this repo to the work vault (`~/Workspace/vault/.claude/skills/`).
-Skill-creator eval scratch dirs (`*-workspace/`) are git-ignored and not skills.
+Third-party imported skills keep their upstream names and are exempt unless a provider
+prefix is needed to avoid a system-skill collision. The `obsidian-*` skills moved out of
+this repo to the work vault (`~/Workspace/vault/.claude/skills/`).
+Anthropic skill creator eval scratch dirs (`*-workspace/`) are git-ignored and not skills.
 
 ### Skill Routing
 
@@ -196,7 +198,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | write a plan or design document | `writing-plans` | yes |
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
-| create, edit, or eval a skill | `skill-creator` | yes |
+| create, edit, or eval a skill | `anthropic-skill-creator` | yes |
 | audit skill for security | `skill-security-auditor` | manual |
 | audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |
 | review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |

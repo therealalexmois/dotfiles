@@ -50,6 +50,16 @@
   }
  },
  {
+  "skill": "anthropic-skill-creator",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "api-design-reviewer",
   "verdict": "PASS",
   "counts": {
@@ -991,16 +1001,6 @@
  },
  {
   "skill": "six-thinking-hats",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "skill-creator",
   "verdict": "PASS",
   "counts": {
    "critical": 0,

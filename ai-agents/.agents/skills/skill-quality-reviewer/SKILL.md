@@ -1,12 +1,12 @@
 ---
 name: skill-quality-reviewer
-description: Review a SKILL.md for predictability against the writing-great-skills doctrine and report findings by failure mode. Complements skill-creator; invoke by name after drafting or editing a skill.
+description: Review a SKILL.md for predictability against the writing-great-skills doctrine and report findings by failure mode. Complements anthropic-skill-creator; invoke by name after drafting or editing a skill.
 disable-model-invocation: true
 ---
 
 A skill exists to wrangle determinism out of a stochastic system. **Predictability** — the agent taking the same _process_ every run, not producing the same output — is the root virtue you review for; every lever below serves it. Full definitions of the **bold terms** live in [`GLOSSARY.md`](GLOSSARY.md); consult it whenever a term's exact test matters.
 
-This skill reviews one skill at a time. It pairs with `skill-creator`, which drafts and improves: write there, review here.
+This skill reviews one skill at a time. It pairs with `anthropic-skill-creator`, which drafts and improves: write there, review here.
 
 ## Get the target
 

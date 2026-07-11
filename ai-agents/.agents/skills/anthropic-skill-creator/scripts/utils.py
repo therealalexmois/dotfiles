@@ -1,4 +1,4 @@
-"""Shared utilities for skill-creator scripts."""
+"""Shared utilities for anthropic-skill-creator scripts."""
 
 from pathlib import Path
 

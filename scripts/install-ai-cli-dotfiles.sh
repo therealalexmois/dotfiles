@@ -7,7 +7,7 @@ repo_dir="${HOME}/.dotfiles"
 backup_dir="${HOME}/.dotfiles-backups/ai-cli-dotfiles/$(date +%Y%m%d-%H%M%S)"
 
 # Shared skills are discovered from the tracked source of truth so this list never
-# drifts. Skill-creator eval scratch dirs (`*-workspace`) are excluded.
+# drifts. Skill eval scratch dirs (`*-workspace`) are excluded.
 skills=()
 for skill_dir in "${repo_dir}/ai-agents/.agents/skills/"*/(N); do
   skill_name="${skill_dir:t}"
@@ -225,10 +225,6 @@ main() {
   # Claude rewrites runtime keys (model, theme, effort) into settings.json. Hide those
   # local edits from git so the tracked defaults stay stable across machines.
   git -C "$repo_dir" update-index --skip-worktree ai-agents/.claude/settings.json
-
-  if [[ -d "${HOME}/.agents/skills/skill-creator" && -d "${HOME}/.codex/skills/.system/skill-creator" ]]; then
-    echo "warning: global skill-creator duplicates Codex .system/skill-creator; neither was modified"
-  fi
 
   echo "validation summary:"
   python3 -c 'import tomllib, pathlib; tomllib.load(open(pathlib.Path.home()/".codex/config.toml","rb")); print("codex toml ok")'
