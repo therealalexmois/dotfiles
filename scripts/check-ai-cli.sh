@@ -16,9 +16,12 @@ else
   fail "install-ai-cli-dotfiles.sh has zsh syntax errors"
 fi
 
-note "bash lint: statusline.sh"
+note "bash lint: AI CLI shell scripts"
 if command -v shellcheck >/dev/null 2>&1; then
-  if shellcheck "${repo_dir}/ai-agents/.claude/statusline.sh" "${repo_dir}/scripts/check-ai-cli.sh"; then
+  if shellcheck \
+    "${repo_dir}/ai-agents/.claude/statusline.sh" \
+    "${repo_dir}/scripts/check-ai-cli.sh" \
+    "${repo_dir}/scripts/test-skill-discovery-names.sh"; then
     echo "ok"
   else
     fail "shellcheck reported issues"
@@ -58,6 +61,13 @@ PY
   :
 else
   fail "a tracked Codex TOML failed to parse"
+fi
+
+note "skill discovery names"
+if bash "${repo_dir}/scripts/test-skill-discovery-names.sh"; then
+  echo "ok"
+else
+  fail "skill discovery names are inconsistent"
 fi
 
 note "result"
