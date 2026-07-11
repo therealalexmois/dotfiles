@@ -1,0 +1,13 @@
+interface:
+  display_name: "Writing"
+  short_description: "Пишет русский текст и техническую документацию"
+  icon_small: "assets/icon.svg"
+  icon_large: "assets/icon.svg"
+  default_prompt: "Используй $writing, чтобы написать, улучшить или проверить русский текст."
+policy:
+  products:
+    - "chatgpt"
+    - "codex"
+    - "api"
+    - "atlas"
+  allow_implicit_invocation: true

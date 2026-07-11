@@ -111,6 +111,42 @@
         "Output flags vague or duplicated structure and unsupported promotional claims",
         "Output does not provide a full rewritten version of the source"
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "Напиши короткую how-to инструкцию по фактам. Цель: проверить readiness сервиса перед rollout. Prerequisites: есть доступ к namespace analytics-dev и kubectl. Шаги: выполнить kubectl -n analytics-dev get pods; убедиться, что все pod имеют Ready 1/1; выполнить curl -f https://analytics-dev.example.com/ready; успешный ответ - HTTP 200. Если pod не Ready или endpoint отвечает не 200, rollout не начинать. Не добавляй неизвестные команды.",
+      "expected_output": "Исполнимая task-oriented инструкция с prerequisites, последовательными шагами, ожидаемым результатом и стоп-условием.",
+      "files": [],
+      "expectations": [
+        "Output preserves namespace analytics-dev, both commands, Ready 1/1, HTTP 200, and the stop condition",
+        "Output places prerequisites before the procedure",
+        "Output uses numbered steps for the sequence",
+        "Output does not invent rollout, diagnostic, or recovery commands"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Проведи review фрагмента troubleshooting, но не переписывай его: Если API отвечает 500, сразу удалите таблицу request_cache и перезапустите сервис. Ошибка обычно связана с кэшем. После перезапуска проблема должна исчезнуть. Данных о причинах ошибки, резервной копии и проверке восстановления нет.",
+      "expected_output": "Review должен остановить опасную инструкцию, отделить неизвестную причину от факта и указать отсутствующую диагностику и проверку восстановления.",
+      "files": [],
+      "expectations": [
+        "Output treats deleting request_cache as a blocker or equivalently critical issue",
+        "Output flags the unsupported cache root-cause claim",
+        "Output notes missing diagnosis, backup or recovery safeguards, and verification",
+        "Output does not invent safe commands or rewrite the troubleshooting guide"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Отредактируй как release notes без объяснения правок. Факты: в версии 2.4 параметр timeout_ms переименован в request_timeout_ms; старое имя поддерживается до версии 3.0; изменение касается YAML-конфигурации worker; автоматической миграции нет; производительность не измеряли. Верни только готовый текст.",
+      "expected_output": "Короткие release notes с изменением, областью влияния, совместимостью и требуемым действием без недоказанных улучшений.",
+      "files": [],
+      "expectations": [
+        "Output preserves versions 2.4 and 3.0 and both parameter names exactly",
+        "Output identifies YAML worker configuration as affected",
+        "Output states that migration is not automatic and makes the required rename clear",
+        "Output does not claim performance or reliability improvements"
+      ]
     }
   ]
 }
