@@ -1,0 +1,11 @@
+interface:
+  display_name: Handoff
+  short_description: Transfer work safely to a fresh agent session
+  default_prompt: Use $handoff to create a verified handoff for a fresh agent session.
+policy:
+  allow_implicit_invocation: false
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
