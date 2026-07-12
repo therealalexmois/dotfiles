@@ -170,16 +170,6 @@
   }
  },
  {
-  "skill": "caveman-review",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "changelog-generator",
   "verdict": "PASS",
   "counts": {
@@ -301,16 +291,6 @@
  },
  {
   "skill": "customer-research",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "daily-news",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -711,16 +691,6 @@
  },
  {
   "skill": "plantuml-ascii",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "pr-review-expert",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
