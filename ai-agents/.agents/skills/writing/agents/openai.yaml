@@ -1,9 +1,9 @@
 interface:
   display_name: "Writing"
-  short_description: "Пишет русский текст и техническую документацию"
+  short_description: "Пишет и редактирует естественный русский текст"
   icon_small: "assets/icon.svg"
   icon_large: "assets/icon.svg"
-  default_prompt: "Используй $writing, чтобы написать, улучшить или проверить русский текст."
+  default_prompt: "Используй $writing, чтобы написать, улучшить или проверить русский текст без потери смысла и авторства."
 policy:
   products:
     - "chatgpt"

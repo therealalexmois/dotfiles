@@ -147,6 +147,276 @@
         "Output states that migration is not automatic and makes the required rename clear",
         "Output does not claim performance or reliability improvements"
       ]
+    },
+    {
+      "id": 13,
+      "prompt": "Отредактируй фрагмент описания личного вклада только с точки зрения чистоты и читаемости. Сохрани авторство личных действий и не присваивай автору командный результат. Текст: Я предложил использовать dp-ai как общий backend Data Platform. Я инициировал обсуждение с командами Proteus и Helicopter. Я создал tenant DP AI. После согласования Proteus и Helicopter получили общий backend вместо отдельных сервисов. Верни только готовый фрагмент.",
+      "expected_output": "Естественный фрагмент без повторяющегося `я`, в котором личные действия и командный результат по-прежнему разделены.",
+      "files": [],
+      "expectations": [
+        "Output preserves that the author proposed dp-ai, initiated the discussion, and created tenant DP AI",
+        "Output preserves Proteus and Helicopter as the teams that received the shared backend",
+        "Output retains the architectural distinction expressed by 'общий backend вместо отдельных сервисов'",
+        "Output reduces repetitive first-person pronouns without making authorship ambiguous",
+        "Output does not turn the team outcome into a sole personal achievement"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Отредактируй без объяснения правок: Несколько продуктов используют общий сервис. Это значительно упростило работу пользователей. Известны только факты: Proteus, Helicopter и Data Detective вызывают API DP AI; данных о влиянии на работу пользователей нет. Верни только готовый текст.",
+      "expected_output": "Конкретная фраза с названиями продуктов и API без недоказанной пользы для абстрактных пользователей.",
+      "files": [],
+      "expectations": [
+        "Output names Proteus, Helicopter, Data Detective, and API DP AI",
+        "Output does not retain the vague phrase 'несколько продуктов' when exact entities are known",
+        "Output does not claim that users' work became easier",
+        "Output adds no invented user group, metric, or operational benefit"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Отредактируй без объяснения правок: Была реализована эффективная мультитенантность, которая позволила нескольким продуктам удобно использовать один сервис. Известно: tenants изолируют конфигурации и LLM-ключи; Proteus и Helicopter используют один сервис; метрик эффективности и удобства нет; исполнитель не указан. Верни только готовый текст.",
+      "expected_output": "Фактическое описание поведения мультитенантности без субъективных оценок, выдуманного исполнителя и фичеризма.",
+      "files": [],
+      "expectations": [
+        "Output preserves isolation of configurations and LLM keys",
+        "Output names Proteus and Helicopter as users of one service",
+        "Output removes or neutralizes unsupported claims of efficiency and convenience",
+        "Output does not invent an implementer to force active voice",
+        "Output does not add mixed quotas or any other benefit absent from the prompt"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Отредактируй фрагмент без объяснения правок. Факты: интеграцию с DPQA и rollout выполнил автор; первая версия уже обслуживала production-сценарии; команды подтвердили готовность до rollout; rollout включал миграцию конфигурации, переключение feature flag и проверку метрик. Исходник: Я отвечал за интеграцию. Была выполнена интеграция сервиса с DPQA без рефакторинга работающей первой версии, обслуживающей production-сценарии. И после этого был выполнен rollout, включавший миграцию конфигурации, переключение feature flag и проверку метрик, когда команды подтвердили готовность. Верни только готовый фрагмент.",
+      "expected_output": "Читаемый фрагмент в действительном залоге без парцелляции и перегруженных причастных цепочек, с сохраненным авторством и порядком событий.",
+      "files": [],
+      "expectations": [
+        "Output attributes both the DPQA integration and rollout to the author",
+        "Output preserves that the first version was already serving production scenarios",
+        "Output preserves readiness confirmation before rollout",
+        "Output preserves all three rollout activities",
+        "Output removes the sentence fragment and avoids a stacked participial construction"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "Отредактируй техническую фразу, сохранив идентификаторы: Решение от команды описывает SLO/SLI для server/client частей API /public/v1/search. Оно зависит от RAG Platform; ошибка от внешнего сервиса возвращается без изменений. Файл: config/slo/api.yaml. Верни только готовый текст.",
+      "expected_output": "Естественная техническая фраза, где косая черта в прозе и принадлежность через `от` исправлены, а endpoint, путь и корректные значения `от` сохранены.",
+      "files": [],
+      "expectations": [
+        "Output rewrites 'решение от команды' as team ownership without the preposition от",
+        "Output connects SLO and SLI with a conjunction rather than a slash",
+        "Output rewrites server/client as a readable conjunction or coordinated adjective phrase",
+        "Output preserves /public/v1/search and config/slo/api.yaml exactly",
+        "Output preserves dependency on RAG Platform and the external-service error source"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "Отредактируй фрагмент, сохранив Markdown и авторство действий. Верни только готовый текст.\n\n## DP AI - общий production-backend Data Platform\n\nКогда Proteus и Helicopter начали независимо развивать AI-сценарии, из-за чего каждой команде потребовались отдельные интеграции с LLM Proxy, RAG Platform и Langfuse, я предложил общий backend, и инициировал обсуждение, и после согласования создал tenant DP AI. И перенес в него Proteus AI.",
+      "expected_output": "Номинативный заголовок и несколько связанных предложений без тяжелой союзной цепочки и парцелляции, с сохраненным личным вкладом.",
+      "files": [],
+      "expectations": [
+        "Output preserves the nominal heading and does not force a verb into it",
+        "Output preserves Proteus, Helicopter, LLM Proxy, RAG Platform, Langfuse, tenant DP AI, and Proteus AI",
+        "Output attributes the proposal, discussion, tenant creation, and transfer to the author",
+        "Output preserves the reason that separate development required separate integrations",
+        "Output removes the incomplete sentence beginning with И and makes the long sentence easier to read"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "Отредактируй без объяснения правок: По предварительной оценке, миграция займет около 20 минут. Точного измерения нет. Это быстрый и простой процесс. Верни только готовый текст.",
+      "expected_output": "Честная приблизительная оценка без превращения 20 минут в точное значение и без недоказанных оценок простоты и скорости.",
+      "files": [],
+      "expectations": [
+        "Output retains that 20 minutes is an approximate preliminary estimate",
+        "Output retains that there is no exact measurement or does not imply exact measurement",
+        "Output removes or neutralizes unsupported claims that the process is fast and simple",
+        "Output invents no precise duration, baseline, or migration evidence"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "Отредактируй фрагмент только с точки зрения чистоты и читаемости. Факты: в Data Platform не было готового подхода к архитектуре AI-сервисов и интеграции с LLM; автор предложил общий backend и инициировал обсуждение с Proteus и Helicopter, чтобы AI-сценарии не зависели от отдельных команд; при росте нагрузки синхронная обработка ограничила число одновременных запросов; автор проектировал архитектуру и согласовывал API-контракты. Исходник: Готового подхода к архитектуре AI-сервисов и интеграции с LLM в Data Platform не было. Чтобы AI-сценарии не зависели от отдельных команд, предложил общий backend. Инициировал обсуждение с Proteus и Helicopter. При росте нагрузки синхронная обработка стала ограничивать число одновременных запросов. В проекте выполнял обязанности архитектора. Верни только готовый текст.",
+      "expected_output": "Связный фрагмент с ранним главным действием, ясным авторством и простыми сказуемыми без механического запрета союзного начала.",
+      "files": [],
+      "expectations": [
+        "Output preserves the absence of a ready Data Platform approach for AI-service architecture and LLM integration",
+        "Output attributes the backend proposal and discussion with Proteus and Helicopter to the author",
+        "Output preserves the purpose of avoiding dependence on separate teams",
+        "Output preserves that synchronous processing limited concurrent requests as load grew",
+        "Output replaces or explains the vague duty phrase with architecture design and API-contract coordination",
+        "Output avoids a tautology such as 'в проекте проектировал'",
+        "Output does not treat every sentence beginning with Чтобы or an omitted first-person subject as automatically invalid"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "Отредактируй без объяснения правок: Модуль проверяет простые числа и хранит данные в пяти независимых дата-центрах. Это простое, надежное и высококачественное решение. Известно: `простые числа` - математический термин; дата-центры действительно независимы; данных о простоте, надежности и качестве решения нет. Верни только готовый текст.",
+      "expected_output": "Фактическое описание, которое сохраняет термины и объективные признаки, но убирает недоказанные оценки решения.",
+      "files": [],
+      "expectations": [
+        "Output preserves the mathematical term 'простые числа'",
+        "Output preserves that there are five independent data centers",
+        "Output removes or neutralizes unsupported claims that the solution is simple, reliable, or high-quality",
+        "Output invents no reliability metric, certification, or quality evidence"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "Отредактируй без объяснения правок: Автоматизация - залог успешных релизов и важный шаг к новому уровню качества. Факты: release checklist содержит 18 ручных шагов; за последние четыре релиза два шага пропускали три раза; автоматизация покроет 11 шагов; данных о снижении числа ошибок после внедрения нет. Верни только готовый текст.",
+      "expected_output": "Конкретный текст о масштабе ручной работы и границе автоматизации без универсальных формул и выдуманного результата.",
+      "files": [],
+      "expectations": [
+        "Output preserves 18 manual steps, three omissions across four releases, and coverage of 11 steps",
+        "Output removes generic success and quality formulas",
+        "Output does not claim that automation reduced or will eliminate release errors",
+        "Output distinguishes the proposed coverage from an already measured outcome"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "Отредактируй без объяснения правок: Сервис ведет непримиримую борьбу с дефектами: проверяет схемы, сравнение версий и предупреждает об удаленных полях. Других проверок нет. Верни только готовый текст.",
+      "expected_output": "Прямое предложение с тремя параллельными действиями без декоративной военной метафоры.",
+      "files": [],
+      "expectations": [
+        "Output preserves schema checks, version comparison, and warnings about removed fields",
+        "Output expresses the three actions in parallel grammatical form",
+        "Output removes the unsupported battle metaphor",
+        "Output adds no checks or defect-reduction claim"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "Отредактируй как спокойный продуктовый текст без объяснения правок: Все еще теряете время на проверку Alembic-миграций? Оставьте заявку прямо сейчас и навсегда забудьте об ошибках! Факты: инженер проверяет конфигурацию Alembic и возвращает замечания в течение двух рабочих дней; гарантии отсутствия ошибок нет. Нужны заголовок, один абзац и следующий шаг.",
+      "expected_output": "Спокойный продуктовый блок с фактической услугой, сроком и следующим шагом без давления и гарантии результата.",
+      "files": [],
+      "expectations": [
+        "Output includes review of Alembic configuration and a two-business-day response time",
+        "Output contains a heading, one concise paragraph, and a next step",
+        "Output removes the rhetorical pressure and permanent-error-elimination promise",
+        "Output does not invent submission channel, price, or additional review scope"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "Отредактируй без объяснения правок: Кластер обрабатывает 100 000 запросов в день. Факты: месяц назад было 60 000 запросов в день; проверенная емкость кластера - 150 000 запросов в день; данных о latency и ошибках нет. Верни только готовый текст.",
+      "expected_output": "Число в понятном масштабе: рост относительно baseline и отношение к проверенной емкости без выводов о производительности.",
+      "files": [],
+      "expectations": [
+        "Output preserves current 100,000 requests per day, prior 60,000, and tested capacity of 150,000",
+        "Output makes the comparison understandable without inventing a household analogy",
+        "Output does not claim improved latency, reliability, or overload safety",
+        "Output does not turn tested capacity into a guarantee"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "Отредактируй без объяснения правок: Согласно многочисленным исследованиям, разработчики постоянно тратят огромное количество времени на ручные проверки. Известно только: во внутреннем опросе от 12 мая 14 из 20 инженеров сообщили, что за предыдущую неделю потратили на ручные проверки больше часа; внешних исследований нет. Верни только готовый текст.",
+      "expected_output": "Ограниченный данными вывод с точной атрибуцией внутреннему опросу без фиктивных исследований и обобщения на всех разработчиков.",
+      "files": [],
+      "expectations": [
+        "Output identifies the internal survey and preserves the date 12 May",
+        "Output preserves 14 of 20 engineers, more than one hour, and the previous-week period",
+        "Output removes the false reference to numerous studies and vague intensifiers",
+        "Output does not generalize the result to all developers or infer productivity loss"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "Отредактируй описание гарантии без объяснения правок. Факты: гарантия действует три года; покрывает двигатель и сварные швы; не покрывает краску; действует при ежегодном обслуживании; гарантийный ремонт занимает до десяти рабочих дней; доставка не входит. Верни только готовый текст.",
+      "expected_output": "Операционное описание гарантии со сроком, покрытием, условием, исключениями и сроком ремонта.",
+      "files": [],
+      "expectations": [
+        "Output preserves the three-year term and annual-service condition",
+        "Output limits coverage to the engine and welds",
+        "Output states that paint and delivery are excluded",
+        "Output preserves up to ten business days for warranty repair",
+        "Output adds no legal terms, replacement promise, or whole-product coverage"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "Отредактируй техническую инструкцию, сохранив идентификаторы: В форме укажите email и/или phone. Требование: нужно заполнить хотя бы одно поле, можно заполнить оба. Данные отправляются в POST /v1/profile/contact; схема лежит в schemas/contact/request.json. Верни только готовый текст.",
+      "expected_output": "Однозначное условие без `и/или`, которое разрешает одно или оба поля и сохраняет endpoint и путь.",
+      "files": [],
+      "expectations": [
+        "Output states that at least one of email and phone is required and both are allowed",
+        "Output does not reduce the condition to a mechanically chosen и or или",
+        "Output preserves POST /v1/profile/contact exactly",
+        "Output preserves schemas/contact/request.json exactly"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "Отредактируй без объяснения правок: Запустив rollout, latency выросла. После этого провел анализ результатов проверки настройки политики доступа tenant DP AI. Факты: после запуска rollout latency выросла; автор проверил настройку политики доступа tenant DP AI и проанализировал результаты; причинность между rollout и ростом latency не доказана. Верни только готовый текст.",
+      "expected_output": "Два ясных предложения без повисшего деепричастия и родительной цепочки, с сохраненной хронологией без ложной причинности.",
+      "files": [],
+      "expectations": [
+        "Output preserves that latency increased after rollout without claiming rollout caused the increase",
+        "Output attributes the access-policy check and result analysis to the author",
+        "Output preserves tenant DP AI exactly",
+        "Output removes the dangling gerund and clarifies the dependent-noun chain"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "Проведи review, но не переписывай текст: Сервис проверяет электронную подпись. Запустив rollout, команда проверила метрики. Запрос отклонен при неверном token. Модуль использует принципиальную схему обработки. Встреча продолжила работу команды. Дай краткий вывод и только реальные проблемы.",
+      "expected_output": "Контекстный review, который находит ложную агентность встречи и не объявляет ошибками корректный системный субъект, деепричастие, пассив и термин.",
+      "files": [],
+      "expectations": [
+        "Output flags or correctively describes the illogical subject in 'Встреча продолжила работу команды'",
+        "Output does not flag 'Сервис проверяет' merely because the subject is inanimate",
+        "Output does not flag the rollout gerund because team is the subject of both actions",
+        "Output does not mechanically reject the status-focused passive sentence",
+        "Output does not treat 'принципиальная схема' as an unsupported evaluative adjective"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "Проведи строгое полное review текста из файла. Не переписывай его. Верни обычный пользовательский review: краткий диагноз и только приоритетные проблемы. Не показывай внутренний процесс проверки.",
+      "expected_output": "Полное, но приоритетное review, которое покрывает смысл, структуру, язык и специальные редакционные правила без раскрытия внутренней оркестрации.",
+      "files": [
+        "evals/fixtures/strict-review-draft.md"
+      ],
+      "expectations": [
+        "Output identifies the contradiction between the 100 ms guarantee and responses up to 2 seconds, and notes that SLA is not agreed",
+        "Output flags unsupported claims about all users, efficiency, quality, or convenience",
+        "Output identifies structural repetition or the unsupported conclusion that repeats earlier claims",
+        "Output flags the overloaded passive sentence and unclear participial dependencies in the implementation section",
+        "Output does not recommend changing /public/v1/search or otherwise treat the slash inside the endpoint as an editorial error",
+        "Output uses Proteus and Helicopter to replace or challenge the vague 'несколько продуктов' formulation",
+        "Output does not rewrite the full text or expose a coverage matrix, subagent roles, or internal orchestration"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "Проведи строгое review и исправь текст. Факты: автор предложил общий backend, инициировал обсуждение и создал tenant DP AI; после согласования Proteus и Helicopter получили общий backend вместо отдельных сервисов; миграция, по предварительной оценке, займет около 20 минут, точного измерения нет; endpoint /public/v1/search не меняется. Исходник: Я предложил эффективное решение. Я инициировал обсуждение. Tenant DP AI был создан мной. Несколько продуктов получили удобный backend. Миграция займет 20 минут. SLO/SLI для API /public/v1/search не меняются. После findings верни полный исправленный текст.",
+      "expected_output": "Приоритетные findings и полный исправленный текст, который устраняет языковые проблемы без потери авторства, архитектурного различия, приблизительности и endpoint.",
+      "files": [],
+      "expectations": [
+        "Output preserves the author's proposal, discussion initiation, and tenant DP AI creation as personal contributions",
+        "Output preserves Proteus and Helicopter as recipients of a shared backend instead of separate services",
+        "Output retains that 20 minutes is an approximate preliminary estimate and that no exact measurement exists",
+        "Output preserves /public/v1/search exactly and connects SLO and SLI without altering the endpoint",
+        "Output removes unsupported claims of efficiency and convenience and reduces repetitive pronouns without obscuring authorship",
+        "Output contains both prioritized findings and a full corrected version",
+        "Output does not expose a coverage matrix, subagent identities, or internal orchestration"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "Проверь одну фразу, но не переписывай ее: Была выполнена интеграция сервиса с DPQA. Верни только краткую проблему и направление исправления.",
+      "expected_output": "Короткое замечание о пассивной канцелярской конструкции и необходимости назвать исполнителя, если он известен.",
+      "files": [],
+      "expectations": [
+        "Output identifies the passive bureaucratic construction",
+        "Output recommends naming the actor or using an active verb only if the actor is known",
+        "Output stays concise and does not create a formal severity framework",
+        "Output does not mention subagents, coverage matrices, specialized passes, or orchestration"
+      ]
     }
   ]
 }
