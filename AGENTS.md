@@ -195,6 +195,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | Trigger | Skill | Auto |
 | --- | --- | --- |
 | write, edit, shorten, or review Russian text | `writing` | yes |
+| distill raw thoughts or a voice-to-text transcript into clear text | `distill-thoughts` | yes |
 | write a plan or design document | `writing-plans` | yes |
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |

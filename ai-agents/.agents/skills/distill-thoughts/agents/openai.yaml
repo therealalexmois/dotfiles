@@ -1,0 +1,12 @@
+interface:
+  display_name: Distill Thoughts
+  short_description: Turn raw thoughts into clear, concise text
+  default_prompt: Use $distill-thoughts to turn this raw transcript into clear, concise
+    text without adding meaning.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
