@@ -24,6 +24,9 @@ openspec/config.json
 # GitHub CLI: hosts.yml holds auth tokens, config is machine state
 gh/
 
+# Homebrew: trust.json and its lock are runtime state, not config
+homebrew/
+
 # atuin: track config only; history/key/session live in XDG_DATA_HOME (~/.local/share/atuin)
 atuin/*
 !atuin/config.toml
