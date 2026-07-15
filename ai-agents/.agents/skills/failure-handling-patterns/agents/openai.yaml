@@ -1,0 +1,11 @@
+interface:
+  display_name: "Паттерны обработки отказов"
+  short_description: "Выбор и review паттернов обработки отказов"
+  default_prompt: "Используй $failure-handling-patterns, чтобы подобрать минимально достаточный паттерн для этого сценария отказа."
+policy:
+  products:
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
+  allow_implicit_invocation: true
