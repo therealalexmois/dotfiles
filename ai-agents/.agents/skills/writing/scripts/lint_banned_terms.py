@@ -20,7 +20,9 @@
 Совпадение печатается как `path:line:col`. Режим `--fix` чинит fixable-правила на
 месте и оставляет report-only как findings.
 
-Коды выхода: 0 - чисто, 1 - остались findings, 2 - ошибка конфигурации или чтения.
+Коды выхода: 0 - чисто, 1 - остались findings, 2 - ошибка конфигурации или
+чтения. Ошибка приоритетнее findings: при exit 2 прогон неполный, и его
+результату нельзя доверять как полному отчету.
 
 Запуск:
     uv run lint_banned_terms.py FILE [FILE ...]
@@ -215,19 +217,26 @@ def load_terms(path: Path) -> list[Term]:
     """Читает и компилирует стоп-лист из TOML.
 
     Raises:
-        ValueError: Если в файле нет ни одной записи `[[term]]` - пустой
-            стоп-лист означает, что gate молча пропустит все, поэтому это ошибка.
+        ValueError: Если в файле нет ни одной записи `[[term]]`, запись без
+            обязательного ключа или с некомпилируемым regex в `patterns`.
+            Любой из этих дефектов делает gate ненадежным, поэтому это ошибка
+            конфигурации, а не повод молча пропустить запись.
     """
     data: dict[str, Any] = tomllib.loads(path.read_text(encoding="utf-8-sig"))
     entries: list[TermEntry] = data.get("term", [])
 
     terms: list[Term] = []
     for entry in entries:
-        matchers = tuple(
-            re.compile(STEM_TEMPLATE.format(stem=stem), re.IGNORECASE)
-            for stem in entry["patterns"]
-        )
-        terms.append(Term(id=entry["id"], replacement=entry["replacement"], matchers=matchers))
+        try:
+            matchers = tuple(
+                re.compile(STEM_TEMPLATE.format(stem=stem), re.IGNORECASE)
+                for stem in entry["patterns"]
+            )
+            terms.append(Term(id=entry["id"], replacement=entry["replacement"], matchers=matchers))
+        except KeyError as exc:
+            raise ValueError(f"запись [[term]] без обязательного ключа {exc}") from exc
+        except re.error as exc:
+            raise ValueError(f"[[term]] {entry.get('id', '?')}: битый regex в patterns: {exc}") from exc
 
     if not terms:
         raise ValueError(f"стоп-лист пуст: {path} не содержит ни одного [[term]]")
@@ -367,7 +376,11 @@ def fix_file(path: Path, rules: list[Rule]) -> list[Finding]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Разбирает аргументы, прогоняет линтер и возвращает код выхода."""
+    """Разбирает аргументы, прогоняет линтер и возвращает код выхода.
+
+    Коды выхода: 0 - чисто, 1 - остались findings, 2 - ошибка конфигурации или
+    чтения файла. Ошибка приоритетнее findings: exit 2 означает неполный прогон.
+    """
     parser = argparse.ArgumentParser(description="Детерминированный линтер (Tier 1) для русского Markdown.")
     parser.add_argument("files", nargs="+", type=Path, help="Markdown-файлы для проверки.")
     parser.add_argument(
@@ -395,6 +408,7 @@ def main(argv: list[str] | None = None) -> int:
     read_errors = 0
     for path in args.files:
         if path.suffix.lower() not in {".md", ".markdown"}:
+            print(f"{path}: skip: не markdown-файл", file=sys.stderr)
             continue
 
         try:
@@ -408,9 +422,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if findings:
         print(f"\nОсталось findings: {len(findings)}", file=sys.stderr)
-        return 1
 
-    return 2 if read_errors else 0
+    # Ошибка чтения приоритетнее findings: прогон неполный, exit 1 создал бы
+    # ложное впечатление полного отчета.
+    if read_errors:
+        return 2
+
+    return 1 if findings else 0
 
 
 if __name__ == "__main__":

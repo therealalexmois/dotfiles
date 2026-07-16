@@ -158,6 +158,25 @@ def test_load_terms_empty_raises(tmp_path):
         lint.load_terms(toml)
 
 
+def test_load_terms_bad_regex_raises_value_error(tmp_path):
+    toml = tmp_path / "bad.toml"
+    toml.write_text(
+        '[[term]]\nid = "x"\npatterns = ["("]\nreplacement = "y"\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="битый regex"):
+        lint.load_terms(toml)
+
+
+def test_load_terms_missing_key_raises_value_error(tmp_path):
+    toml = tmp_path / "nokey.toml"
+    toml.write_text('[[term]]\nid = "x"\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="обязательного ключа"):
+        lint.load_terms(toml)
+
+
 def test_main_clean_returns_zero(tmp_path):
     md = tmp_path / "c.md"
     md.write_text("Чистая проза.\n", encoding="utf-8")
@@ -170,3 +189,18 @@ def test_main_findings_returns_one(tmp_path):
     md.write_text("Мы сделали провижинг.\n", encoding="utf-8")
 
     assert lint.main([str(md)]) == 1
+
+
+def test_main_read_error_priority_over_findings(tmp_path):
+    md = tmp_path / "d.md"
+    md.write_text("Мы сделали провижинг.\n", encoding="utf-8")
+    missing = tmp_path / "missing.md"
+
+    assert lint.main([str(md), str(missing)]) == 2
+
+
+def test_main_skips_non_markdown_with_zero(tmp_path):
+    txt = tmp_path / "n.txt"
+    txt.write_text("провижинг\n", encoding="utf-8")
+
+    assert lint.main([str(txt)]) == 0
