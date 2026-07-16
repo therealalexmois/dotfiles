@@ -10,12 +10,15 @@
 в коде. Линтер вырезает из текста код, frontmatter, HTML и URL (там правила не
 действуют) и применяет правила только к прозе.
 
-Правила первой волны:
+Правила:
     banned-term - запрещенные основы-кальки из TOML (report-only, замену выбирает
         человек);
     em-dash     - длинное тире U+2014 при политике «только `–`» (fixable);
     whitespace  - двойные пробелы и пробел перед пунктуацией (fixable); не трогает
-        markdown hard line break, строки таблиц и выравнивание маркеров списка.
+        markdown hard line break, строки таблиц и выравнивание маркеров списка;
+    yo          - буква ё при политике «писать е» (fixable, замена ё->е с
+        сохранением регистра); слово из необязательного списка yo_keep
+        детектируется, но не автозаменяется - его разрешает человек.
 
 Маскирование inline-кода следует CommonMark: backtick-run парятся по равной длине,
 экранированный backtick не открывает спан, спан может пересекать перенос строки
@@ -87,6 +90,10 @@ _LINE_SPLIT = re.compile(r"(\r\n|\r|\n)")
 # (политика проекта). Короткое тире U+2013 - разрешенный символ замены.
 EM_DASH = re.compile("\u2014")
 EN_DASH = "–"
+
+# Русское слово: непрерывный прогон кириллических букв (тот же алфавит, что в
+# STEM_TEMPLATE). Нужно, чтобы проверить слово с ё против списка yo_keep целиком.
+CYRILLIC_WORD = re.compile(r"[а-яёА-ЯЁ]+")
 
 # Внутристрочные прогоны пробелов; хвостовые и ведущие не трогаем (markdown-перенос).
 DOUBLE_SPACE = re.compile(r"(?<=\S) {2,}(?=\S)")
@@ -267,6 +274,40 @@ class WhitespaceRule:
                 yield Hit(match.start(1), match.end(1), match.group(1), "пробел перед пунктуацией", "")
 
 
+class YoRule:
+    """R3: буква ё при политике «писать е». Fixable, кроме слов из yo_keep.
+
+    По умолчанию каждая ё - fixable-находка: замена на е с сохранением регистра
+    (ё->е, Ё->Е). Слово из yo_keep остается находкой, но не автозаменяется:
+    замена ё->е не всегда сохраняет смысл (всё->все, узнаём->узнаем), поэтому
+    такой случай разрешает человек вручную. Список yo_keep пуст по умолчанию,
+    поэтому политику «всегда е» он не ослабляет - только снимает рискованный
+    автофикс с перечисленных слов.
+    """
+
+    id = "yo"
+
+    def __init__(self, keep: frozenset[str]) -> None:
+        self.keep = keep
+
+    def scan_line(self, line: Line) -> Iterable[Hit]:
+        for match in CYRILLIC_WORD.finditer(line.masked):
+            word = match.group(0)
+            if "ё" not in word and "Ё" not in word:
+                continue
+
+            kept = word.casefold() in self.keep
+            for offset, char in enumerate(word):
+                if char != "ё" and char != "Ё":
+                    continue
+
+                pos = match.start() + offset
+                if kept:
+                    yield Hit(pos, pos + 1, char, "буква ё (слово в yo_keep): замените вручную", None)
+                else:
+                    yield Hit(pos, pos + 1, char, "буква ё, пишите е", "Е" if char == "Ё" else "е")
+
+
 def load_terms(path: Path) -> list[Term]:
     """Читает, валидирует и компилирует стоп-лист из TOML.
 
@@ -310,9 +351,31 @@ def load_terms(path: Path) -> list[Term]:
     return terms
 
 
-def build_rules(terms: list[Term]) -> list[Rule]:
+def load_yo_keep(path: Path) -> frozenset[str]:
+    """Читает необязательный список слов-исключений yo_keep из TOML.
+
+    yo_keep - слова, где буква ё детектируется правилом `yo`, но не
+    автозаменяется на е (см. YoRule). Ключ верхнего уровня и необязателен;
+    его отсутствие означает пустой список. Слова сравниваются без учета
+    регистра.
+
+    Raises:
+        ValueError: yo_keep задан, но это не список строк. Битый конфиг делает
+            поведение gate неопределенным, поэтому это ошибка, а не тихий
+            пропуск.
+    """
+    data: dict[str, Any] = tomllib.loads(path.read_text(encoding="utf-8-sig"))
+    keep = data.get("yo_keep", [])
+
+    if not isinstance(keep, list) or not all(isinstance(word, str) for word in keep):
+        raise ValueError("yo_keep должен быть списком строк")
+
+    return frozenset(word.casefold() for word in keep)
+
+
+def build_rules(terms: list[Term], yo_keep: frozenset[str] = frozenset()) -> list[Rule]:
     """Собирает включенные правила Tier 1 в порядке применения."""
-    return [TermRule(terms), EmDashRule(), WhitespaceRule()]
+    return [TermRule(terms), EmDashRule(), WhitespaceRule(), YoRule(yo_keep)]
 
 
 def read_document(path: Path) -> Document:
@@ -610,11 +673,12 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         terms = load_terms(args.terms)
+        yo_keep = load_yo_keep(args.terms)
     except (OSError, ValueError, tomllib.TOMLDecodeError) as exc:
         print(f"error: не удалось загрузить стоп-лист {args.terms}: {exc}", file=sys.stderr)
         return 2
 
-    rules = build_rules(terms)
+    rules = build_rules(terms, yo_keep)
 
     findings: list[Finding] = []
     read_errors = 0

@@ -15,7 +15,7 @@ EN = chr(0x2013)  # короткое тире
 
 
 def rules() -> list[lint.Rule]:
-    return lint.build_rules(lint.load_terms(lint.DEFAULT_TERMS))
+    return lint.build_rules(lint.load_terms(lint.DEFAULT_TERMS), lint.load_yo_keep(lint.DEFAULT_TERMS))
 
 
 def mkline(raw: str, *, is_table_row: bool = False) -> lint.Line:
@@ -495,3 +495,81 @@ def test_prefixed_verb_dispatch_flagged():
 
     assert list(rule.scan_line(mkline("Мы задиспетчили событие.")))
     assert not list(rule.scan_line(mkline("диспетчер направил заявку")))
+
+
+# --- R3: правило ё ---
+
+
+def test_yo_flagged_and_fixable():
+    hits = list(lint.YoRule(frozenset()).scan_line(mkline("ещё раз")))
+
+    assert len(hits) == 1
+    assert hits[0].matched == "ё"
+    assert hits[0].replacement == "е"
+
+
+def test_yo_uppercase_preserves_case():
+    hits = list(lint.YoRule(frozenset()).scan_line(mkline("Ёлка стоит")))
+
+    assert hits[0].replacement == "Е"
+
+
+def test_yo_in_code_span_ignored():
+    assert not list(lint.YoRule(frozenset()).scan_line(mkline("`ещё` код")))
+
+
+def test_yo_fix_replaces_in_file(tmp_path):
+    md = tmp_path / "yo.md"
+    md.write_text("ещё раз\n", encoding="utf-8")
+
+    remaining = lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == "еще раз\n"
+    assert not remaining
+
+
+def test_yo_keep_word_reported_not_fixed(tmp_path):
+    md = tmp_path / "keep.md"
+    md.write_text("всё и ещё\n", encoding="utf-8")
+    kept = lint.build_rules(lint.load_terms(lint.DEFAULT_TERMS), frozenset({"всё"}))
+
+    remaining = lint.fix_file(md, kept)
+
+    # «ещё» починено, «всё» из yo_keep сохранено, но остается находкой (report-only).
+    assert md.read_text(encoding="utf-8") == "всё и еще\n"
+    assert any(f.rule_id == "yo" and not f.fixable for f in remaining)
+
+
+def test_yo_keep_is_case_insensitive():
+    hits = list(lint.YoRule(frozenset({"всё"})).scan_line(mkline("Всё готово")))
+
+    assert hits[0].replacement is None
+
+
+def test_load_yo_keep_default_empty():
+    assert lint.load_yo_keep(lint.DEFAULT_TERMS) == frozenset()
+
+
+def test_load_yo_keep_reads_words(tmp_path):
+    toml = tmp_path / "k.toml"
+    toml.write_text(
+        'yo_keep = ["Всё", "узнаём"]\n\n[[term]]\nid = "x"\npatterns = ["a"]\nreplacement = "y"\n',
+        encoding="utf-8",
+    )
+
+    assert lint.load_yo_keep(toml) == frozenset({"всё", "узнаём"})
+
+
+def test_load_yo_keep_bad_type_raises(tmp_path):
+    toml = tmp_path / "badyo.toml"
+    toml.write_text('yo_keep = "нет"\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="yo_keep"):
+        lint.load_yo_keep(toml)
+
+
+def test_main_yo_returns_one(tmp_path):
+    md = tmp_path / "y.md"
+    md.write_text("ещё раз\n", encoding="utf-8")
+
+    assert lint.main([str(md)]) == 1
