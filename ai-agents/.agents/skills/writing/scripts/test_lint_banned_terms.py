@@ -17,6 +17,11 @@ def rules() -> list[lint.Rule]:
     return lint.build_rules(lint.load_terms(lint.DEFAULT_TERMS))
 
 
+def mkline(raw: str, *, is_table_row: bool = False) -> lint.Line:
+    spans = lint.prose_spans(raw)
+    return lint.Line(raw=raw, masked=lint.blank_spans(raw, spans), spans=spans, is_table_row=is_table_row)
+
+
 def test_prose_spans_marks_inline_code_and_url():
     line = "код `x  y` и http://a.b/c текст"
     spans = lint.prose_spans(line)
@@ -34,7 +39,7 @@ def test_blank_spans_preserves_length():
 
 
 def test_term_rule_reports_stem_without_fix():
-    hits = list(lint.TermRule(lint.load_terms(lint.DEFAULT_TERMS)).scan_line("сделали провижинг", "сделали провижинг", []))
+    hits = list(lint.TermRule(lint.load_terms(lint.DEFAULT_TERMS)).scan_line(mkline("сделали провижинг")))
 
     assert hits
     assert hits[0].replacement is None
@@ -42,49 +47,48 @@ def test_term_rule_reports_stem_without_fix():
 
 
 def test_em_dash_flagged_in_prose():
-    line = f"текст {EM} текст"
-    hits = list(lint.EmDashRule().scan_line(line, line, []))
+    hits = list(lint.EmDashRule().scan_line(mkline(f"текст {EM} текст")))
 
     assert hits
     assert hits[0].replacement == EN
 
 
 def test_em_dash_in_code_ignored():
-    raw = f"`a {EM} b`"
-    spans = lint.prose_spans(raw)
-    masked = lint.blank_spans(raw, spans)
-
-    assert not list(lint.EmDashRule().scan_line(masked, raw, spans))
+    assert not list(lint.EmDashRule().scan_line(mkline(f"`a {EM} b`")))
 
 
 def test_internal_double_space_flagged():
-    line = "текст  текст"
-    hits = list(lint.WhitespaceRule().scan_line(line, line, []))
+    hits = list(lint.WhitespaceRule().scan_line(mkline("текст  текст")))
 
     assert hits
     assert hits[0].replacement == " "
 
 
 def test_trailing_double_space_not_flagged():
-    raw = "строка  "
-
-    assert not list(lint.WhitespaceRule().scan_line(raw, raw, []))
+    assert not list(lint.WhitespaceRule().scan_line(mkline("строка  ")))
 
 
 def test_space_before_punct_flagged():
-    line = "текст ,"
-    hits = list(lint.WhitespaceRule().scan_line(line, line, []))
+    hits = list(lint.WhitespaceRule().scan_line(mkline("текст ,")))
 
     assert hits
     assert hits[0].replacement == ""
 
 
 def test_double_space_in_code_span_ignored():
-    raw = "a `x  y` b"
-    spans = lint.prose_spans(raw)
-    masked = lint.blank_spans(raw, spans)
+    assert not list(lint.WhitespaceRule().scan_line(mkline("a `x  y` b")))
 
-    assert not list(lint.WhitespaceRule().scan_line(masked, raw, spans))
+
+def test_whitespace_skips_table_row():
+    line = mkline("| a    b | c |", is_table_row=True)
+
+    assert not list(lint.WhitespaceRule().scan_line(line))
+
+
+def test_em_dash_in_table_cell_still_flagged():
+    line = mkline(f"| {EM} | x |", is_table_row=True)
+
+    assert list(lint.EmDashRule().scan_line(line))
 
 
 def test_scan_excludes_frontmatter_and_code(tmp_path):
@@ -99,6 +103,19 @@ def test_scan_excludes_frontmatter_and_code(tmp_path):
     assert {f.line for f in findings} == {5}
 
 
+def test_scan_skips_table_whitespace_but_keeps_term(tmp_path):
+    md = tmp_path / "tbl.md"
+    md.write_text(
+        "проза\n\n| A | B |\n| --- | --- |\n| x    y | провижинг |\n",
+        encoding="utf-8",
+    )
+
+    findings = lint.scan(md, rules())
+
+    assert not [f for f in findings if f.rule_id == "whitespace"]
+    assert [f for f in findings if f.rule_id == "banned-term"]
+
+
 def test_fix_applies_fixable_leaves_report_only(tmp_path):
     md = tmp_path / "t.md"
     md.write_text(f"текст {EM} текст  и провижинг ,\n", encoding="utf-8")
@@ -110,6 +127,16 @@ def test_fix_applies_fixable_leaves_report_only(tmp_path):
     assert "  " not in out
     assert " ," not in out
     assert any(r.rule_id == "banned-term" for r in remaining)
+
+
+def test_fix_preserves_table_alignment(tmp_path):
+    md = tmp_path / "tbl.md"
+    original = "| A | B |\n| --- | --- |\n| x    y | z |\n"
+    md.write_text(original, encoding="utf-8")
+
+    lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == original
 
 
 def test_fix_is_idempotent(tmp_path):

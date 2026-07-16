@@ -65,8 +65,9 @@ EN_DASH = "–"
 DOUBLE_SPACE = re.compile(r"(?<=\S) {2,}(?=\S)")
 SPACE_BEFORE_PUNCT = re.compile(r"(?<=\S)( +)(?=[,.;:!?])")
 
-# Парсер не зависит от файла, поэтому создается один раз на процесс.
-_MD = MarkdownIt("commonmark")
+# Парсер не зависит от файла, поэтому создается один раз на процесс. Таблицы
+# включены, чтобы отличать выравнивание ячеек от лишних пробелов в прозе.
+_MD = MarkdownIt("commonmark").enable("table")
 
 
 class TermEntry(TypedDict):
@@ -112,6 +113,24 @@ class Hit:
 
 
 @dataclass(frozen=True)
+class Line:
+    """Строка прозы с предвычисленным контекстом для правил.
+
+    Attributes:
+        raw: Исходная строка.
+        masked: Строка с вырезанными кодом и URL, длина сохранена.
+        spans: Исключенные inline-span (код, URL) как пары `(start, end)`.
+        is_table_row: Строка входит в markdown-таблицу, где пробелы выравнивают
+            ячейки и не считаются лишними.
+    """
+
+    raw: str
+    masked: str
+    spans: list[tuple[int, int]]
+    is_table_row: bool
+
+
+@dataclass(frozen=True)
 class Finding:
     """Одно попадание правила в файле.
 
@@ -139,14 +158,8 @@ class Rule(Protocol):
 
     id: str
 
-    def scan_line(self, masked: str, raw: str, spans: list[tuple[int, int]]) -> Iterable[Hit]:
-        """Возвращает срабатывания в строке.
-
-        Args:
-            masked: Строка с вырезанными кодом и URL (длина сохранена).
-            raw: Исходная строка для правил, которым нужен реальный контекст.
-            spans: Исключенные inline-span (код, URL) как пары `(start, end)`.
-        """
+    def scan_line(self, line: Line) -> Iterable[Hit]:
+        """Возвращает срабатывания в строке."""
         ...
 
 
@@ -158,10 +171,10 @@ class TermRule:
     def __init__(self, terms: list[Term]) -> None:
         self.terms = terms
 
-    def scan_line(self, masked: str, raw: str, spans: list[tuple[int, int]]) -> Iterable[Hit]:
+    def scan_line(self, line: Line) -> Iterable[Hit]:
         for term in self.terms:
             for matcher in term.matchers:
-                for match in matcher.finditer(masked):
+                for match in matcher.finditer(line.masked):
                     yield Hit(match.start(), match.end(), match.group(0), term.replacement, None)
 
 
@@ -170,23 +183,31 @@ class EmDashRule:
 
     id = "em-dash"
 
-    def scan_line(self, masked: str, raw: str, spans: list[tuple[int, int]]) -> Iterable[Hit]:
-        for match in EM_DASH.finditer(masked):
+    def scan_line(self, line: Line) -> Iterable[Hit]:
+        for match in EM_DASH.finditer(line.masked):
             yield Hit(match.start(), match.end(), match.group(0), "длинное тире, замените на –", EN_DASH)
 
 
 class WhitespaceRule:
-    """R4: двойные пробелы и пробел перед пунктуацией. Fixable."""
+    """R4: двойные пробелы и пробел перед пунктуацией. Fixable.
+
+    Пропускает строки markdown-таблиц: там пробелы выравнивают ячейки, а не
+    засоряют прозу. Запрещенные основы и длинное тире в ячейках ловят другие
+    правила, поэтому carve-out локальный, а не исключение всей строки.
+    """
 
     id = "whitespace"
 
-    def scan_line(self, masked: str, raw: str, spans: list[tuple[int, int]]) -> Iterable[Hit]:
-        for match in DOUBLE_SPACE.finditer(raw):
-            if not in_spans(match.start(), spans):
+    def scan_line(self, line: Line) -> Iterable[Hit]:
+        if line.is_table_row:
+            return
+
+        for match in DOUBLE_SPACE.finditer(line.raw):
+            if not in_spans(match.start(), line.spans):
                 yield Hit(match.start(), match.end(), match.group(0), "лишние пробелы", " ")
 
-        for match in SPACE_BEFORE_PUNCT.finditer(raw):
-            if not in_spans(match.start(1), spans):
+        for match in SPACE_BEFORE_PUNCT.finditer(line.raw):
+            if not in_spans(match.start(1), line.spans):
                 yield Hit(match.start(1), match.end(1), match.group(1), "пробел перед пунктуацией", "")
 
 
@@ -246,9 +267,16 @@ def in_spans(pos: int, spans: list[tuple[int, int]]) -> bool:
     return any(start <= pos < end for start, end in spans)
 
 
-def excluded_lines(text: str) -> set[int]:
-    """Возвращает 0-индексные номера строк с кодом, HTML или frontmatter."""
+def line_kinds(text: str) -> tuple[set[int], set[int]]:
+    """Классифицирует строки, 0-индекс.
+
+    Returns:
+        Пара `(excluded, tables)`. `excluded` - строки кода, HTML и frontmatter,
+        где правила не действуют совсем. `tables` - строки markdown-таблиц для
+        per-rule carve-out.
+    """
     excluded: set[int] = set()
+    tables: set[int] = set()
 
     lines = text.splitlines()
     if lines and lines[0].strip() == "---":
@@ -258,26 +286,36 @@ def excluded_lines(text: str) -> set[int]:
                 break
 
     for token in _MD.parse(text):
-        if token.type in BLOCK_CODE_TYPES and token.map:
-            excluded.update(range(token.map[0], token.map[1]))
+        if not token.map:
+            continue
 
-    return excluded
+        if token.type in BLOCK_CODE_TYPES:
+            excluded.update(range(token.map[0], token.map[1]))
+        elif token.type == "table_open":
+            tables.update(range(token.map[0], token.map[1]))
+
+    return excluded, tables
+
+
+def _build_line(raw: str, index: int, tables: set[int]) -> Line:
+    """Собирает `Line` с маской и флагом таблицы для одной строки."""
+    spans = prose_spans(raw)
+    return Line(raw=raw, masked=blank_spans(raw, spans), spans=spans, is_table_row=index in tables)
 
 
 def scan(path: Path, rules: list[Rule]) -> list[Finding]:
     """Прогоняет все правила по прозе одного Markdown-файла."""
     text = path.read_text(encoding="utf-8-sig")
-    skip = excluded_lines(text)
+    skip, tables = line_kinds(text)
 
     findings: list[Finding] = []
     for index, raw in enumerate(text.splitlines()):
         if index in skip:
             continue
 
-        spans = prose_spans(raw)
-        masked = blank_spans(raw, spans)
+        line = _build_line(raw, index, tables)
         for rule in rules:
-            for hit in rule.scan_line(masked, raw, spans):
+            for hit in rule.scan_line(line):
                 findings.append(
                     Finding(
                         path=path,
@@ -293,20 +331,12 @@ def scan(path: Path, rules: list[Rule]) -> list[Finding]:
     return findings
 
 
-def _fix_line(raw: str, rules: list[Rule]) -> str:
+def _fix_line(line: Line, rules: list[Rule]) -> str:
     """Применяет fixable-правила к строке, замены справа-налево без пересечений."""
-    spans = prose_spans(raw)
-    masked = blank_spans(raw, spans)
-
-    hits = [
-        hit
-        for rule in rules
-        for hit in rule.scan_line(masked, raw, spans)
-        if hit.replacement is not None
-    ]
+    hits = [hit for rule in rules for hit in rule.scan_line(line) if hit.replacement is not None]
     hits.sort(key=lambda hit: hit.start, reverse=True)
 
-    result = raw
+    result = line.raw
     applied: list[tuple[int, int]] = []
     for hit in hits:
         if any(not (hit.end <= start or hit.start >= end) for start, end in applied):
@@ -323,11 +353,11 @@ def fix_file(path: Path, rules: list[Rule]) -> list[Finding]:
     """Чинит fixable-правила в файле и возвращает оставшиеся findings."""
     text = path.read_text(encoding="utf-8-sig")
     had_trailing_nl = text.endswith("\n")
-    skip = excluded_lines(text)
+    skip, tables = line_kinds(text)
 
     fixed: list[str] = []
     for index, raw in enumerate(text.splitlines()):
-        fixed.append(raw if index in skip else _fix_line(raw, rules))
+        fixed.append(raw if index in skip else _fix_line(_build_line(raw, index, tables), rules))
 
     new_text = "\n".join(fixed) + ("\n" if had_trailing_nl else "")
     if new_text != text:
