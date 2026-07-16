@@ -236,8 +236,174 @@ def test_main_read_error_priority_over_findings(tmp_path):
     assert lint.main([str(md), str(missing)]) == 2
 
 
-def test_main_skips_non_markdown_with_zero(tmp_path):
+def test_main_non_markdown_is_error(tmp_path):
     txt = tmp_path / "n.txt"
     txt.write_text("провижинг\n", encoding="utf-8")
 
-    assert lint.main([str(txt)]) == 0
+    assert lint.main([str(txt)]) == 2
+
+
+# --- Репро из red-team отчета ---
+
+
+def test_multiline_code_span_not_flagged_or_fixed(tmp_path):
+    md = tmp_path / "a1.md"
+    original = "начало `cmd --flag " + EM + " value  x\ny` конец\n"
+    md.write_text(original, encoding="utf-8")
+
+    findings = lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == original
+    assert not findings
+
+
+def test_multiline_code_span_hides_term(tmp_path):
+    md = tmp_path / "a1b.md"
+    md.write_text("текст `провижинг\nвнутри` конец\n", encoding="utf-8")
+
+    assert not lint.scan(md, rules())
+
+
+def test_double_backtick_nested_span_not_fixed(tmp_path):
+    md = tmp_path / "a8.md"
+    original = "вот ``x `a  " + EM + " b` y`` конец\n"
+    md.write_text(original, encoding="utf-8")
+
+    lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == original
+
+
+def test_double_backtick_nested_term_not_flagged():
+    line = mkline("вот ``a `провижинг` b`` конец")
+
+    assert not list(lint.TermRule(lint.load_terms(lint.DEFAULT_TERMS)).scan_line(line))
+
+
+def test_comparison_angle_brackets_term_flagged(tmp_path):
+    md = tmp_path / "a2.md"
+    md.write_text("если x < y, а провижинг важен > z, то все.\n", encoding="utf-8")
+
+    findings = lint.scan(md, rules())
+
+    assert any(f.rule_id == "banned-term" for f in findings)
+
+
+def test_crlf_preserved_by_fix(tmp_path):
+    md = tmp_path / "a9.md"
+    md.write_bytes("первая строка\r\nслово  слово\r\nтретья строка\r\n".encode())
+
+    lint.fix_file(md, rules())
+    out = md.read_bytes().decode()
+
+    assert out.count("\r\n") == 3
+    assert "слово слово" in out
+
+
+def test_u2028_not_treated_as_newline(tmp_path):
+    md = tmp_path / "a10.md"
+    md.write_text("тире " + EM + " тут\nдве части\n", encoding="utf-8")
+
+    lint.fix_file(md, rules())
+    out = md.read_text(encoding="utf-8")
+
+    assert "две части" in out
+
+
+def test_bom_preserved_by_fix(tmp_path):
+    md = tmp_path / "a11.md"
+    md.write_bytes(b"\xef\xbb\xbf" + "слово  слово\n".encode())
+
+    lint.fix_file(md, rules())
+
+    assert md.read_bytes().startswith(b"\xef\xbb\xbf")
+
+
+def test_thematic_break_start_is_not_frontmatter(tmp_path):
+    md = tmp_path / "a14.md"
+    md.write_text("---\n\nМы сделали провижинг.\n\n---\n\nхвост\n", encoding="utf-8")
+
+    findings = lint.scan(md, rules())
+
+    assert any(f.rule_id == "banned-term" for f in findings)
+
+
+def test_fix_converges_in_one_run(tmp_path):
+    md = tmp_path / "a7.md"
+    md.write_text("слово  ,\n", encoding="utf-8")
+
+    remaining = lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == "слово,\n"
+    assert not remaining
+
+
+def test_list_marker_alignment_not_flagged(tmp_path):
+    md = tmp_path / "a15.md"
+    original = "-   пункт\n\n        код\n"
+    md.write_text(original, encoding="utf-8")
+
+    findings = lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == original
+    assert not findings
+
+
+def test_link_destination_with_parens_not_fixed(tmp_path):
+    md = tmp_path / "a12.md"
+    original = "[док](docs/a(b)v" + EM + "g.md) конец\n"
+    md.write_text(original, encoding="utf-8")
+
+    lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == original
+
+
+def test_reference_definition_not_fixed(tmp_path):
+    md = tmp_path / "a13.md"
+    original = "[id]: docs/file" + EM + "name.md\n\nссылка [текст][id] тут\n"
+    md.write_text(original, encoding="utf-8")
+
+    lint.fix_file(md, rules())
+
+    assert md.read_text(encoding="utf-8") == original
+
+
+def test_table_instead_of_array_gives_value_error(tmp_path):
+    toml = tmp_path / "table.toml"
+    toml.write_text('[term]\nid = "x"\npatterns = ["a"]\nreplacement = "y"\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="массивом таблиц"):
+        lint.load_terms(toml)
+
+
+def test_empty_patterns_rejected(tmp_path):
+    toml = tmp_path / "empty_patterns.toml"
+    toml.write_text('[[term]]\nid = "x"\npatterns = []\nreplacement = "y"\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="непустым списком"):
+        lint.load_terms(toml)
+
+
+def test_escaped_backtick_does_not_open_span():
+    line = mkline("символ \\` литерал, а провижинг дальше и `код` тут")
+    hits = list(lint.TermRule(lint.load_terms(lint.DEFAULT_TERMS)).scan_line(line))
+
+    assert hits
+    assert "провижинг" in hits[0].matched
+
+
+def test_em_dash_glued_to_url_flagged():
+    line = mkline("смотри https://a.b" + EM + "тире тут")
+
+    assert list(lint.EmDashRule().scan_line(line))
+
+
+def test_findings_sorted_by_column(tmp_path):
+    md = tmp_path / "sorted.md"
+    md.write_text("тут " + EM + " и провижинг и еще " + EM + " хвост\n", encoding="utf-8")
+
+    findings = lint.scan(md, rules())
+    cols = [f.col for f in findings]
+
+    assert cols == sorted(cols)

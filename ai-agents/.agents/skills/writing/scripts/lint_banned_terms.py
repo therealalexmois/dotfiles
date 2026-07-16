@@ -14,15 +14,21 @@
     banned-term - запрещенные основы-кальки из TOML (report-only, замену выбирает
         человек);
     em-dash     - длинное тире U+2014 при политике «только `–`» (fixable);
-    whitespace  - двойные пробелы и пробел перед пунктуацией (fixable), не трогает
-        markdown hard line break (два пробела в конце строки).
+    whitespace  - двойные пробелы и пробел перед пунктуацией (fixable); не трогает
+        markdown hard line break, строки таблиц и выравнивание маркеров списка.
+
+Маскирование inline-кода следует CommonMark: backtick-run парятся по равной длине,
+экранированный backtick не открывает спан, спан может пересекать перенос строки
+внутри абзаца. `--fix` сохраняет представление файла: переводы строк (`\\n`,
+`\\r\\n`, `\\r`) построчно, BOM и отсутствие завершающего перевода строки; правки
+повторяются до неподвижной точки.
 
 Совпадение печатается как `path:line:col`. Режим `--fix` чинит fixable-правила на
 месте и оставляет report-only как findings.
 
 Коды выхода: 0 - чисто, 1 - остались findings, 2 - ошибка конфигурации или
-чтения. Ошибка приоритетнее findings: при exit 2 прогон неполный, и его
-результату нельзя доверять как полному отчету.
+чтения (включая не-markdown файл, переданный явно). Ошибка приоритетнее findings:
+при exit 2 прогон неполный, и его результату нельзя доверять как полному отчету.
 
 Запуск:
     uv run lint_banned_terms.py FILE [FILE ...]
@@ -48,15 +54,25 @@ DEFAULT_TERMS = Path(__file__).resolve().parent.parent / "references" / "banned-
 # Основа якорится по левой границе слова и поглощает русский суффиксальный хвост.
 STEM_TEMPLATE = r"(?<![а-яёА-ЯЁ])(?:{stem})[а-яё]*"
 
-# Регионы прозы, где правила не действуют и которые маскируются пробелами.
-INLINE_CODE = re.compile(r"`+[^`]*`+")
-LINK_TARGET = re.compile(r"\]\([^)]*\)")
-BARE_URL = re.compile(r"https?://\S+")
-AUTOLINK = re.compile(r"<[^>]+>")
-MASK_INLINE: tuple[re.Pattern[str], ...] = (INLINE_CODE, LINK_TARGET, BARE_URL, AUTOLINK)
+# Inline-регионы прозы, где правила не действуют. Inline-код здесь не задается
+# regex-ом: backtick-спаны считает _backtick_spans по правилам CommonMark.
+# Target ссылки допускает один уровень вложенных скобок; URL ограничен printable
+# ASCII, чтобы не съедать русскую прозу за адресом; autolink/HTML-тег требует
+# осмысленного первого символа, чтобы не глотать сравнения вида `x < y ... > z`.
+LINK_TARGET = re.compile(r"\]\((?:[^()]|\([^()]*\))*\)")
+BARE_URL = re.compile(r"https?://[!-~]+")
+AUTOLINK = re.compile(r"<(?=[A-Za-z/!?])[^>]*>")
+REF_DEF = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*\S+")
+MASK_INLINE: tuple[re.Pattern[str], ...] = (LINK_TARGET, BARE_URL, AUTOLINK)
 
 BLOCK_CODE_TYPES = {"fence", "code_block", "html_block"}
 FRONTMATTER_FENCE = {"---", "..."}
+
+# Выравнивание после маркера списка (`-   пункт`) - синтаксис, а не проза.
+LIST_MARKER_PREFIX = re.compile(r"(?:\s{0,3}>\s?)*\s{0,3}(?:[-*+]|\d{1,9}[.)])")
+
+# Переводы строк по CommonMark; U+2028, U+2029, \f и \v переводами не являются.
+_LINE_SPLIT = re.compile(r"(\r\n|\r|\n)")
 
 # Длинное тире U+2014 задано escape-ом, чтобы не держать его литерал в исходнике
 # (политика проекта). Короткое тире U+2013 - разрешенный символ замены.
@@ -66,6 +82,9 @@ EN_DASH = "–"
 # Внутристрочные прогоны пробелов; хвостовые и ведущие не трогаем (markdown-перенос).
 DOUBLE_SPACE = re.compile(r"(?<=\S) {2,}(?=\S)")
 SPACE_BEFORE_PUNCT = re.compile(r"(?<=\S)( +)(?=[,.;:!?])")
+
+# Кап на повтор _fix_line: пересекающиеся матчи чинятся за несколько проходов.
+MAX_FIX_PASSES = 10
 
 # Парсер не зависит от файла, поэтому создается один раз на процесс. Таблицы
 # включены, чтобы отличать выравнивание ячеек от лишних пробелов в прозе.
@@ -93,6 +112,27 @@ class Term:
     id: str
     replacement: str
     matchers: tuple[re.Pattern[str], ...]
+
+
+@dataclass(frozen=True)
+class Document:
+    """Файл с сохраненным представлением: строки, переводы строк и BOM.
+
+    Attributes:
+        bom: `\\ufeff`, если файл начинался с BOM, иначе пустая строка.
+        lines: Строки без переводов строк.
+        eols: Перевод строки после каждой строки; пустая строка у последней,
+            если файл не заканчивается переводом строки.
+    """
+
+    bom: str
+    lines: list[str]
+    eols: list[str]
+
+    @property
+    def text(self) -> str:
+        """Нормализованный текст для markdown-it: все переводы строк -> `\\n`."""
+        return "\n".join(self.lines)
 
 
 @dataclass(frozen=True)
@@ -193,9 +233,10 @@ class EmDashRule:
 class WhitespaceRule:
     """R4: двойные пробелы и пробел перед пунктуацией. Fixable.
 
-    Пропускает строки markdown-таблиц: там пробелы выравнивают ячейки, а не
-    засоряют прозу. Запрещенные основы и длинное тире в ячейках ловят другие
-    правила, поэтому carve-out локальный, а не исключение всей строки.
+    Carve-out (синтаксис, не проза): строки markdown-таблиц (выравнивание ячеек)
+    и пробелы сразу после маркера списка (`-   пункт`, стиль MD030). Запрещенные
+    основы и длинное тире в этих местах ловят другие правила, поэтому исключения
+    локальные, а не на всю строку.
     """
 
     id = "whitespace"
@@ -205,8 +246,11 @@ class WhitespaceRule:
             return
 
         for match in DOUBLE_SPACE.finditer(line.raw):
-            if not in_spans(match.start(), line.spans):
-                yield Hit(match.start(), match.end(), match.group(0), "лишние пробелы", " ")
+            if in_spans(match.start(), line.spans):
+                continue
+            if LIST_MARKER_PREFIX.fullmatch(line.raw[: match.start()]):
+                continue
+            yield Hit(match.start(), match.end(), match.group(0), "лишние пробелы", " ")
 
         for match in SPACE_BEFORE_PUNCT.finditer(line.raw):
             if not in_spans(match.start(1), line.spans):
@@ -214,23 +258,35 @@ class WhitespaceRule:
 
 
 def load_terms(path: Path) -> list[Term]:
-    """Читает и компилирует стоп-лист из TOML.
+    """Читает, валидирует и компилирует стоп-лист из TOML.
 
     Raises:
-        ValueError: Если в файле нет ни одной записи `[[term]]`, запись без
-            обязательного ключа или с некомпилируемым regex в `patterns`.
-            Любой из этих дефектов делает gate ненадежным, поэтому это ошибка
-            конфигурации, а не повод молча пропустить запись.
+        ValueError: Пустой стоп-лист, `[term]` вместо `[[term]]`, запись без
+            обязательного ключа, пустой или некорректный `patterns`,
+            некомпилируемый regex. Любой из этих дефектов делает gate
+            ненадежным, поэтому это ошибка конфигурации, а не повод молча
+            пропустить запись.
     """
     data: dict[str, Any] = tomllib.loads(path.read_text(encoding="utf-8-sig"))
-    entries: list[TermEntry] = data.get("term", [])
+    entries = data.get("term", [])
+
+    if not isinstance(entries, list):
+        raise ValueError("term должен быть массивом таблиц [[term]], а не таблицей [term]")
 
     terms: list[Term] = []
     for entry in entries:
+        if not isinstance(entry, dict):
+            raise ValueError(f"некорректная запись term: {entry!r}")
+
         try:
+            patterns = entry["patterns"]
+            if not isinstance(patterns, list) or not patterns:
+                raise ValueError(
+                    f"[[term]] {entry.get('id', '?')}: patterns должен быть непустым списком"
+                )
             matchers = tuple(
                 re.compile(STEM_TEMPLATE.format(stem=stem), re.IGNORECASE)
-                for stem in entry["patterns"]
+                for stem in patterns
             )
             terms.append(Term(id=entry["id"], replacement=entry["replacement"], matchers=matchers))
         except KeyError as exc:
@@ -249,13 +305,132 @@ def build_rules(terms: list[Term]) -> list[Rule]:
     return [TermRule(terms), EmDashRule(), WhitespaceRule()]
 
 
-def prose_spans(line: str) -> list[tuple[int, int]]:
-    """Возвращает span inline-кода и URL, где правила не действуют."""
+def read_document(path: Path) -> Document:
+    """Читает файл, сохраняя BOM и перевод строки каждой строки."""
+    raw = path.read_bytes().decode("utf-8")
+
+    bom = ""
+    if raw.startswith("\ufeff"):
+        bom, raw = "\ufeff", raw[1:]
+
+    tokens = _LINE_SPLIT.split(raw)
+    lines = tokens[0::2]
+    eols = tokens[1::2]
+    eols.append("")
+
+    return Document(bom=bom, lines=lines, eols=eols)
+
+
+def write_document(path: Path, doc: Document) -> None:
+    """Записывает файл в исходном представлении: BOM и EOL без перекодировки."""
+    body = "".join(line + eol for line, eol in zip(doc.lines, doc.eols))
+    path.write_text(doc.bom + body, encoding="utf-8", newline="")
+
+
+def _backtick_spans(text: str) -> list[tuple[int, int]]:
+    """Спаны inline-кода по CommonMark: backtick-run парятся по равной длине.
+
+    Backtick, экранированный нечетным числом backslash, не входит в run.
+    Открывающий run без закрывающего того же размера остается литералом,
+    сканирование продолжается со следующего run.
+    """
+    runs: list[tuple[int, int]] = []
+    i, n = 0, len(text)
+    while i < n:
+        if text[i] != "`":
+            i += 1
+            continue
+
+        start = i
+        while i < n and text[i] == "`":
+            i += 1
+
+        backslashes = 0
+        j = start - 1
+        while j >= 0 and text[j] == "\\":
+            backslashes += 1
+            j -= 1
+
+        length = i - start
+        if backslashes % 2 == 1:
+            start += 1
+            length -= 1
+        if length:
+            runs.append((start, length))
+
     spans: list[tuple[int, int]] = []
+    k = 0
+    while k < len(runs):
+        opener_start, opener_len = runs[k]
+        closer = next(
+            (m for m in range(k + 1, len(runs)) if runs[m][1] == opener_len),
+            None,
+        )
+        if closer is None:
+            k += 1
+            continue
+
+        closer_start, closer_len = runs[closer]
+        spans.append((opener_start, closer_start + closer_len))
+        k = closer + 1
+
+    return spans
+
+
+def prose_spans(line: str) -> list[tuple[int, int]]:
+    """Возвращает inline-span одной строки, где правила не действуют."""
+    spans = _backtick_spans(line)
+
+    ref = REF_DEF.match(line)
+    if ref:
+        spans.append((ref.start(), ref.end()))
+
     for pattern in MASK_INLINE:
         spans.extend((match.start(), match.end()) for match in pattern.finditer(line))
 
     return spans
+
+
+def code_span_lines(lines: list[str], excluded: set[int]) -> dict[int, list[tuple[int, int]]]:
+    """Проецирует многострочные backtick-спаны на строки.
+
+    Абзац - непрерывный блок непустых, не исключенных строк; спан inline-кода
+    может пересекать перенос строки только внутри такого блока.
+    """
+    result: dict[int, list[tuple[int, int]]] = {}
+    segment: list[int] = []
+
+    def flush() -> None:
+        if not segment:
+            segment.clear()
+            return
+
+        offsets: list[int] = []
+        pos = 0
+        for index in segment:
+            offsets.append(pos)
+            pos += len(lines[index]) + 1
+
+        joined = "\n".join(lines[index] for index in segment)
+        for start, end in _backtick_spans(joined):
+            for seg_pos, index in enumerate(segment):
+                line_start = offsets[seg_pos]
+                line_end = line_start + len(lines[index])
+                lo = max(start, line_start)
+                hi = min(end, line_end)
+                if lo < hi:
+                    result.setdefault(index, []).append((lo - line_start, hi - line_start))
+
+        segment.clear()
+
+    for index, line in enumerate(lines):
+        if index in excluded or not line.strip():
+            flush()
+        else:
+            segment.append(index)
+    flush()
+
+    return result
 
 
 def blank_spans(line: str, spans: list[tuple[int, int]]) -> str:
@@ -287,10 +462,14 @@ def line_kinds(text: str) -> tuple[set[int], set[int]]:
     excluded: set[int] = set()
     tables: set[int] = set()
 
-    lines = text.splitlines()
+    lines = text.split("\n")
     if lines and lines[0].strip() == "---":
         for i in range(1, len(lines)):
-            if lines[i].strip() in FRONTMATTER_FENCE:
+            stripped = lines[i].strip()
+            if not stripped:
+                # Пустая строка до закрытия: это thematic break, а не frontmatter.
+                break
+            if stripped in FRONTMATTER_FENCE:
                 excluded.update(range(0, i + 1))
                 break
 
@@ -306,23 +485,30 @@ def line_kinds(text: str) -> tuple[set[int], set[int]]:
     return excluded, tables
 
 
-def _build_line(raw: str, index: int, tables: set[int]) -> Line:
+def _build_line(
+    raw: str,
+    index: int,
+    tables: set[int],
+    code_spans: dict[int, list[tuple[int, int]]],
+) -> Line:
     """Собирает `Line` с маской и флагом таблицы для одной строки."""
     spans = prose_spans(raw)
+    spans.extend(code_spans.get(index, []))
+
     return Line(raw=raw, masked=blank_spans(raw, spans), spans=spans, is_table_row=index in tables)
 
 
-def scan(path: Path, rules: list[Rule]) -> list[Finding]:
-    """Прогоняет все правила по прозе одного Markdown-файла."""
-    text = path.read_text(encoding="utf-8-sig")
-    skip, tables = line_kinds(text)
+def _scan_document(path: Path, doc: Document, rules: list[Rule]) -> list[Finding]:
+    """Прогоняет все правила по прозе разобранного документа."""
+    skip, tables = line_kinds(doc.text)
+    code_spans = code_span_lines(doc.lines, skip)
 
     findings: list[Finding] = []
-    for index, raw in enumerate(text.splitlines()):
+    for index, raw in enumerate(doc.lines):
         if index in skip:
             continue
 
-        line = _build_line(raw, index, tables)
+        line = _build_line(raw, index, tables, code_spans)
         for rule in rules:
             for hit in rule.scan_line(line):
                 findings.append(
@@ -337,7 +523,13 @@ def scan(path: Path, rules: list[Rule]) -> list[Finding]:
                     )
                 )
 
+    findings.sort(key=lambda finding: (finding.line, finding.col))
     return findings
+
+
+def scan(path: Path, rules: list[Rule]) -> list[Finding]:
+    """Прогоняет все правила по прозе одного Markdown-файла."""
+    return _scan_document(path, read_document(path), rules)
 
 
 def _fix_line(line: Line, rules: list[Rule]) -> str:
@@ -359,27 +551,47 @@ def _fix_line(line: Line, rules: list[Rule]) -> str:
 
 
 def fix_file(path: Path, rules: list[Rule]) -> list[Finding]:
-    """Чинит fixable-правила в файле и возвращает оставшиеся findings."""
-    text = path.read_text(encoding="utf-8-sig")
-    had_trailing_nl = text.endswith("\n")
-    skip, tables = line_kinds(text)
+    """Чинит fixable-правила в файле и возвращает оставшиеся findings.
 
-    fixed: list[str] = []
-    for index, raw in enumerate(text.splitlines()):
-        fixed.append(raw if index in skip else _fix_line(_build_line(raw, index, tables), rules))
+    Проходы повторяются до неподвижной точки (не более MAX_FIX_PASSES):
+    пересекающиеся матчи, отброшенные в одном проходе, чинятся следующим.
+    Представление файла (EOL, BOM) сохраняется.
+    """
+    doc = read_document(path)
+    original = list(doc.lines)
 
-    new_text = "\n".join(fixed) + ("\n" if had_trailing_nl else "")
-    if new_text != text:
-        path.write_text(new_text, encoding="utf-8")
+    for _ in range(MAX_FIX_PASSES):
+        skip, tables = line_kinds(doc.text)
+        code_spans = code_span_lines(doc.lines, skip)
 
-    return scan(path, rules)
+        changed = False
+        new_lines: list[str] = []
+        for index, raw in enumerate(doc.lines):
+            if index in skip:
+                new_lines.append(raw)
+                continue
+
+            fixed = _fix_line(_build_line(raw, index, tables, code_spans), rules)
+            if fixed != raw:
+                changed = True
+            new_lines.append(fixed)
+
+        doc = Document(bom=doc.bom, lines=new_lines, eols=doc.eols)
+        if not changed:
+            break
+
+    if doc.lines != original:
+        write_document(path, doc)
+
+    return _scan_document(path, doc, rules)
 
 
 def main(argv: list[str] | None = None) -> int:
     """Разбирает аргументы, прогоняет линтер и возвращает код выхода.
 
     Коды выхода: 0 - чисто, 1 - остались findings, 2 - ошибка конфигурации или
-    чтения файла. Ошибка приоритетнее findings: exit 2 означает неполный прогон.
+    чтения файла (включая явно переданный не-markdown файл). Ошибка приоритетнее
+    findings: exit 2 означает неполный прогон.
     """
     parser = argparse.ArgumentParser(description="Детерминированный линтер (Tier 1) для русского Markdown.")
     parser.add_argument("files", nargs="+", type=Path, help="Markdown-файлы для проверки.")
@@ -408,7 +620,10 @@ def main(argv: list[str] | None = None) -> int:
     read_errors = 0
     for path in args.files:
         if path.suffix.lower() not in {".md", ".markdown"}:
-            print(f"{path}: skip: не markdown-файл", file=sys.stderr)
+            # Явно переданный не-markdown файл - ошибка вызова, а не тихий
+            # пропуск: gate не имеет права отчитаться «чисто» о непроверенном.
+            print(f"{path}: error: не markdown-файл (ожидается .md)", file=sys.stderr)
+            read_errors += 1
             continue
 
         try:
