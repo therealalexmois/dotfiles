@@ -46,6 +46,43 @@ def test_term_rule_reports_stem_without_fix():
     assert "провижинг" in hits[0].matched
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "уточнить маппинг полей",
+        "мэппинг компетенций",
+        "собрали фидбек команды",
+        "запрос скоупится по владельцу",
+        "надо заскоупить задачу",
+        "заасайнить тикет на себя",
+        "пропушили изменение в прод",
+        "диспетч результата в очередь",
+        "метрика ключуется по user_id",
+        "результат презентован команде",
+    ],
+)
+def test_new_terms_flagged(text):
+    rule = lint.TermRule(lint.load_terms(lint.DEFAULT_TERMS))
+
+    assert list(rule.scan_line(mkline(text))), text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "диспетчер направил заявку",
+        "диспетчеризация запросов",
+        "он презентовал решение команде",
+        "будет презентовать на демо",
+        "ключ на столе, ключом по проводу",
+    ],
+)
+def test_legit_words_not_flagged(text):
+    rule = lint.TermRule(lint.load_terms(lint.DEFAULT_TERMS))
+
+    assert not list(rule.scan_line(mkline(text))), text
+
+
 def test_em_dash_flagged_in_prose():
     hits = list(lint.EmDashRule().scan_line(mkline(f"текст {EM} текст")))
 

@@ -16,6 +16,109 @@
 
 [[term]]
 id          = "provisioning"
-patterns    = ["провижинг", "за?провиж(ить|у|ишь|ил|енн)"]
+patterns    = ["провижинг", "(за)?провиж(ить|у|ишь|ил|енн)"]
 replacement = "выделение ресурсов, подготовка окружения или предоставление доступа"
 note        = "транслитерированная калька provisioning"
+
+[[term]]
+id          = "mapping"
+patterns    = ["м[аэ]ппинг"]
+replacement = "сопоставление, отображение"
+
+[[term]]
+id          = "grooming"
+patterns    = ["груминг"]
+replacement = "уточнение задач, доработка"
+
+[[term]]
+id          = "feedback"
+patterns    = ["фидб[эе]к"]
+replacement = "обратная связь"
+
+[[term]]
+id          = "reporting"
+patterns    = ["репортинг"]
+replacement = "отчетность"
+
+[[term]]
+id          = "update"
+patterns    = ["апдейт"]
+replacement = "обновление"
+
+[[term]]
+id          = "timeline"
+patterns    = ["таймлайн"]
+replacement = "временная шкала, сроки"
+
+[[term]]
+id          = "authoring"
+patterns    = ["авторинг"]
+replacement = "написание, создание"
+
+[[term]]
+id          = "use-case"
+patterns    = ["юз-?кейс"]
+replacement = "сценарий использования"
+
+[[term]]
+id          = "naming"
+patterns    = ["нейминг"]
+replacement = "именование"
+
+[[term]]
+id          = "gating"
+patterns    = ["гейтинг"]
+replacement = "контроль допуска, фильтрация"
+
+[[term]]
+id          = "impact"
+patterns    = ["импакт"]
+replacement = "влияние, эффект"
+
+[[term]]
+id          = "sizing"
+patterns    = ["сайзинг"]
+replacement = "оценка размера"
+
+[[term]]
+id          = "scope"
+patterns    = ["(за)?скоуп"]
+replacement = "охват, границы; скоупится - ограничивается"
+
+[[term]]
+id          = "push"
+patterns    = ["пропуш"]
+replacement = "продвинуть, отправить"
+
+[[term]]
+id          = "batching"
+patterns    = ["батчинг"]
+replacement = "пакетная обработка, группировка"
+
+[[term]]
+id          = "vision"
+patterns    = ["вижн"]
+replacement = "видение, концепция"
+
+[[term]]
+id          = "dispatch"
+patterns    = ["диспетч(?!ер)"]
+replacement = "отправка, передача, публикация"
+note        = "lookahead исключает легитимные «диспетчер», «диспетчеризация»"
+
+[[term]]
+id          = "keyed"
+patterns    = ["ключу(ется|ются)"]
+replacement = "строится по, учитывается в ключе"
+note        = "узкие глагольные формы; существительное «ключ» легитимно"
+
+[[term]]
+id          = "assign"
+patterns    = ["заасайн"]
+replacement = "назначить, закрепить"
+
+[[term]]
+id          = "presented"
+patterns    = ["презентован"]
+replacement = "представлен, показан"
+note        = "только пассивная основа; «презентовал», «презентовать» легитимны"

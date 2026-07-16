@@ -19,14 +19,23 @@ allowlist и набор правил, а не требование исполь�
 
 `AI`, `LLM`, `RAG`, `embedding`, `evaluation`, `benchmark`, `grounding`,
 `tool call`, `agent`, `skill`, `MCP`, `latency`, `trace`, `span`, `prompt`,
-`context window`, `fine-tuning`, `inference`.
+`context window`, `fine-tuning`, `inference`, `evals`, `LLM-as-a-judge`,
+`HITL`, `ReAct`, `BYOK`, `harness`, `grader`.
 
 ### Software и инфраструктура
 
 `runtime`, `thread`, `cache`, `middleware`, `payload`, `feature flag`,
 `use case`, `migration`, `lock`, `connection pool`, `endpoint`, `backend`,
 `frontend`, `rollback`, `deploy`, `commit`, `merge`, `MR`, `PR`, `RFC`, `ADR`,
-`API`, `CI/CD`.
+`API`, `CI/CD`, `observability`, `SLO`, `SLI`, `SLA`, `SRE`, `pipeline`,
+`SSE`, `fallback`, `scaffold`, `diff`, `worktree`, `release`, `REST`, `SDK`,
+`notebook`, `quality gate`.
+
+### Процессы и планирование
+
+`backlog`, `OKR`, `workflow`, `roadmap`, `standup`, `retro`, `epic`,
+`stakeholder`, `MVP`, `DoD`, `POC`, `sync`, `postmortem`, `discovery`,
+`onboarding`, `sprint`, `follow-up`, `gap`.
 
 ### Python и data
 
