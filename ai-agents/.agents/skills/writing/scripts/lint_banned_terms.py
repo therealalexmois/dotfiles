@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["markdown-it-py>=3"]
+# dependencies = ["markdown-it-py>=3", "mdit-py-plugins>=0.4"]
 # ///
 """Детерминированный линтер (Tier 1) для русского Markdown.
 
@@ -48,6 +48,7 @@ from pathlib import Path
 from typing import Any, Protocol, TypedDict
 
 from markdown_it import MarkdownIt
+from mdit_py_plugins.front_matter import front_matter_plugin
 
 DEFAULT_TERMS = Path(__file__).resolve().parent.parent / "references" / "banned-terms.toml"
 
@@ -55,18 +56,26 @@ DEFAULT_TERMS = Path(__file__).resolve().parent.parent / "references" / "banned-
 STEM_TEMPLATE = r"(?<![а-яёА-ЯЁ])(?:{stem})[а-яё]*"
 
 # Inline-регионы прозы, где правила не действуют. Inline-код здесь не задается
-# regex-ом: backtick-спаны считает _backtick_spans по правилам CommonMark.
-# Target ссылки допускает один уровень вложенных скобок; URL ограничен printable
-# ASCII, чтобы не съедать русскую прозу за адресом; autolink/HTML-тег требует
-# осмысленного первого символа, чтобы не глотать сравнения вида `x < y ... > z`.
+# regex-ом: backtick-спаны считает _backtick_spans по segment-ам из inline-токенов
+# markdown-it (единый источник правды). URL тянется до пробела, чтобы покрыть
+# кириллические IRI (wiki-ссылки). Target ссылки допускает один уровень вложенных
+# скобок; autolink/HTML-тег требует осмысленного первого символа. REF_DEF матчит
+# строку целиком по грамматике reference definition, а не по первому токену, чтобы
+# не глотать глоссарную прозу вида «[термин]: описание».
 LINK_TARGET = re.compile(r"\]\((?:[^()]|\([^()]*\))*\)")
-BARE_URL = re.compile(r"https?://[!-~]+")
+BARE_URL = re.compile(r"https?://\S+")
 AUTOLINK = re.compile(r"<(?=[A-Za-z/!?])[^>]*>")
-REF_DEF = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*\S+")
+REF_DEF = re.compile(
+    r"""^\s{0,3}\[[^\]]+\]:\s*      # [label]:
+        (?:<[^>]*>|\S+)             # destination
+        (?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?  # optional title
+        \s*$""",
+    re.VERBOSE,
+)
 MASK_INLINE: tuple[re.Pattern[str], ...] = (LINK_TARGET, BARE_URL, AUTOLINK)
 
-BLOCK_CODE_TYPES = {"fence", "code_block", "html_block"}
-FRONTMATTER_FENCE = {"---", "..."}
+# front_matter добавлен плагином и исключается целиком (см. _MD).
+BLOCK_CODE_TYPES = {"fence", "code_block", "html_block", "front_matter"}
 
 # Выравнивание после маркера списка (`-   пункт`) - синтаксис, а не проза.
 LIST_MARKER_PREFIX = re.compile(r"(?:\s{0,3}>\s?)*\s{0,3}(?:[-*+]|\d{1,9}[.)])")
@@ -86,9 +95,10 @@ SPACE_BEFORE_PUNCT = re.compile(r"(?<=\S)( +)(?=[,.;:!?])")
 # Кап на повтор _fix_line: пересекающиеся матчи чинятся за несколько проходов.
 MAX_FIX_PASSES = 10
 
-# Парсер не зависит от файла, поэтому создается один раз на процесс. Таблицы
-# включены, чтобы отличать выравнивание ячеек от лишних пробелов в прозе.
-_MD = MarkdownIt("commonmark").enable("table")
+# Парсер не зависит от файла, поэтому создается один раз на процесс. Frontmatter -
+# авторитетно плагином (а не ручной эвристикой); таблицы включены, чтобы отличать
+# выравнивание ячеек от лишних пробелов в прозе.
+_MD = MarkdownIt("commonmark").use(front_matter_plugin).enable("table")
 
 
 class TermEntry(TypedDict):
@@ -378,8 +388,12 @@ def _backtick_spans(text: str) -> list[tuple[int, int]]:
 
 
 def prose_spans(line: str) -> list[tuple[int, int]]:
-    """Возвращает inline-span одной строки, где правила не действуют."""
-    spans = _backtick_spans(line)
+    """Возвращает regex-маски одной строки: URL, autolink, target, refdef.
+
+    Inline-код здесь не считается - его дают backtick-спаны по segment-ам
+    (единый источник, чтобы построчная и joined-модели не расходились).
+    """
+    spans: list[tuple[int, int]] = []
 
     ref = REF_DEF.match(line)
     if ref:
@@ -391,44 +405,37 @@ def prose_spans(line: str) -> list[tuple[int, int]]:
     return spans
 
 
-def code_span_lines(lines: list[str], excluded: set[int]) -> dict[int, list[tuple[int, int]]]:
-    """Проецирует многострочные backtick-спаны на строки.
+def code_span_lines(
+    lines: list[str],
+    segments: list[tuple[int, int]],
+) -> dict[int, list[tuple[int, int]]]:
+    """Проецирует backtick-спаны на строки внутри каждого inline-segment-а.
 
-    Абзац - непрерывный блок непустых, не исключенных строк; спан inline-кода
-    может пересекать перенос строки только внутри такого блока.
+    Segment - диапазон строк одного inline-токена markdown-it (абзац, заголовок,
+    ячейка таблицы, пункт списка). Спан inline-кода может пересекать перенос
+    строки только внутри одного segment-а, поэтому чужой backtick из соседнего
+    блока не спаривается через границу.
     """
     result: dict[int, list[tuple[int, int]]] = {}
-    segment: list[int] = []
 
-    def flush() -> None:
-        if not segment:
-            segment.clear()
-            return
+    for start, end in segments:
+        seg_lines = lines[start:end]
 
         offsets: list[int] = []
         pos = 0
-        for index in segment:
+        for line in seg_lines:
             offsets.append(pos)
-            pos += len(lines[index]) + 1
+            pos += len(line) + 1
 
-        joined = "\n".join(lines[index] for index in segment)
-        for start, end in _backtick_spans(joined):
-            for seg_pos, index in enumerate(segment):
+        joined = "\n".join(seg_lines)
+        for span_start, span_end in _backtick_spans(joined):
+            for seg_pos, line in enumerate(seg_lines):
                 line_start = offsets[seg_pos]
-                line_end = line_start + len(lines[index])
-                lo = max(start, line_start)
-                hi = min(end, line_end)
+                line_end = line_start + len(line)
+                lo = max(span_start, line_start)
+                hi = min(span_end, line_end)
                 if lo < hi:
-                    result.setdefault(index, []).append((lo - line_start, hi - line_start))
-
-        segment.clear()
-
-    for index, line in enumerate(lines):
-        if index in excluded or not line.strip():
-            flush()
-        else:
-            segment.append(index)
-    flush()
+                    result.setdefault(start + seg_pos, []).append((lo - line_start, hi - line_start))
 
     return result
 
@@ -451,27 +458,18 @@ def in_spans(pos: int, spans: list[tuple[int, int]]) -> bool:
     return any(start <= pos < end for start, end in spans)
 
 
-def line_kinds(text: str) -> tuple[set[int], set[int]]:
-    """Классифицирует строки, 0-индекс.
+def line_kinds(text: str) -> tuple[set[int], set[int], list[tuple[int, int]]]:
+    """Классифицирует строки по токенам markdown-it, 0-индекс.
 
     Returns:
-        Пара `(excluded, tables)`. `excluded` - строки кода, HTML и frontmatter,
-        где правила не действуют совсем. `tables` - строки markdown-таблиц для
-        per-rule carve-out.
+        `(excluded, tables, segments)`. `excluded` - строки кода, HTML и
+        frontmatter, где правила не действуют совсем. `tables` - строки
+        markdown-таблиц для per-rule carve-out. `segments` - диапазоны строк
+        inline-токенов для расчета backtick-спанов внутри одного блока.
     """
     excluded: set[int] = set()
     tables: set[int] = set()
-
-    lines = text.split("\n")
-    if lines and lines[0].strip() == "---":
-        for i in range(1, len(lines)):
-            stripped = lines[i].strip()
-            if not stripped:
-                # Пустая строка до закрытия: это thematic break, а не frontmatter.
-                break
-            if stripped in FRONTMATTER_FENCE:
-                excluded.update(range(0, i + 1))
-                break
+    segments: set[tuple[int, int]] = set()
 
     for token in _MD.parse(text):
         if not token.map:
@@ -481,8 +479,10 @@ def line_kinds(text: str) -> tuple[set[int], set[int]]:
             excluded.update(range(token.map[0], token.map[1]))
         elif token.type == "table_open":
             tables.update(range(token.map[0], token.map[1]))
+        elif token.type == "inline":
+            segments.add((token.map[0], token.map[1]))
 
-    return excluded, tables
+    return excluded, tables, sorted(segments)
 
 
 def _build_line(
@@ -500,8 +500,8 @@ def _build_line(
 
 def _scan_document(path: Path, doc: Document, rules: list[Rule]) -> list[Finding]:
     """Прогоняет все правила по прозе разобранного документа."""
-    skip, tables = line_kinds(doc.text)
-    code_spans = code_span_lines(doc.lines, skip)
+    skip, tables, segments = line_kinds(doc.text)
+    code_spans = code_span_lines(doc.lines, segments)
 
     findings: list[Finding] = []
     for index, raw in enumerate(doc.lines):
@@ -561,8 +561,8 @@ def fix_file(path: Path, rules: list[Rule]) -> list[Finding]:
     original = list(doc.lines)
 
     for _ in range(MAX_FIX_PASSES):
-        skip, tables = line_kinds(doc.text)
-        code_spans = code_span_lines(doc.lines, skip)
+        skip, tables, segments = line_kinds(doc.text)
+        code_spans = code_span_lines(doc.lines, segments)
 
         changed = False
         new_lines: list[str] = []
