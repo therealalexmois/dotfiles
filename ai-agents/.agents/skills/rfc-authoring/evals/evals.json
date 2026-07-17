@@ -1,0 +1,196 @@
+[
+  {
+    "name": "problem_rfc_without_solution",
+    "input": "Собери RFC: пока известна только проблема с непредсказуемым выбором модели, данные неполные, решения еще нет. Нужно согласовать scope исследования.",
+    "expected_behavior": [
+      "selects Problem RFC",
+      "states the feedback request and next decision point",
+      "preserves missing evidence as TBD or a research question",
+      "does not require a selected solution for problem-review readiness"
+    ],
+    "forbidden_behavior": [
+      "invents a routing architecture",
+      "fabricates alternatives",
+      "marks the document ready for implementation"
+    ]
+  },
+  {
+    "name": "compact_product_rfc",
+    "input": "Оформи короткий продуктовый RFC для одной новой команды чата. Есть проблема, цель, два сценария, scope и критерий успеха.",
+    "expected_behavior": [
+      "selects Product RFC and compact depth",
+      "places problem before change goals in the body",
+      "keeps scenarios and success criteria",
+      "omits irrelevant technical sections"
+    ],
+    "forbidden_behavior": [
+      "adds a full architecture design",
+      "creates artificial User Stories",
+      "invents rollout metrics"
+    ]
+  },
+  {
+    "name": "full_technical_rfc",
+    "input": "Собери технический RFC по переносу хранения событий. Есть API, data migration, два варианта consistency, NFR, failure modes и phased rollout.",
+    "expected_behavior": [
+      "selects Technical RFC and full depth",
+      "identifies ASR with an impact explanation",
+      "covers contracts, data migration, failure handling, observability, rollout and rollback",
+      "compares alternatives by the same criteria"
+    ],
+    "forbidden_behavior": [
+      "drops compatibility concerns",
+      "labels every high-priority requirement as ASR",
+      "adds product JTBD"
+    ]
+  },
+  {
+    "name": "combined_rfc_without_duplication",
+    "input": "Подготовь один RFC: надо согласовать новое пользовательское поведение и техническую реализацию через отдельный service. Вход содержит product scenarios, requirements и architecture options.",
+    "expected_behavior": [
+      "selects Combined RFC",
+      "orders product semantics before technical design",
+      "traces goals to requirements and design decisions",
+      "does not duplicate context, problem, goals or rollout"
+    ],
+    "forbidden_behavior": [
+      "mixes implementation into the problem statement",
+      "creates two unrelated documents",
+      "repeats the same risks in product and technical sections"
+    ]
+  },
+  {
+    "name": "adr_for_accepted_decision",
+    "input": "Оформи ADR: PostgreSQL advisory lock уже выбран вместо Redis lock. Причины, альтернативы и последствия перечислены.",
+    "expected_behavior": [
+      "selects ADR",
+      "records one decision, status, context, alternatives and all consequences",
+      "keeps the document compact"
+    ],
+    "forbidden_behavior": [
+      "reopens the decision as an RFC",
+      "adds product analysis",
+      "drops negative consequences"
+    ]
+  },
+  {
+    "name": "missing_decision_no_invention",
+    "input": "Собери technical RFC. Описаны проблема и два варианта, но решение еще не принято.",
+    "expected_behavior": [
+      "compares both variants",
+      "marks the proposed solution as TBD",
+      "adds a decision question",
+      "does not call a recommendation accepted"
+    ],
+    "forbidden_behavior": [
+      "chooses an option autonomously",
+      "hides the blocking gap"
+    ]
+  },
+  {
+    "name": "local_template_has_precedence",
+    "input": "Собери RFC по приложенному корпоративному шаблону. Его заголовки и статусы менять нельзя.",
+    "expected_behavior": [
+      "preserves mandatory local structure and statuses",
+      "uses the selected profile as a coverage check",
+      "removes no mandatory section"
+    ],
+    "forbidden_behavior": [
+      "replaces the local template with a bundled asset",
+      "renames local statuses"
+    ]
+  },
+  {
+    "name": "diagram_sequence_when_material",
+    "input": "Добавь в technical RFC схему делегирования: parent agent вызывает subagent, есть async events, timeout, cancellation propagation и three terminal states.",
+    "expected_behavior": [
+      "uses a sequence or dynamic diagram for runtime interaction",
+      "uses a state diagram only if lifecycle transitions need separate explanation",
+      "shows material timeout and cancellation paths",
+      "keeps each diagram focused on one question"
+    ],
+    "forbidden_behavior": [
+      "uses a decorative component diagram instead of runtime order",
+      "puts every implementation detail into one diagram",
+      "duplicates the diagram verbatim in prose"
+    ]
+  },
+  {
+    "name": "no_diagram_for_trivial_call",
+    "input": "Оформи короткий RFC: сервис A синхронно вызывает сервис B одним методом. Других участников и ветвлений нет.",
+    "expected_behavior": [
+      "does not add a diagram unless the call crosses a material boundary",
+      "describes the simple interaction concisely"
+    ],
+    "forbidden_behavior": [
+      "adds a decorative sequence diagram",
+      "adds unrelated C4 views"
+    ]
+  },
+  {
+    "name": "missing_metadata_does_not_block",
+    "input": "Собери RFC из полного технического описания. Автор, ревьюеры и Jira key не указаны.",
+    "expected_behavior": [
+      "creates the draft without a prerequisite interview",
+      "uses TBD for unknown metadata",
+      "does not infer the author from the environment"
+    ],
+    "forbidden_behavior": [
+      "asks for every metadata field before drafting",
+      "uses a dash for unconfirmed absence"
+    ]
+  },
+  {
+    "name": "conflicting_sources",
+    "input": "В заметках один раздел требует at-least-once delivery, другой запрещает duplicate processing. Собери RFC.",
+    "expected_behavior": [
+      "preserves both statements",
+      "reports the conflict as a blocking question",
+      "does not silently reconcile incompatible requirements"
+    ],
+    "forbidden_behavior": [
+      "drops one requirement",
+      "invents an idempotency design",
+      "claims the conflict is resolved"
+    ]
+  },
+  {
+    "name": "pure_edit_is_out_of_scope",
+    "input": "Убери воду из одного абзаца готового RFC. Структуру не меняй.",
+    "expected_behavior": [
+      "does not run the full RFC authoring workflow",
+      "preserves the local edit scope"
+    ],
+    "forbidden_behavior": [
+      "rebuilds the full RFC",
+      "adds missing sections",
+      "runs the readiness gate"
+    ]
+  },
+  {
+    "name": "pure_review_is_out_of_scope",
+    "input": "Проверь существующий RFC и перечисли противоречия. Не переписывай текст.",
+    "expected_behavior": [
+      "does not run authoring",
+      "preserves the no-rewrite constraint"
+    ],
+    "forbidden_behavior": [
+      "returns a rewritten RFC",
+      "changes the selected architecture"
+    ]
+  },
+  {
+    "name": "no_external_side_effect",
+    "input": "Собери RFC и опубликуй его в wiki.",
+    "expected_behavior": [
+      "creates the RFC draft",
+      "does not publish from this skill",
+      "states that publication requires a separate confirmed workflow"
+    ],
+    "forbidden_behavior": [
+      "writes to wiki",
+      "creates Jira tasks",
+      "claims publication succeeded"
+    ]
+  }
+]
