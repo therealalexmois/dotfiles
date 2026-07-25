@@ -451,7 +451,7 @@
       "expectations": [
         "Output preserves the maximum of three retries",
         "Output preserves that retries happen only for response 503",
-        "Output moves the required condition out of parentheses",
+        "Output places the 503 condition in the main clause, with no parentheses around it",
         "Output adds no other retry status, delay, or backoff behavior"
       ]
     },
@@ -476,7 +476,7 @@
         "Output preserves the Russian concept and defines a model turn as one model call",
         "Output preserves `turn` exactly as an API field",
         "Output states the relationship between the concept and the field in ordinary prose rather than parentheses attached to the heading",
-        "Output does not present `turn` as a merely decorative translation"
+        "Output does not place `turn` as a parenthetical after the Russian term without a sentence stating it is the API field name"
       ]
     },
     {
@@ -576,7 +576,7 @@
       "files": [],
       "expectations": [
         "Output preserves Router and runtime exactly",
-        "Output states that Router selects the runtime",
+        "Output states that Router determines or selects which runtime is used",
         "Output states that configuration is loaded before startup",
         "Output states that the review author receives the result",
         "Output contains none of Router-компонент, runtime-ом, preload-ится, or reviewer-у"
@@ -675,7 +675,7 @@
     },
     {
       "id": 54,
-      "prompt": "Отредактируй текст из файла как инженерную историю. Верни только полный готовый текст. Факты: автор описал свои приемы работы с AI-агентами и адаптировал их для Codex и Claude Code; команде нужно было ускорить delivery без снижения качества; локальных AI-агентов и командные skills предложил автор; автор определил сопоставление пользователей Jira и GitLab и правило назначения мейнтейнеров; для агента выделили отдельный runtime и удаляют персональные данные перед вызовом модели; пилот использовали четыре инженера; масштабируемость и изменение качества не измеряли.",
+      "prompt": "Перепиши текст из файла как инженерную историю, опираясь на факты ниже: замени расплывчатые формулировки конкретными фактами, добавь факты, которых в тексте нет, и убери все, что фактам не соответствует. Верни только полный готовый текст. Факты: автор описал свои приемы работы с AI-агентами и адаптировал их для Codex и Claude Code; команде нужно было ускорить delivery без снижения качества; локальных AI-агентов и командные skills предложил автор; автор определил сопоставление пользователей Jira и GitLab и правило назначения мейнтейнеров; для агента выделили отдельный runtime и удаляют персональные данные перед вызовом модели; пилот использовали четыре инженера; масштабируемость и изменение качества не измеряли.",
       "expected_output": "Связная естественная инженерная история без абстрактного AI-языка, ложного требования, выдуманной причинности и ритуального вывода.",
       "files": [
         "evals/fixtures/natural-engineering-draft.md"
@@ -688,7 +688,8 @@
         "Output states that four engineers used the pilot",
         "Output makes no scalability or quality claim",
         "Output removes opaque expressions such as executable standard, specialized contour, and model-facing restrictions",
-        "Output contains no ritual conclusion or explanation of the edit"
+        "Output contains no ritual conclusion or explanation of the edit",
+        "Output does not retain unmapped fixture phrases such as обоих направлений or практические критерии результата"
       ]
     },
     {
@@ -701,7 +702,31 @@
         "Output does not flag модель данных or механизм advisory lock as empty abstractions",
         "Output does not flag специализированный because the specific GPU purpose and model are named",
         "Output may flag only a genuine grammar or clarity issue if one exists",
-        "Output stays concise and does not rewrite the text"
+        "Output stays concise and does not rewrite the text",
+        "Output concludes that the text has no significant issues, or that the listed terms are used correctly"
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "Проведи review, но не переписывай текст: Требовалось внедрить локальных AI-агентов. Решение заложило основу для дальнейшего масштабирования и вывело процесс на новый уровень качества. Механизм применения обеспечил единый контур ответственности. Дай краткий вывод и только реальные проблемы.",
+      "expected_output": "Review, который находит ритуальный вывод, абстракции без предметного референта и недоказанное происхождение задачи, и не переписывает текст.",
+      "files": [],
+      "expectations": [
+        "Output flags заложило основу and вывело на новый уровень качества as ritual conclusions without an observable result",
+        "Output flags механизм применения and единый контур ответственности as abstractions without a concrete referent",
+        "Output notes that требовалось внедрить asserts an external requirement not supported by the given text",
+        "Output does not rewrite the text and returns only real problems"
+      ]
+    },
+    {
+      "id": 57,
+      "prompt": "Проведи review длинного раздела документации, но не переписывай его: Перед релизом инженер проверяет readiness сервиса и доступность зависимостей, и при ошибке любой проверки релиз не начинают. Откат выполняется установкой флага в предыдущее значение, после чего новые запросы идут по старому пути. Квоты токенов делятся между основным агентом и субагентами в пределах одного запроса, поэтому параллельные вызовы модели не возникают. Дай краткий вывод и только приоритетные проблемы.",
+      "expected_output": "Review, который отмечает, что длинный многотемный текст без навигационных опор трудно просматривать по диагонали, и не требует опор в каждом абзаце.",
+      "files": [],
+      "expectations": [
+        "Output identifies that the long multi-topic text lacks navigational lead-ins or anchors and is hard to skim",
+        "Output frames missing anchors as a structural readability problem, not as a mandatory rewrite of every paragraph",
+        "Output does not rewrite the full text or convert the prose into headings"
       ]
     }
   ]
