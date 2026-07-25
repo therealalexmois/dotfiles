@@ -417,6 +417,292 @@
         "Output stays concise and does not create a formal severity framework",
         "Output does not mention subagents, coverage matrices, specialized passes, or orchestration"
       ]
+    },
+    {
+      "id": 34,
+      "prompt": "Отредактируй без объяснения правок и сохрани смысл: Алёна провела приём заявок, ещё раз проверила отчёт и подтвердила: всё готово к четырём часам. Верни только готовый текст.",
+      "expected_output": "Готовый текст без U+0451, в котором имя Алена и исходный смысл сохранены.",
+      "files": [],
+      "expectations": [
+        "Output contains no Unicode character U+0451",
+        "Output preserves the name as 'Алена'",
+        "Output preserves that Алена handled the applications, checked the report again, and confirmed readiness by four o'clock",
+        "Output contains only the edited text without analysis or an explanation of changes"
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "Отредактируй без объяснения правок. Исходник: **Ход модели (`turn`)**: один вызов модели и выполнение запрошенных ею тулов. Несколько вызовов тулов из одного ответа модели относятся к одному ходу. Факт для редактуры: `turn` здесь только английский перевод, это не идентификатор и дальше он не используется. Верни только готовый текст.",
+      "expected_output": "Определение хода модели без лишнего английского эквивалента в скобках и без потери технического смысла.",
+      "files": [],
+      "expectations": [
+        "Output preserves the definition of one model turn as one model call plus execution of its requested tools",
+        "Output preserves that several tool calls from one model response belong to one turn",
+        "Output removes the parenthetical English duplicate `turn`",
+        "Output does not reintroduce `turn` with англ., italics, or another translation note",
+        "Output preserves the Markdown label and contains no explanation of the edit"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "Отредактируй без объяснения правок: Сервис повторяет запрос (только при ответе 503) не более трех раз. Верни только готовый текст.",
+      "expected_output": "Прямое предложение, в котором обязательное условие ответа 503 встроено в основной текст.",
+      "files": [],
+      "expectations": [
+        "Output preserves the maximum of three retries",
+        "Output preserves that retries happen only for response 503",
+        "Output moves the required condition out of parentheses",
+        "Output adds no other retry status, delay, or backoff behavior"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "Отредактируй без объяснения правок. Исходник: Соглашение об уровне обслуживания (SLA) задает целевую доступность. Факт для редактуры: далее документ использует сокращение SLA еще четыре раза. Верни только готовый текст.",
+      "expected_output": "Первое введение используемого далее сокращения SLA сохраняется; служебная фраза о количестве употреблений не попадает в результат.",
+      "files": [],
+      "expectations": [
+        "Output preserves the full Russian term and the abbreviation SLA on first mention",
+        "Output keeps SLA in parentheses or introduces the mapping equally clearly",
+        "Output preserves that the agreement defines target availability",
+        "Output does not mechanically remove the abbreviation or mention the editing instruction"
+      ]
+    },
+    {
+      "id": 38,
+      "prompt": "Отредактируй без объяснения правок. Исходник: **Ход модели (`turn`)**: один вызов модели. Факт для редактуры: `turn` - точное имя поля API, и читателю нужно понимать соответствие русского понятия этому полю. Верни только готовый текст.",
+      "expected_output": "Определение хода модели и явное сопоставление с полем API `turn`, а не неразъясненная пара терминов в заголовке.",
+      "files": [],
+      "expectations": [
+        "Output preserves the Russian concept and defines a model turn as one model call",
+        "Output preserves `turn` exactly as an API field",
+        "Output states the relationship between the concept and the field in ordinary prose rather than parentheses attached to the heading",
+        "Output does not present `turn` as a merely decorative translation"
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "Отредактируй без объяснения правок и сохрани технические токены: Вызов `retry(3)` выполняет не более трех повторов, а выражение `status in (503, 504)` ограничивает их двумя статусами. Верни только готовый текст.",
+      "expected_output": "Ясная техническая фраза с неизмененными скобками внутри кода.",
+      "files": [],
+      "expectations": [
+        "Output preserves `retry(3)` exactly",
+        "Output preserves `status in (503, 504)` exactly",
+        "Output preserves the maximum of three retries and both statuses",
+        "Output does not apply the prose-parentheses rule inside code"
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "Отредактируй текст: улучши структуру и читаемость, сохрани все факты. Верни только готовый текст.\n\nЗачем заниматься спортом?\n\nРегулярная физическая активность укрепляет сердечно-сосудистую систему и снижает риск инфарктов, инсультов и гипертонии. Спорт также положительно влияет на суставы и позвоночник, улучшает осанку и помогает сохранять подвижность в пожилом возрасте.\n\nВо время тренировок вырабатываются эндорфины, которые помогают снизить уровень стресса и тревожности. Регулярная физическая активность улучшает настроение, а достижение тренировочных целей развивает самодисциплину и уверенность в себе.\n\nЛюди, которые занимаются спортом, лучше спят, поддерживают оптимальный вес и реже испытывают упадок сил. Регулярные тренировки помогают стать энергичнее и работоспособнее.\n\nСовместные тренировки, командные игры и групповые занятия помогают заводить знакомства, укреплять дружеские связи и развивать навыки работы в команде.",
+      "expected_output": "Сканируемый текст, где каждый смысловой абзац начинается с короткой жирной опоры и затем раскрывает ее без превращения прозы в список.",
+      "files": [],
+      "expectations": [
+        "Output begins each of the four semantic paragraphs with a concise bold thesis or meaningful label",
+        "The bold anchors alone reveal the health, psychological, quality-of-life, and social aspects",
+        "Output keeps each bold anchor inline with the paragraph it introduces rather than as an unformatted standalone line",
+        "Output preserves all stated health, psychological, sleep, weight, energy, work-capacity, and social effects",
+        "Output does not turn the explanatory prose into a numbered or bulleted list",
+        "Output adds no medical guarantees, metrics, or benefits absent from the prompt"
+      ]
+    },
+    {
+      "id": 41,
+      "prompt": "Отредактируй короткое рабочее сообщение: улучши читаемость, сохрани смысл. Верни только готовый текст.\n\nРелиз переносим на пятницу, потому что интеграционные тесты пока падают. Обновленный план опубликуем после повторного прогона.",
+      "expected_output": "Короткое связное сообщение без искусственного заголовка или жирной смысловой метки.",
+      "files": [],
+      "expectations": [
+        "Output preserves the move to Friday and failing integration tests as the reason",
+        "Output preserves that the updated plan will be published after another run",
+        "Output does not add a heading, bold lead, list, or extra section",
+        "Output contains only the edited message"
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "Отредактируй техническую инструкцию: улучши чистоту и читаемость, сохрани Markdown, команды и условия. Верни только готовый текст.\n\n## Проверка readiness\n\nПеред rollout:\n\n1. Выполните `kubectl -n analytics-dev get pods`.\n2. Убедитесь, что все pod имеют статус `Ready 1/1`.\n3. Выполните `curl -f https://analytics-dev.example.com/ready`.\n\nЕсли pod не Ready или endpoint отвечает не `HTTP 200`, rollout не начинайте.",
+      "expected_output": "Чистая инструкция, которая сохраняет достаточную исходную навигацию и не дублирует ее жирными метками.",
+      "files": [],
+      "expectations": [
+        "Output preserves the readiness heading and ordered steps",
+        "Output preserves both commands, namespace analytics-dev, Ready 1/1, and HTTP 200",
+        "Output preserves the condition that rollout must not start after either failed check",
+        "Output does not add redundant bold anchors before the heading, list, or final condition",
+        "Output adds no new commands or recovery steps"
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "Отредактируй без объяснения правок. Факты: автор описал свои приемы работы с AI-агентами, оформил повторяемые действия как skills и адаптировал их для Codex и Claude Code; исполняемого стандарта не создавал. Исходник: Техническая сложность заключалась в превращении неявных личных приемов в исполняемый стандарт для разных agent harness. Верни только готовый текст.",
+      "expected_output": "Естественная фраза о документировании личных приемов, оформлении skills и адаптации для двух agent harness без выдуманного исполняемого стандарта.",
+      "files": [],
+      "expectations": [
+        "Output preserves that the author documented personal AI-agent practices and turned repeatable actions into skills",
+        "Output preserves Codex and Claude Code exactly",
+        "Output does not claim that an executable standard was created",
+        "Output removes the opaque formula about transforming implicit practices for different agent harness",
+        "Output contains only the edited text"
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "Отредактируй без объяснения правок. Факты: автор определил сопоставление пользователей Jira и GitLab и правило назначения мейнтейнеров проектов. Исходник: Согласовал идентичности, проекты и ответственность между системами. Верни только готовый текст.",
+      "expected_output": "Конкретная фраза о сопоставлении пользователей и назначении мейнтейнеров вместо абстрактных идентичностей и ответственности.",
+      "files": [],
+      "expectations": [
+        "Output states that the author defined how Jira and GitLab users are matched",
+        "Output states the rule for assigning project maintainers",
+        "Output preserves Jira and GitLab exactly",
+        "Output does not retain opaque references to identities or responsibility between systems",
+        "Output adds no systems, roles, or approval facts"
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "Отредактируй без объяснения правок. Факты: для агента выделили отдельный runtime; перед вызовом модели из контекста удаляют персональные данные; изоляция runtime не подтверждена. Исходник: Runtime получил специализированный execution-контур с model-facing ограничениями. Верни только готовый текст.",
+      "expected_output": "Естественная фраза об отдельном runtime и удалении персональных данных перед вызовом модели без кальки и неподтвержденной изоляции.",
+      "files": [],
+      "expectations": [
+        "Output preserves that the agent has a separate runtime",
+        "Output states that personal data is removed before the model call",
+        "Output does not describe the runtime as isolated",
+        "Output removes execution-контур and model-facing",
+        "Output does not invent additional model restrictions"
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "Отредактируй без объяснения правок, сохрани имена компонентов. Исходник: Router-компонент управляет runtime-ом, configuration preload-ится до запуска, а результат передается reviewer-у. Факты: компонент Router выбирает runtime; конфигурация загружается до запуска; результат получает автор review. Верни только готовый текст.",
+      "expected_output": "Русская конструкция без окончаний у английских слов, которая сохраняет Router, runtime и роль автора review.",
+      "files": [],
+      "expectations": [
+        "Output preserves Router and runtime exactly",
+        "Output states that Router selects the runtime",
+        "Output states that configuration is loaded before startup",
+        "Output states that the review author receives the result",
+        "Output contains none of Router-компонент, runtime-ом, preload-ится, or reviewer-у"
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "Отредактируй без объяснения правок. Факты: команде нужно было ускорить delivery без снижения качества; идею локальных AI-агентов и командных skills предложил автор; внешнего требования внедрить их не было. Исходник: Требовалось внедрить локальных AI-агентов и командные skills. Верни только готовый текст.",
+      "expected_output": "Фраза отделяет потребность команды от предложения автора и не выдает его решение за поставленное требование.",
+      "files": [],
+      "expectations": [
+        "Output preserves the need to speed up delivery without reducing quality",
+        "Output attributes the proposal of local AI agents and team skills to the author",
+        "Output does not claim that adopting those tools was an external or assigned requirement",
+        "Output preserves delivery and skills",
+        "Output adds no adoption result"
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "Отредактируй без объяснения правок. Факты: backend сначала запустили для Proteus; позже к нему подключили Helicopter; решения добавить метрики в roadmap не было. Исходник: Первый production-сценарий подтвердил необходимость общего backend. Метрики вошли в roadmap. Верни только готовый текст.",
+      "expected_output": "Наблюдаемая последовательность подключений без ложной агентности сценария и без выдуманного решения о roadmap.",
+      "files": [],
+      "expectations": [
+        "Output preserves that the backend was first launched for Proteus and Helicopter connected later",
+        "Output does not claim that a scenario proved or confirmed a necessity",
+        "Output removes the unsupported roadmap statement",
+        "Output preserves Proteus and Helicopter exactly",
+        "Output does not invent who approved the shared backend"
+      ]
+    },
+    {
+      "id": 49,
+      "prompt": "Отредактируй без объяснения правок. Факты: после изменений к сервису подключили Proteus, Autodesc и Helicopter; данных о масштабируемости, эффективности и качестве нет. Исходник: Решение заложило основу для дальнейшего масштабирования, повысило общую эффективность и вывело процесс на новый уровень качества. Верни только готовый текст.",
+      "expected_output": "Наблюдаемый результат с названиями подключенных продуктов вместо ритуального AI-вывода.",
+      "files": [],
+      "expectations": [
+        "Output states that Proteus, Autodesc, and Helicopter connected after the changes",
+        "Output preserves all three product names exactly",
+        "Output removes claims about scalability, efficiency, and quality",
+        "Output contains no ritual conclusion about a foundation or new level",
+        "Output adds no future benefit"
+      ]
+    },
+    {
+      "id": 50,
+      "prompt": "Отредактируй без объяснения правок и используй один термин для каждой сущности. Язык команды: production, runtime и review. Исходник: Runtime работает в prod. В PROD среде среда выполнения пишет trace. После проверки результат runtime передают на review. Верни только готовый текст.",
+      "expected_output": "Естественный инженерный текст с последовательными production, runtime и review без ненужного перевода.",
+      "files": [],
+      "expectations": [
+        "Output uses production consistently instead of mixing prod and PROD",
+        "Output uses runtime consistently instead of alternating with среда выполнения",
+        "Output preserves trace and review",
+        "Output does not translate established team terms merely for formal Russian",
+        "Output preserves the original sequence of runtime behavior, trace recording, and review"
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "Отредактируй без объяснения правок. В проекте `Evidence Registry` - официальное название раздела, `runtime` - закрепленный термин. Исходник: Механизм advisory lock защищает обновление модели данных. Результат сохраняется в `Evidence Registry`, а runtime публикует событие `evidence_saved`. Верни только готовый текст.",
+      "expected_output": "Точная естественная фраза, которая не удаляет корректные абстрактные термины и официальные технические названия.",
+      "files": [],
+      "expectations": [
+        "Output preserves механизм advisory lock or an equally precise natural construction",
+        "Output preserves модель данных",
+        "Output preserves `Evidence Registry`, runtime, and `evidence_saved` exactly",
+        "Output does not replace the official section name with a generic Russian phrase",
+        "Output adds no implementation detail"
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "Отредактируй без объяснения правок и сохрани авторство. Факты: автор определил подход и координировал реализацию; компоненты Router и Resolver разработали два инженера команды; автор не писал эти компоненты. Исходник: Я создал единый механизм маршрутизации: реализовал Router и Resolver вместе с участниками процесса. Верни только готовый текст.",
+      "expected_output": "Фрагмент отделяет архитектурный и координационный вклад автора от реализации компонентов командой.",
+      "files": [],
+      "expectations": [
+        "Output attributes defining the approach and coordinating implementation to the author",
+        "Output attributes implementation of Router and Resolver to two team engineers",
+        "Output does not claim that the author implemented either component",
+        "Output removes the vague participants-of-the-process wording",
+        "Output preserves Router and Resolver exactly"
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "Напиши короткий фрагмент рабочей истории по фактам. До изменения владельцы проектов просили автора вручную добавить проект в сервис. Автор перенес регистрацию проектов в self-service через GitLab. Теперь владельцы добавляют проекты самостоятельно. Не используй абстрактные слова вместо действий и не добавляй оценок. Верни только готовый текст.",
+      "expected_output": "Короткая естественная история с исходным состоянием, действием автора и наблюдаемым изменением.",
+      "files": [],
+      "expectations": [
+        "Output states that project owners previously asked the author to add projects manually",
+        "Output attributes moving project registration to GitLab self-service to the author",
+        "Output states that project owners now add projects themselves",
+        "Output preserves self-service and GitLab",
+        "Output adds no efficiency, quality, adoption, or time-saving claim"
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "Отредактируй текст из файла как инженерную историю. Верни только полный готовый текст. Факты: автор описал свои приемы работы с AI-агентами и адаптировал их для Codex и Claude Code; команде нужно было ускорить delivery без снижения качества; локальных AI-агентов и командные skills предложил автор; автор определил сопоставление пользователей Jira и GitLab и правило назначения мейнтейнеров; для агента выделили отдельный runtime и удаляют персональные данные перед вызовом модели; пилот использовали четыре инженера; масштабируемость и изменение качества не измеряли.",
+      "expected_output": "Связная естественная инженерная история без абстрактного AI-языка, ложного требования, выдуманной причинности и ритуального вывода.",
+      "files": [
+        "evals/fixtures/natural-engineering-draft.md"
+      ],
+      "expectations": [
+        "Output preserves the author's documentation and adaptation work for Codex and Claude Code",
+        "Output distinguishes the team's delivery need from the author's proposal of local AI agents and team skills",
+        "Output states the Jira-to-GitLab user matching and maintainer assignment rule",
+        "Output preserves the separate runtime and personal-data removal before model calls",
+        "Output states that four engineers used the pilot",
+        "Output makes no scalability or quality claim",
+        "Output removes opaque expressions such as executable standard, specialized contour, and model-facing restrictions",
+        "Output contains no ritual conclusion or explanation of the edit"
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "Проведи review, но не переписывай текст: Каноническая форма URL определена в RFC 3986. Модель данных описывает пользователей и их роли. Механизм advisory lock не позволяет двум worker одновременно обновить запись. Для обработки запросов используется специализированный GPU L4. Дай краткий вывод и только реальные проблемы.",
+      "expected_output": "Review не объявляет ошибками точные термины и проверяемые свойства только из-за сигнальных слов.",
+      "files": [],
+      "expectations": [
+        "Output does not flag каноническая merely because it is on a style signal list",
+        "Output does not flag модель данных or механизм advisory lock as empty abstractions",
+        "Output does not flag специализированный because the specific GPU purpose and model are named",
+        "Output may flag only a genuine grammar or clarity issue if one exists",
+        "Output stays concise and does not rewrite the text"
+      ]
     }
   ]
 }
