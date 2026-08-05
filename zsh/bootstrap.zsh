@@ -4,7 +4,7 @@ echo "🔧 Bootstrapping Zsh environment..."
 
 # Paths
 DOTFILES_ZSH="$HOME/.dotfiles/zsh"
-ZSH_FILES=(.zshrc .zprofile .zlogin)
+ZSH_FILES=(.zshrc .zprofile)
 
 for file in $ZSH_FILES; do
   TARGET="$HOME/$file"

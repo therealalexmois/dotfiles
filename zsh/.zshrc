@@ -80,8 +80,8 @@ DISABLE_AUTO_TITLE="true"
 # --- Prompt: clean multi-line rendering ---
 setopt PROMPT_SUBST
 
-# Корпоративный root CA (TINKOFFBANK-ROOTCA) для *.tbank.ru.
-# Экспортируем только если файл есть (на личной машине его нет — иначе Node ругается).
+# Корпоративный root CA для внутренних доменов работодателя.
+# Экспортируем только если файл есть (на личной машине его нет – иначе Node ругается).
 if [[ -r "$HOME/.claude/certs/corporate-root-ca.pem" ]]; then
   export NODE_EXTRA_CA_CERTS="$HOME/.claude/certs/corporate-root-ca.pem"
 fi

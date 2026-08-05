@@ -8,29 +8,66 @@ settings so one laptop can reproduce a consistent interactive development enviro
 
 ## Repository Structure
 
-- `ai-agents/` - Single Stow package for AI CLI agents. Holds `.codex/` (Codex `AGENTS.md`,
+Stow-managed (see README.md "The role of GNU Stow"):
+
+- `ai-agents/` - Stow package for AI CLI agents. Holds `.codex/` (Codex `AGENTS.md`,
   `config.shared.toml`, `config.local.toml.example`, and `*.config.toml` reasoning/mode
   profiles), `.claude/` (`CLAUDE.md`, `settings.json`, `statusline.sh`, and `agents/`
   tracked Claude Code subagents), and `.agents/skills/` (shared agent skills, the source of
   truth for both CLIs). Runtime state, secrets, and the rendered `config.toml` are
-  git-ignored.
+  git-ignored. Also stows a legacy top-level `ai-agents/rules/` (empty) to `~/rules`.
 - `alacritty/` - Alacritty terminal configuration, key bindings, color script, and themes.
 - `bootstrap/` - Stow package for home-level bootstrap files that redirect shell startup
-  into repo config.
+  into repo config, plus `install-alacritty.sh` (separate `stow` invocation for the
+  `alacritty` package, since Alacritty is a GUI app and never sees `$XDG_CONFIG_HOME`).
+
+Picked up via `$XDG_CONFIG_HOME=$HOME/.dotfiles` (no symlink; see `zsh/.zshenv`):
+
+- `atuin/` - Only `config.toml` is tracked; shell-history sync runtime state lives under
+  `$XDG_DATA_HOME/atuin` and is git-ignored.
+- `git/` - `ignore`, the global git excludes file. git identity (`user.name`/`email`) is
+  deliberately not tracked anywhere in this repo.
+- `lazydocker/` - lazydocker configuration (`config.yml`, tracked).
+- `mise/` - `config.toml`, Node (and other runtime) version pins (tracked).
+- `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile. No
+  symlink at `~/.config/nvim`; a launcher that doesn't inherit the shell's
+  `XDG_CONFIG_HOME` (e.g. a non-terminal GUI wrapper) falls back to an empty directory.
+- `tmux/` - tmux configuration (tmux 3.1+ XDG support); plugin checkouts (TPM-managed) are
+  intentionally ignored.
+- `zsh/` - `.zshrc`/`.zprofile`/`.zshenv`/`bootstrap.zsh` are tracked; `bootstrap.zsh`
+  additionally hand-symlinks `.zshrc`/`.zprofile` into `$HOME` (not via Stow) because
+  `ZDOTDIR` alone doesn't satisfy tools (like Oh My Zsh) that expect a literal `~/.zshrc`.
+- `starship.toml` (repo root) - Starship prompt configuration, loaded through
+  `$STARSHIP_CONFIG` rather than a default path.
+
+Local-only, not part of a reproducible install (present on this machine, but excluded from
+git either by `.gitignore` or by a machine-local `.git/info/exclude`, so a fresh clone
+won't reproduce them):
+
+- `glab-cli/`, `k9s/` - excluded via `.git/info/exclude` (not the committed `.gitignore`).
+- `homebrew/`, `htop/`, `lazygit/`, `openspec/` - excluded via the committed `.gitignore`
+  as pure runtime/telemetry/preference state.
+- `goose/` - empty; the tool isn't in `mac-setup/Brewfile` and has no documented install
+  step yet.
+
+Everything else:
+
+- `docs/` - Design/plan notes for repo-internal work (e.g. `docs/plans/`); not runtime
+  config.
+- `llm/` - Global AI prompt library and prompt-system policy used by Neovim. Read from a
+  hardcoded `~/.dotfiles/llm/prompts/` path (`nvim/lua/plugins/ai/codecompanion.lua`), so
+  the repo must live at exactly `~/.dotfiles`.
+- `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
 - `scripts/` - Repo tooling: `install-ai-cli-dotfiles.sh` (Stow + skill/profile symlinks),
   `render-codex-config.py` (merge shared + local Codex TOML into `~/.codex/config.toml`),
-  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), and `audit-skills.sh` (security
+  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `audit-skills.sh` (security
   audit of all skills via skill-security-auditor; compares with the committed
-  `skills-audit-baseline.json`).
-- `lazydocker/` - lazydocker configuration.
-- `llm/` - Global AI prompt library and prompt-system policy used by Neovim.
-- `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
-- `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile.
-- `tmux/` - tmux configuration; plugin checkouts are intentionally ignored.
-- `zsh/` - Tracked Zsh startup files and bootstrap script.
+  `skills-audit-baseline.json`), and `dry-run-install.sh` (validates Stow-package and zsh
+  startup symlinks against a throwaway fake `$HOME`; see README.md "Verifying the
+  install").
 - `.gitignore` - Ignore rules for machine state, plugin caches, and local-only tools.
-- `README.md` - Manual macOS setup notes and installation checklist.
-- `starship.toml` - Starship prompt configuration loaded through `STARSHIP_CONFIG`.
+- `README.md` - Reproducible install guide: install order, Homebrew vs other install
+  methods, GNU Stow's role, and per-tool setup/theme notes.
 
 ## Build & Development Commands
 
@@ -48,6 +85,10 @@ stow --target "$HOME" bootstrap
 
 # Link tracked Zsh startup files and install Oh My Zsh if missing.
 zsh zsh/bootstrap.zsh
+
+# Alacritty is a GUI app and never sees $XDG_CONFIG_HOME, so it needs its own
+# Stow-backed symlink at ~/.config/alacritty.
+bootstrap/install-alacritty.sh
 
 # Install AI CLI agent dotfiles: backup, Stow `bootstrap`+`ai-agents` (folds
 # ~/.claude/agents), render Codex config, and create per-skill / per-profile symlinks for
@@ -84,6 +125,10 @@ scripts/check-ai-cli.sh
 # Security-audit all agent skills (skips *-workspace scratch dirs) and compare the
 # verdicts with scripts/skills-audit-baseline.json; --update-baseline rewrites it.
 scripts/audit-skills.sh
+
+# Validate Stow-package and zsh startup symlinks against a throwaway fake $HOME;
+# does not touch the real $HOME or install anything.
+scripts/dry-run-install.sh
 ```
 
 Type-check:
@@ -277,7 +322,7 @@ Rename checklist (every step is required, the link layers break silently):
   profile needs the `claude-code-acp` bridge (`npm install -g @zed-industries/claude-code-acp`);
   `claudecode.nvim` needs only the `claude` CLI. `CLAUDE_CODE_OAUTH_TOKEN` (from
   `claude setup-token`) is optional and, if used, is a local-only secret exported from the
-  shell env — never commit it. ACP also works without it on an interactive subscription.
+  shell env – never commit it. ACP also works without it on an interactive subscription.
 - Treat `.pyenv/`, `tmux/plugins/*`, ignored Zsh plugin checkouts, shell history, htop
   config, and local-only CLI configs as machine state unless the user explicitly asks to
   version them.
@@ -385,6 +430,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | Shell entrypoint | `bootstrap/.zshenv` / `zsh/bootstrap.zsh` | |
 | Starship module | `starship.toml` | |
 | Terminal config | `alacritty/` | |
+| Install validation | `scripts/dry-run-install.sh` | Fake-`$HOME` symlink check; full VM run documented in README.md "Verifying the install" |
 
 Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile variables in CodeCompanion config.
 

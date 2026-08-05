@@ -2,13 +2,13 @@
 # Host-specific project trust entries, MCP servers, and plugins belong here.
 # Do not put machine-specific MCP/plugin settings into config.shared.toml.
 
-[projects."/Users/al.a.moiseenko/work/dwsai-data-agent"]
+[projects."/Users/<your-username>/work/<work-project>"]
 trust_level = "trusted"
 
-[projects."/Users/al.a.moiseenko/projects/work-vault"]
+[projects."/Users/<your-username>/projects/<another-project>"]
 trust_level = "trusted"
 
-[projects."/Users/al.a.moiseenko/.dotfiles"]
+[projects."/Users/<your-username>/.dotfiles"]
 trust_level = "trusted"
 
 # Example for a corporate workstation only:

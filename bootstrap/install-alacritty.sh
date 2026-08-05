@@ -14,6 +14,12 @@ if [[ -e "$TARGET" && ! -L "$TARGET" ]]; then
   rm -rf "$TARGET"
 fi
 
+# Without a pre-existing ~/.config, stow would fold the whole directory into a
+# single ~/.config -> <repo>/alacritty/.config symlink instead of a leaf-level
+# ~/.config/alacritty one, quietly routing every future ~/.config/<other-app>
+# write into this repo.
+mkdir -p "${HOME}/.config"
+
 stow --dir "$DOTFILES_DIR" --target "$HOME" alacritty
 
 echo "✅ Symlink: $TARGET → $(readlink "$TARGET")"
