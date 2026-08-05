@@ -1,0 +1,14 @@
+interface:
+  display_name: OpenSpec Reviewer
+  short_description: Ревью intent, capability и OpenSpec-дельт
+  default_prompt: Используй $review-openspec-change, чтобы проверить intent, границу
+    capability и все артефакты OpenSpec change, затем дать итоговый verdict.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
