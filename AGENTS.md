@@ -225,6 +225,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | `anthropic-` | skills imported from or based on Anthropic workflows |
 | `python-` | Python coding conventions |
 | `jira-` | Jira workflows |
+| `git-` | Git repository and worktree workflows |
 | `gitlab-` | GitLab workflows |
 | `spirit-deploy` | deploy (single-skill domain) |
 
@@ -244,6 +245,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | write a plan or design document | `writing-plans` | yes |
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
+| inspect, create, reuse, sync, or clean up Git worktrees | `git-worktree` | yes |
 | create, edit, or eval a skill | `anthropic-skill-creator` | yes |
 | audit skill for security | `skill-security-auditor` | manual |
 | audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |

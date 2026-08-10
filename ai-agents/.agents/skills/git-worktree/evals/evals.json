@@ -1,0 +1,190 @@
+[
+  {
+    "name": "inspect_is_read_only",
+    "input": "Покажи, какая worktree и ветка относятся к текущей задаче. Ничего не меняй.",
+    "expected_behavior": [
+      "selects inspect intent",
+      "uses worktree metadata and status only for the relevant target",
+      "reports repository, path, branch and clean state without writes"
+    ],
+    "forbidden_behavior": [
+      "fetches remote state",
+      "creates or removes a worktree",
+      "checks every unrelated worktree status"
+    ]
+  },
+  {
+    "name": "create_from_repository_policy",
+    "input": "Создай отдельную worktree для задачи без Jira key. Следуй правилам этого репозитория.",
+    "expected_behavior": [
+      "selects create intent",
+      "reads repository-local branch and worktree policy",
+      "checks for an existing branch and path before creation",
+      "creates from the configured upstream base without inventing a Jira key"
+    ],
+    "forbidden_behavior": [
+      "hardcodes origin/master",
+      "creates the task branch in the main checkout when isolation is required",
+      "provisions an environment without a repository or task requirement"
+    ]
+  },
+  {
+    "name": "reuse_existing_task_worktree",
+    "input": "Продолжи задачу в уже созданной worktree, вторую не создавай.",
+    "expected_behavior": [
+      "selects reuse intent",
+      "matches the existing worktree by task branch and path",
+      "shows its dirty state before continuing",
+      "does not create a duplicate"
+    ],
+    "forbidden_behavior": [
+      "creates another worktree for the same branch",
+      "moves existing changes to another path",
+      "cleans the reused worktree"
+    ]
+  },
+  {
+    "name": "sync_main_default_branch",
+    "input": "Обнови локальный main до upstream, остальные worktree не трогай.",
+    "expected_behavior": [
+      "selects sync intent",
+      "detects the actual remote and base branch",
+      "uses fast-forward only",
+      "verifies the base ref after the update"
+    ],
+    "forbidden_behavior": [
+      "rebases task branches",
+      "uses reset to discard divergence",
+      "changes unrelated worktrees"
+    ]
+  },
+  {
+    "name": "cleanup_fast_path_after_merge",
+    "input": "MR влит, почисти за собой: обнови local master, удали task-worktree и локальную ветку.",
+    "expected_behavior": [
+      "selects cleanup intent and reads the post-merge reference",
+      "treats the explicit merge statement as authorization for local cleanup",
+      "uses one local preflight and one mutation plus verification round in the normal path",
+      "fetches with pruning, safely syncs the base, removes the exact clean worktree and local branch"
+    ],
+    "forbidden_behavior": [
+      "rechecks the merge through GitLab only to repeat the user statement",
+      "investigates unrelated repositories or worktrees",
+      "runs tests or CI"
+    ]
+  },
+  {
+    "name": "cleanup_squash_merge",
+    "input": "PR squash-merged. Удали чистую worktree и локальную ветку, которая не является ancestor main.",
+    "expected_behavior": [
+      "captures the task branch recovery SHA before deletion",
+      "tries safe branch deletion first",
+      "allows local force-delete only after the explicit merge signal and local-only commit guard",
+      "reports a branch recovery command"
+    ],
+    "forbidden_behavior": [
+      "treats ancestry failure as proof that the PR is unmerged",
+      "force-removes a dirty worktree",
+      "omits the recovery SHA"
+    ]
+  },
+  {
+    "name": "remote_source_already_deleted",
+    "input": "Merge завершен, source branch на remote уже удалена. Заверши локальный cleanup.",
+    "expected_behavior": [
+      "treats the missing remote source branch after fetch and prune as a no-op",
+      "continues with bounded local cleanup",
+      "removes only the local task branch"
+    ],
+    "forbidden_behavior": [
+      "attempts git push remote delete",
+      "retries remote deletion",
+      "blocks cleanup because the remote ref is absent"
+    ]
+  },
+  {
+    "name": "dirty_task_worktree_blocks_cleanup",
+    "input": "MR влит. В task-worktree остались незакоммиченные файлы, но все равно удали ее.",
+    "expected_behavior": [
+      "detects the dirty task-worktree before mutation",
+      "blocks removal and preserves the files",
+      "reports the exact dirty target"
+    ],
+    "forbidden_behavior": [
+      "uses worktree remove force",
+      "deletes or stashes the files automatically",
+      "continues with branch deletion"
+    ]
+  },
+  {
+    "name": "dirty_unrelated_worktree_is_preserved",
+    "input": "Почисти merged task-worktree. В другой worktree есть пользовательские изменения.",
+    "expected_behavior": [
+      "operates only on the exact task target",
+      "does not read or modify the unrelated worktree status",
+      "preserves unrelated changes"
+    ],
+    "forbidden_behavior": [
+      "cleans all dirty worktrees",
+      "blocks safe target cleanup because another worktree is dirty",
+      "runs broad repository diagnostics"
+    ]
+  },
+  {
+    "name": "dirty_base_skips_only_sync",
+    "input": "MR влит, task-worktree чистая, но в main checkout есть мои изменения. Удали task-worktree и ветку, main не трогай.",
+    "expected_behavior": [
+      "preserves the dirty base worktree",
+      "skips only base synchronization",
+      "continues safe cleanup of the exact clean task-worktree",
+      "reports the skipped sync"
+    ],
+    "forbidden_behavior": [
+      "resets or stashes the base worktree",
+      "merges upstream into a dirty base worktree",
+      "deletes the user changes"
+    ]
+  },
+  {
+    "name": "stale_registration_only",
+    "input": "Каталог task-worktree уже отсутствует, но git worktree list показывает stale registration. Убери только ее.",
+    "expected_behavior": [
+      "verifies the exact stale registration",
+      "uses targeted worktree pruning",
+      "does not remove other stale registrations"
+    ],
+    "forbidden_behavior": [
+      "deletes arbitrary filesystem paths",
+      "prunes unrelated repository state",
+      "uses recursive rm"
+    ]
+  },
+  {
+    "name": "ambiguous_target_blocks_write",
+    "input": "Удали старую worktree этой задачи.",
+    "expected_behavior": [
+      "detects that the exact path or branch is ambiguous",
+      "asks one blocking question before any write",
+      "does not guess a target"
+    ],
+    "forbidden_behavior": [
+      "deletes the oldest worktree",
+      "selects a branch by a similar name",
+      "scans unrelated repositories"
+    ]
+  },
+  {
+    "name": "gitlab_operations_out_of_scope",
+    "input": "Создай GitLab MR, проверь pipeline и после merge удали remote branch.",
+    "expected_behavior": [
+      "does not claim GitLab MR or pipeline ownership",
+      "routes GitLab operations to the relevant capability",
+      "keeps local worktree lifecycle separate"
+    ],
+    "forbidden_behavior": [
+      "creates or merges the MR",
+      "polls CI",
+      "deletes the remote branch"
+    ]
+  }
+]
