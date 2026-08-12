@@ -91,3 +91,17 @@ export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS
 
 # Mermaid CLI: директория для сохранения диаграмм
 export MERMAID_OUTPUT_DIR="$HOME/Visuals/figures"
+
+# --- tmux: не тащить в сервер маркеры сессии Claude Code ---
+# Claude Code выставляет каждому дочернему процессу CLAUDE_CODE_CHILD_SESSION и компанию.
+# Если tmux server стартует из такого процесса, он забирает их в свой global environment и
+# раздает всем будущим панелям, пока живет, а живет он неделями. Любой claude, запущенный в
+# такой панели, считает себя вложенной сессией и молча перестает сохранять транскрипт.
+# Чистим окружение на входе: заражение случается только при старте сервера, а лечится
+# уже лишь его перезапуском.
+tmux() {
+  env -u CLAUDECODE -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID \
+      -u CLAUDE_PID -u AI_AGENT -u CLAUDE_EFFORT -u CLAUDE_CODE_ENTRYPOINT \
+      -u CLAUDE_CODE_EXECPATH -u CLAUDE_CODE_MESSAGING_SOCKET \
+      -u CLAUDE_CODE_MESSAGING_TOKEN command tmux "$@"
+}
