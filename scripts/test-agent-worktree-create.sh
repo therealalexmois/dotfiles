@@ -5,7 +5,9 @@ set -euo pipefail
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 wrapper="${repo_dir}/ai-agents/.agents/skills/git-worktree/scripts/agent-worktree-create"
 claude_hook="${repo_dir}/ai-agents/.claude/hooks/worktree-create.sh"
-expected_delegate="\$HOME/.local/bin/agent-worktree-create"
+skill_file="${repo_dir}/ai-agents/.agents/skills/git-worktree/SKILL.md"
+installer="${repo_dir}/scripts/install-ai-cli-dotfiles.sh"
+expected_delegate="\$HOME/.agents/skills/git-worktree/scripts/agent-worktree-create"
 test_root="$(mktemp -d)"
 
 cleanup() {
@@ -77,6 +79,11 @@ git -C "$checkout" check-ignore -q .worktrees || fail ".worktrees is not exclude
 
 grep -Fq "$expected_delegate" "$claude_hook" \
   || fail "Claude hook does not delegate to the shared wrapper"
+grep -Fq '[scripts/agent-worktree-create](scripts/agent-worktree-create)' "$skill_file" \
+  || fail "SKILL.md does not link the bundled worktree script"
+if grep -Fq 'agent-worktree-create' "$installer"; then
+  fail "installer still manages a separate worktree command link"
+fi
 if grep -Eq 'git[^[:cntrl:]]+worktree add' "$claude_hook"; then
   fail "Claude hook still creates worktrees directly"
 fi

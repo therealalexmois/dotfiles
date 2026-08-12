@@ -20,7 +20,7 @@
       "selects create intent",
       "reads repository-local branch and worktree policy",
       "checks for an existing branch and path before creation",
-      "uses ~/.local/bin/agent-worktree-create instead of git worktree add",
+      "uses the bundled scripts/agent-worktree-create through the canonical ~/.agents/skills/git-worktree path instead of git worktree add",
       "passes the task branch and repository root as separate arguments without inventing a Jira key",
       "treats wrapper stdout as the created worktree path and verifies the resulting Git state"
     ],

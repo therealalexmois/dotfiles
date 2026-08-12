@@ -19,7 +19,7 @@ worktree_name=$(printf '%s' "$input" | jq -r '.name // empty')
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
 [[ -n "$cwd" ]] || { err "no cwd in hook input"; exit 1; }
 
-wrapper="$HOME/.local/bin/agent-worktree-create"
+wrapper="$HOME/.agents/skills/git-worktree/scripts/agent-worktree-create"
 [[ -x "$wrapper" ]] || { err "shared command is not executable: $wrapper"; exit 1; }
 
 exec "$wrapper" --name "$worktree_name" --cwd "$cwd"

@@ -59,15 +59,17 @@ description: >-
 1. Проверить, не существуют ли уже точная task-ветка или worktree path.
 2. Если существует worktree той же задачи, перейти в `reuse`.
 3. Если ветка или путь заняты другой задачей, остановиться с точным конфликтом.
-4. В Codex вызвать общую команду вместо прямого `git worktree add`:
+4. В Codex вызвать bundled [scripts/agent-worktree-create](scripts/agent-worktree-create) вместо прямого `git worktree add`:
 
    ```sh
-   ~/.local/bin/agent-worktree-create --name "$task_branch" --cwd "$repo_root"
+   ~/.agents/skills/git-worktree/scripts/agent-worktree-create \
+     --name "$task_branch" \
+     --cwd "$repo_root"
    ```
 
-   Installer публикует этот runtime CLI из bundled [scripts/agent-worktree-create](scripts/agent-worktree-create). Передать branch/name и repository root отдельными аргументами. Не собирать команду через `eval` и не передавать Claude hook JSON.
+   `~/.agents/skills/git-worktree` является canonical runtime-ссылкой на skill. Передать branch/name и repository root отдельными аргументами. Не собирать команду через `eval` и не передавать Claude hook JSON.
 5. Не запускать wrapper после `git worktree add`: wrapper сам выполняет `git fetch origin`, создает ветку и `.worktrees/<type>-<name>`, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `scripts/worktree-setup.sh`.
-6. Если `~/.local/bin/agent-worktree-create` отсутствует или не executable, остановиться с blocker. Не подменять постоянный путь прямым `git worktree add`.
+6. Если bundled script отсутствует или не executable, остановиться с blocker. Не подменять его прямым `git worktree add`.
 7. Прочитать абсолютный worktree path из stdout wrapper и проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
 
 Не создавать task-ветку в основном checkout, если repository contract требует изоляцию.
