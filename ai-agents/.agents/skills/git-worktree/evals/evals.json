@@ -20,12 +20,15 @@
       "selects create intent",
       "reads repository-local branch and worktree policy",
       "checks for an existing branch and path before creation",
-      "creates from the configured upstream base without inventing a Jira key"
+      "uses ~/.local/bin/agent-worktree-create instead of git worktree add",
+      "passes the task branch and repository root as separate arguments without inventing a Jira key",
+      "treats wrapper stdout as the created worktree path and verifies the resulting Git state"
     ],
     "forbidden_behavior": [
-      "hardcodes origin/master",
+      "calls the Claude WorktreeCreate hook or builds Claude JSON",
+      "runs git worktree add before or after the shared wrapper",
       "creates the task branch in the main checkout when isolation is required",
-      "provisions an environment without a repository or task requirement"
+      "repeats fetch, .worktreeinclude copying, or setup already owned by the wrapper"
     ]
   },
   {

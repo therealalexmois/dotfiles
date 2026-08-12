@@ -350,7 +350,9 @@ under `~/.dotfiles-backups/`):
 3. Symlinks every skill under `ai-agents/.agents/skills/` into `~/.agents/skills/`, with
    child links from `~/.claude/skills/` and `~/.codex/skills/`, and prunes stale links for
    renamed/removed skills.
-4. Symlinks Codex reasoning/mode profile TOML files into `~/.codex/`.
+4. Symlinks the bundled `git-worktree/scripts/agent-worktree-create` command into
+   `~/.local/bin/` for both Codex and the Claude WorktreeCreate hook.
+5. Symlinks Codex reasoning/mode profile TOML files into `~/.codex/`.
 
 See [Personalizing your setup](#personalizing-your-setup) for the local-only
 `config.local.toml` you need to create before this is useful.

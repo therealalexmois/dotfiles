@@ -5,6 +5,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 repo_dir="${HOME}/.dotfiles"
 backup_dir="${HOME}/.dotfiles-backups/ai-cli-dotfiles/$(date +%Y%m%d-%H%M%S)"
+agent_worktree_command="${repo_dir}/ai-agents/.agents/skills/git-worktree/scripts/agent-worktree-create"
 
 # Shared skills are discovered from the tracked source of truth so this list never
 # drifts. Skill eval scratch dirs (`*-workspace`) are excluded.
@@ -155,7 +156,59 @@ ensure_correct_profile_link() {
   echo "created profile link: $link_path -> $target"
 }
 
+ensure_correct_worktree_command_link() {
+  local target="../../.agents/skills/git-worktree/scripts/agent-worktree-create"
+  local link_path="${HOME}/.local/bin/agent-worktree-create"
+
+  mkdir -p "${HOME}/.local/bin"
+  if [[ -L "$link_path" ]]; then
+    local current
+    current="$(readlink "$link_path")"
+    if [[ "$current" == "$target" ]]; then
+      echo "worktree command link ok: $link_path -> $current"
+      return 0
+    fi
+    echo "unexpected worktree command symlink: $link_path -> $current" >&2
+    exit 1
+  fi
+  if [[ -e "$link_path" ]]; then
+    move_conflict "$link_path" "local/bin/agent-worktree-create"
+  fi
+  ln -s "$target" "$link_path"
+  echo "created worktree command link: $link_path -> $target"
+}
+
+prepare_worktree_command_path() {
+  local link_path="${HOME}/.local/bin/agent-worktree-create"
+  local expected_target="../../.agents/skills/git-worktree/scripts/agent-worktree-create"
+  local legacy_target="../../.dotfiles/ai-agents/.local/bin/agent-worktree-create"
+
+  if [[ ! -e "$link_path" && ! -L "$link_path" ]]; then
+    return 0
+  fi
+  if [[ -L "$link_path" ]]; then
+    local current
+    current="$(readlink "$link_path")"
+    if [[ "$current" == "$expected_target" ]]; then
+      echo "worktree command link ok: $link_path -> $current"
+      return 0
+    fi
+    if [[ "$current" == "$legacy_target" ]]; then
+      rm "$link_path"
+      echo "removed legacy worktree command link: $link_path -> $current"
+      return 0
+    fi
+    echo "unexpected worktree command symlink: $link_path -> $current" >&2
+    exit 1
+  fi
+  move_conflict "$link_path" "local/bin/agent-worktree-create"
+}
+
 validate_sources() {
+  if [[ ! -x "$agent_worktree_command" ]]; then
+    echo "missing executable source: $agent_worktree_command" >&2
+    exit 1
+  fi
   for skill in "${skills[@]}"; do
     if [[ ! -d "${repo_dir}/ai-agents/.agents/skills/${skill}" ]]; then
       echo "missing tracked skill source: ${skill}" >&2
@@ -170,7 +223,7 @@ validate_sources() {
 
 main() {
   cd "$repo_dir"
-  mkdir -p "$backup_dir"
+  mkdir -p "$backup_dir" "${HOME}/.local/bin"
   echo "backup directory: $backup_dir"
 
   validate_sources
@@ -180,6 +233,7 @@ main() {
   backup_item "${HOME}/.claude/settings.json" "claude/settings.json"
   backup_item "${HOME}/.claude/CLAUDE.md" "claude/CLAUDE.md"
   backup_item "${HOME}/.claude/agents" "claude/agents"
+  backup_item "${HOME}/.local/bin/agent-worktree-create" "local/bin/agent-worktree-create"
 
   for profile in "${codex_profiles[@]}"; do
     backup_item "${HOME}/.codex/${profile}" "codex/${profile}"
@@ -197,6 +251,7 @@ main() {
   prepare_stow_path "${HOME}/.claude/CLAUDE.md" "../.dotfiles/ai-agents/.claude/CLAUDE.md" "stow-conflicts/claude/CLAUDE.md"
   prepare_stow_path "${HOME}/.claude/settings.json" "../.dotfiles/ai-agents/.claude/settings.json" "stow-conflicts/claude/settings.json"
   prepare_stow_path "${HOME}/.claude/agents" "../.dotfiles/ai-agents/.claude/agents" "stow-conflicts/claude/agents"
+  prepare_worktree_command_path
   for skill in "${skills[@]}"; do
     prepare_stow_path "${HOME}/.agents/skills/${skill}" "../../.dotfiles/ai-agents/.agents/skills/${skill}" "stow-conflicts/agents/skills/${skill}"
   done
@@ -213,6 +268,7 @@ main() {
     ensure_correct_skill_link "${HOME}/.codex" "$skill"
     ensure_correct_skill_link "${HOME}/.claude" "$skill"
   done
+  ensure_correct_worktree_command_link
 
   prune_stray_skill_links "${HOME}/.codex/skills" "../../.agents/skills/"
   prune_stray_skill_links "${HOME}/.claude/skills" "../../.agents/skills/"
@@ -232,6 +288,8 @@ main() {
   test -L "${HOME}/.claude/CLAUDE.md" && readlink "${HOME}/.claude/CLAUDE.md"
   test -L "${HOME}/.claude/settings.json" && readlink "${HOME}/.claude/settings.json"
   test -L "${HOME}/.claude/agents" && readlink "${HOME}/.claude/agents"
+  test -x "${HOME}/.local/bin/agent-worktree-create"
+  test -L "${HOME}/.local/bin/agent-worktree-create" && readlink "${HOME}/.local/bin/agent-worktree-create"
   test -d "${HOME}/.codex/skills/.system"
   find "${HOME}/.agents/skills" -maxdepth 1 -mindepth 1 -type l -print | sort
   find "${HOME}/.codex/skills" -maxdepth 1 -type l -print | sort

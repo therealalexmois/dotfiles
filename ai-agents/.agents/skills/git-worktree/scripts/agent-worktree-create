@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+# Bundled git-worktree command for creating a named branch and worktree.
+#
+# Contract: accept --name and --cwd, print only the absolute worktree path on
+# stdout, and return non-zero before creation when the remote base cannot be
+# refreshed. Provisioning after creation remains best-effort.
+
+set -uo pipefail
+
+err() { printf 'agent-worktree-create: %s\n' "$1" >&2; }
+
+usage() {
+  printf 'usage: agent-worktree-create --name <name> --cwd <repository-path>\n' >&2
+}
+
+worktree_name=""
+cwd=""
+name_set=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --name)
+      [[ $# -ge 2 ]] || { err "--name requires a value"; usage; exit 2; }
+      worktree_name="$2"
+      name_set=1
+      shift 2
+      ;;
+    --cwd)
+      [[ $# -ge 2 ]] || { err "--cwd requires a value"; usage; exit 2; }
+      cwd="$2"
+      shift 2
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      err "unknown argument: $1"
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+[[ "$name_set" -eq 1 ]] || { err "--name is required"; usage; exit 2; }
+[[ -n "$cwd" ]] || { err "--cwd is required"; usage; exit 2; }
+command -v git >/dev/null 2>&1 || { err "git not found"; exit 1; }
+
+repo_root=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || {
+  err "not a git repository: $cwd"
+  exit 1
+}
+
+# conventionalbranch.org: lowercase a-z0-9, hyphens between words, dots only
+# in release versions. Keep `/` so an existing `type/...` prefix survives.
+sanitize() {
+  printf '%s' "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed -E 's#[^a-z0-9._/-]+#-#g; s#-{2,}#-#g; s#\.{2,}#.#g; s#^[-._/]+##; s#[-._/]+$##'
+}
+
+known_type='feature|feat|bugfix|fix|hotfix|release|chore|ai|copilot|cursor|claude|codex'
+default_type='feat'
+clean=$(sanitize "$worktree_name")
+
+# Claude may omit a meaningful name for `claude -w`. Since this command owns
+# creation, synthesize the same kind of stable unique fallback locally.
+case "$clean" in
+  "" | worktree | wt) clean="wt-$(date '+%Y%m%d-%H%M%S')" ;;
+esac
+
+if printf '%s' "$clean" | grep -qE "^(${known_type})/"; then
+  branch="$clean"
+else
+  branch="$default_type/$clean"
+fi
+
+git check-ref-format --branch "$branch" >/dev/null 2>&1 || {
+  err "invalid branch name after normalization: $branch"
+  exit 1
+}
+
+# Keep worktrees flat even though branches keep their conventional type prefix.
+dir_name=$(printf '%s' "$branch" | tr '/' '-')
+path="$repo_root/.worktrees/$dir_name"
+
+# Refresh the canonical remote before resolving origin/HEAD. A failed fetch is
+# an explicit blocker so the command cannot silently branch from stale state.
+if ! git -C "$repo_root" fetch origin >&2; then
+  err "git fetch origin failed"
+  exit 1
+fi
+
+base_ref=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
+[[ -n "$base_ref" ]] || base_ref=HEAD
+
+# Keep `.worktrees/` out of status without changing the tracked .gitignore.
+git_common=$(git -C "$repo_root" rev-parse --git-common-dir 2>/dev/null)
+case "$git_common" in
+  /*) ;;
+  *) git_common="$repo_root/$git_common" ;;
+esac
+if ! git -C "$repo_root" check-ignore -q .worktrees 2>/dev/null; then
+  printf '.worktrees/\n' >>"$git_common/info/exclude" 2>/dev/null || true
+fi
+
+# Git writes progress to stderr so stdout remains machine-readable for callers.
+mkdir -p "$(dirname "$path")"
+if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
+  git -C "$repo_root" worktree add "$path" "$branch" >&2
+  rc=$?
+else
+  git -C "$repo_root" worktree add "$path" -b "$branch" "$base_ref" >&2
+  rc=$?
+fi
+[[ "$rc" -eq 0 ]] || { err "git worktree add failed (rc=$rc)"; exit 1; }
+
+# Copy listed ignored local files without duplicating tracked content. Invalid
+# paths and virtual environments are skipped after creation, with a warning.
+include="$repo_root/.worktreeinclude"
+if [[ -f "$include" ]]; then
+  while IFS= read -r raw || [[ -n "$raw" ]]; do
+    line="${raw#"${raw%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [[ -z "$line" ]] && continue
+    case "$line" in \#*) continue ;; esac
+    case "$line" in
+      /* | ../* | */../* | */..)
+        err "skipping unsafe include path: $line"
+        continue
+        ;;
+      .venv | .venv/ | */.venv | */.venv/)
+        err "skipping $line (recreate venv with uv, not copyable)"
+        continue
+        ;;
+    esac
+    src="$repo_root/$line"
+    [[ -e "$src" ]] || continue
+    git -C "$repo_root" check-ignore -q "$line" 2>/dev/null || continue
+    dest="$path/$line"
+    mkdir -p "$(dirname "$dest")"
+    cp -a "$src" "$dest" 2>/dev/null || err "could not copy $line"
+  done <"$include"
+fi
+
+# Prefer a repository setup script, then provision uv projects. Provisioning is
+# best-effort because the branch and worktree already exist at this point.
+log_file="${XDG_STATE_HOME:-$HOME/.local/state}/agent-worktree-create.log"
+mkdir -p "$(dirname "$log_file")" 2>/dev/null || true
+setup=""
+for candidate in "$repo_root/.worktree-setup.sh" "$repo_root/scripts/worktree-setup.sh"; do
+  [[ -x "$candidate" ]] && { setup="$candidate"; break; }
+done
+if [[ -n "$setup" ]]; then
+  (cd "$path" && "$setup") >>"$log_file" 2>&1 \
+    || err "worktree setup script failed (see $log_file); provision manually"
+elif [[ -f "$path/uv.lock" ]] && command -v uv >/dev/null 2>&1; then
+  (cd "$path" && uv venv && uv sync) >>"$log_file" 2>&1 \
+    || err "uv provisioning failed (see $log_file); run 'uv venv && uv sync' manually"
+fi
+
+printf '%s\n' "$path"

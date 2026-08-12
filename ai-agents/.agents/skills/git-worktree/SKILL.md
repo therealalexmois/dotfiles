@@ -34,7 +34,7 @@ description: >-
 
 1. Найти repository root из явного пути или текущей рабочей директории. Не сканировать домашнюю директорию целиком.
 2. Прочитать применимые `AGENTS.md`, `CLAUDE.md` и repository-local правила worktree, веток и setup.
-3. Определить remote, base branch, task branch и worktree path из явного запроса, Git state и repository policy. Не хардкодить `origin`, `main`, `master` или расположение worktree.
+3. Определить remote, base branch, task branch и worktree path из явного запроса, Git state и repository policy. Для `create` учесть контракт общей команды ниже: она использует `origin`, `origin/HEAD` и каталог `.worktrees/`. Если repository policy с ним конфликтует, остановиться и показать конфликт вместо обхода wrapper.
 4. Выполнить `git status --porcelain=v1 -uall` только для рабочих копий, которые операция должна изменить.
 5. Получить точное соответствие worktree и веток через `git worktree list --porcelain`.
 6. Сохранить unrelated changes. Не выполнять reset, rebase, checkout с потерей данных или широкую очистку.
@@ -59,10 +59,16 @@ description: >-
 1. Проверить, не существуют ли уже точная task-ветка или worktree path.
 2. Если существует worktree той же задачи, перейти в `reuse`.
 3. Если ветка или путь заняты другой задачей, остановиться с точным конфликтом.
-4. Обновить нужный upstream ref, если repository policy требует свежую базу.
-5. Создать ветку от явной или установленной policy base branch и добавить worktree в требуемом репозиторием каталоге.
-6. Копировать ignored local files, запускать setup или создавать environment только когда это требует repository-local инструкция или текущая задача.
-7. Проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
+4. В Codex вызвать общую команду вместо прямого `git worktree add`:
+
+   ```sh
+   ~/.local/bin/agent-worktree-create --name "$task_branch" --cwd "$repo_root"
+   ```
+
+   Installer публикует этот runtime CLI из bundled [scripts/agent-worktree-create](scripts/agent-worktree-create). Передать branch/name и repository root отдельными аргументами. Не собирать команду через `eval` и не передавать Claude hook JSON.
+5. Не запускать wrapper после `git worktree add`: wrapper сам выполняет `git fetch origin`, создает ветку и `.worktrees/<type>-<name>`, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `scripts/worktree-setup.sh`.
+6. Если `~/.local/bin/agent-worktree-create` отсутствует или не executable, остановиться с blocker. Не подменять постоянный путь прямым `git worktree add`.
+7. Прочитать абсолютный worktree path из stdout wrapper и проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
 
 Не создавать task-ветку в основном checkout, если repository contract требует изоляцию.
 

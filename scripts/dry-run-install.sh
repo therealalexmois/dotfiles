@@ -70,11 +70,15 @@ expect_link "$FAKE_HOME/.config/alacritty" "$REPO_DIR/alacritty/.config/alacritt
 echo
 
 echo "=== stow: ai-agents ==="
+# Prepare the target directory used by the installer's runtime command link.
+mkdir -p "$FAKE_HOME/.local/bin"
 stow -n -v --target "$FAKE_HOME" ai-agents
 stow --target "$FAKE_HOME" ai-agents
 for f in .codex/AGENTS.md .claude/CLAUDE.md .claude/settings.json .claude/agents; do
   [[ -L "$FAKE_HOME/$f" || -e "$FAKE_HOME/$f" ]] || { echo "FAIL: missing $FAKE_HOME/$f" >&2; fail=1; }
 done
+ln -s "../../.agents/skills/git-worktree/scripts/agent-worktree-create" "$FAKE_HOME/.local/bin/agent-worktree-create"
+expect_link "$FAKE_HOME/.local/bin/agent-worktree-create" "$REPO_DIR/ai-agents/.agents/skills/git-worktree/scripts/agent-worktree-create"
 find "$FAKE_HOME/.claude" "$FAKE_HOME/.codex" -maxdepth 1 2>/dev/null | sort
 echo
 
