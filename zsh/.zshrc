@@ -92,6 +92,12 @@ export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS
 # Mermaid CLI: директория для сохранения диаграмм
 export MERMAID_OUTPUT_DIR="$HOME/Visuals/figures"
 
+# --- Машинно-локальный конфиг ---
+# Настройки и секреты, которые нужны только на конкретной машине (например рабочие) и не
+# должны попадать в репозиторий. Лежит в XDG_DATA_HOME, а не в XDG_CONFIG_HOME: последний
+# указывает внутрь ~/.dotfiles, то есть в git. На личной машине файла просто нет.
+[[ -r "$XDG_DATA_HOME/zsh/local.zsh" ]] && source "$XDG_DATA_HOME/zsh/local.zsh"
+
 # --- tmux: не тащить в сервер маркеры сессии Claude Code ---
 # Claude Code выставляет каждому дочернему процессу CLAUDE_CODE_CHILD_SESSION и компанию.
 # Если tmux server стартует из такого процесса, он забирает их в свой global environment и
