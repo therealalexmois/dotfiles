@@ -1,0 +1,14 @@
+interface:
+  display_name: Select Reasoning Effort
+  short_description: Choose effort for the next work phase
+  default_prompt: Use $select-reasoning-effort to recommend the effort for my next
+    work phase.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
