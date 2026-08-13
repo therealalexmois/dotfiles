@@ -189,5 +189,52 @@
       "polls CI",
       "deletes the remote branch"
     ]
+  },
+  {
+    "name": "create_json_output_is_opt_in",
+    "input": "Создай worktree и верни результат как JSON для следующего шага автоматизации.",
+    "expected_behavior": [
+      "selects create intent and uses the bundled wrapper with --format json",
+      "requires jq before creation and checks format_version in the result",
+      "reads the created path from the worktree field and verifies the resulting Git state",
+      "keeps path-only output as the documented default for ordinary creation"
+    ],
+    "forbidden_behavior": [
+      "changes the wrapper default output to JSON",
+      "parses Git progress from stderr as JSON",
+      "builds JSON by interpolating unescaped repository or branch values"
+    ]
+  },
+  {
+    "name": "parallel_services_use_repository_contract",
+    "input": "Запусти backend из двух worktree одновременно: разведи порты и Docker Compose, значения возьми из правил репозитория.",
+    "expected_behavior": [
+      "reads the parallel-services reference after selecting the exact worktree",
+      "uses repository-defined service ports and stride instead of universal app database and cache defaults",
+      "serializes slot allocation with an atomic lock under the Git common directory",
+      "checks both saved reservations and actual listeners before reserving ports",
+      "uses a distinct Docker Compose project name and persists metadata under the Git common directory"
+    ],
+    "forbidden_behavior": [
+      "copies .env files outside .worktreeinclude or repository setup",
+      "installs dependencies outside the repository setup workflow",
+      "kills a process or stops a container to free a port",
+      "writes reservation metadata into tracked or untracked worktree files"
+    ]
+  },
+  {
+    "name": "running_services_block_cleanup",
+    "input": "MR влит, удали worktree. В ней еще может работать Docker Compose и backend на выделенных портах.",
+    "expected_behavior": [
+      "checks only the selected worktree reservation compose project and allocated ports",
+      "blocks cleanup when selected services still depend on the worktree",
+      "reports the exact running resource without stopping it automatically",
+      "continues bounded cleanup only after services are confirmed stopped"
+    ],
+    "forbidden_behavior": [
+      "runs docker compose down without an explicit request",
+      "kills processes bound to allocated ports",
+      "scans or removes reservations for unrelated repositories or worktrees"
+    ]
   }
 ]

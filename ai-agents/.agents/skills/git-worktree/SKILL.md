@@ -7,9 +7,10 @@ description: >-
   base branch и выполняет bounded post-merge cleanup. Используй для запросов
   «создай worktree», «продолжи в существующей worktree», «покажи worktree
   задачи», «обнови local main/master», «MR/PR влит, почисти за собой», «удали
-  worktree и локальную ветку». Не используй для создания или merge MR/PR,
-  pipeline/CI, remote branch deletion, rebase/reset либо удаления dirty
-  worktree.
+  worktree и локальную ветку», а также для изоляции портов и Docker Compose при
+  параллельном запуске сервисов из нескольких worktree. Не используй для
+  создания или merge MR/PR, pipeline/CI, remote branch deletion, rebase/reset
+  либо удаления dirty worktree.
 ---
 
 # Git Worktree
@@ -68,11 +69,18 @@ description: >-
    ```
 
    `~/.agents/skills/git-worktree` является canonical runtime-ссылкой на skill. Передать branch/name и repository root отдельными аргументами. Не собирать команду через `eval` и не передавать Claude hook JSON.
-5. Не запускать wrapper после `git worktree add`: wrapper сам выполняет `git fetch origin`, создает ветку и `.worktrees/<type>-<name>`, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `scripts/worktree-setup.sh`.
-6. Если bundled script отсутствует или не executable, остановиться с blocker. Не подменять его прямым `git worktree add`.
-7. Прочитать абсолютный worktree path из stdout wrapper и проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
+5. По умолчанию wrapper печатает только абсолютный worktree path. Если пользователь или вызывающий workflow явно требует JSON output, добавить `--format json`. Для этого режима нужен `jq`; прочитать path из поля `worktree` и проверить `format_version`. Не включать JSON по умолчанию, чтобы не сломать Claude adapter и существующие вызовы.
+6. Не запускать wrapper после `git worktree add`: wrapper сам выполняет `git fetch origin`, создает ветку и `.worktrees/<type>-<name>`, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `scripts/worktree-setup.sh`.
+7. Если bundled script отсутствует или не executable, остановиться с blocker. Не подменять его прямым `git worktree add`.
+8. Прочитать абсолютный worktree path из stdout wrapper или поля `worktree` JSON и проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
 
 Не создавать task-ветку в основном checkout, если repository contract требует изоляцию.
+
+### Параллельные сервисы
+
+Если пользователь просит одновременно запускать сервисы из нескольких worktree или избежать конфликтов портов и Docker Compose, прочитать [references/parallel-services.md](references/parallel-services.md) целиком. Это опциональный workflow после `create` или `reuse`, а не часть базового создания worktree.
+
+Использовать только имена сервисов, base ports, stride и команды, заданные репозиторием или пользователем. Проверять и сохранять записи о портах вне worktree. Не копировать `.env*`, не устанавливать зависимости и не запускать либо останавливать сервисы без явного запроса или repository setup contract.
 
 ## Reuse
 
@@ -119,6 +127,8 @@ Git worktree: `<intent>` <completed|partial|blocked>.
 
 Не пересказывать все найденные worktrees. После cleanup указать команду восстановления локальной ветки из сохраненного SHA, если использовалось force-delete.
 
+Если применялся workflow параллельных сервисов, добавить строку `Services` из соответствующего reference.
+
 ## Done means
 
 - выбран один точный repository и task target;
@@ -127,4 +137,5 @@ Git worktree: `<intent>` <completed|partial|blocked>.
 - write выполнен только для выбранного intent;
 - финальное Git-состояние перечитано;
 - destructive cleanup имеет сохраненный recovery SHA;
+- при параллельном запуске ports и Compose project изолированы и проверены в реальной системе;
 - внешние системы и remote branches не изменены без отдельного запроса.

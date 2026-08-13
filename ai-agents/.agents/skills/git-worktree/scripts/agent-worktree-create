@@ -2,20 +2,22 @@
 # Bundled git-worktree command for creating a named branch and worktree.
 #
 # Contract: accept --name and --cwd, print only the absolute worktree path on
-# stdout, and return non-zero before creation when the remote base cannot be
-# refreshed. Provisioning after creation remains best-effort.
+# stdout by default, and return non-zero before creation when the remote base
+# cannot be refreshed. Optional JSON output is machine-readable. Provisioning
+# after creation remains best-effort.
 
 set -uo pipefail
 
 err() { printf 'agent-worktree-create: %s\n' "$1" >&2; }
 
 usage() {
-  printf 'usage: agent-worktree-create --name <name> --cwd <repository-path>\n' >&2
+  printf 'usage: agent-worktree-create --name <name> --cwd <repository-path> [--format path|json]\n' >&2
 }
 
 worktree_name=""
 cwd=""
 name_set=0
+output_format="path"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -28,6 +30,14 @@ while [[ $# -gt 0 ]]; do
     --cwd)
       [[ $# -ge 2 ]] || { err "--cwd requires a value"; usage; exit 2; }
       cwd="$2"
+      shift 2
+      ;;
+    --format)
+      [[ $# -ge 2 ]] || { err "--format requires a value"; usage; exit 2; }
+      case "$2" in
+        path | json) output_format="$2" ;;
+        *) err "--format must be path or json"; usage; exit 2 ;;
+      esac
       shift 2
       ;;
     -h | --help)
@@ -45,6 +55,9 @@ done
 [[ "$name_set" -eq 1 ]] || { err "--name is required"; usage; exit 2; }
 [[ -n "$cwd" ]] || { err "--cwd is required"; usage; exit 2; }
 command -v git >/dev/null 2>&1 || { err "git not found"; exit 1; }
+if [[ "$output_format" == "json" ]]; then
+  command -v jq >/dev/null 2>&1 || { err "jq is required for --format json"; exit 1; }
+fi
 
 repo_root=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || {
   err "not a git repository: $cwd"
@@ -107,9 +120,11 @@ fi
 # Git writes progress to stderr so stdout remains machine-readable for callers.
 mkdir -p "$(dirname "$path")"
 if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
+  branch_created=false
   git -C "$repo_root" worktree add "$path" "$branch" >&2
   rc=$?
 else
+  branch_created=true
   git -C "$repo_root" worktree add "$path" -b "$branch" "$base_ref" >&2
   rc=$?
 fi
@@ -148,15 +163,39 @@ fi
 log_file="${XDG_STATE_HOME:-$HOME/.local/state}/agent-worktree-create.log"
 mkdir -p "$(dirname "$log_file")" 2>/dev/null || true
 setup=""
+provisioning_method="none"
+provisioning_status="skipped"
 for candidate in "$repo_root/.worktree-setup.sh" "$repo_root/scripts/worktree-setup.sh"; do
   [[ -x "$candidate" ]] && { setup="$candidate"; break; }
 done
 if [[ -n "$setup" ]]; then
-  (cd "$path" && "$setup") >>"$log_file" 2>&1 \
-    || err "worktree setup script failed (see $log_file); provision manually"
+  provisioning_method="repository-script"
+  if (cd "$path" && "$setup") >>"$log_file" 2>&1; then
+    provisioning_status="completed"
+  else
+    provisioning_status="failed"
+    err "worktree setup script failed (see $log_file); provision manually"
+  fi
 elif [[ -f "$path/uv.lock" ]] && command -v uv >/dev/null 2>&1; then
-  (cd "$path" && uv venv && uv sync) >>"$log_file" 2>&1 \
-    || err "uv provisioning failed (see $log_file); run 'uv venv && uv sync' manually"
+  provisioning_method="uv"
+  if (cd "$path" && uv venv && uv sync) >>"$log_file" 2>&1; then
+    provisioning_status="completed"
+  else
+    provisioning_status="failed"
+    err "uv provisioning failed (see $log_file); run 'uv venv && uv sync' manually"
+  fi
 fi
 
-printf '%s\n' "$path"
+if [[ "$output_format" == "json" ]]; then
+  jq -nc \
+    --arg repository "$repo_root" \
+    --arg worktree "$path" \
+    --arg branch "$branch" \
+    --arg base_ref "$base_ref" \
+    --argjson branch_created "$branch_created" \
+    --arg provisioning_method "$provisioning_method" \
+    --arg provisioning_status "$provisioning_status" \
+    '{format_version: 1, repository: $repository, worktree: $worktree, branch: $branch, base_ref: $base_ref, branch_created: $branch_created, provisioning: {method: $provisioning_method, status: $provisioning_status}}'
+else
+  printf '%s\n' "$path"
+fi
