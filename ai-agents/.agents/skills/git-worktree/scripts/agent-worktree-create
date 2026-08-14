@@ -158,6 +158,15 @@ if [[ -f "$include" ]]; then
   done <"$include"
 fi
 
+# Share the repo's `.claude` (project skills, commands, local settings) with the
+# worktree. It is gitignored, so `git worktree add` never brings it in. Symlink
+# rather than copy so project skills stay in sync with the main worktree. The
+# worktree always lives at `<repo>/.worktrees/<dir>`, so `../../.claude` resolves
+# back to the repo root. Best-effort: never aborts a created worktree.
+if [[ -e "$repo_root/.claude" && ! -e "$path/.claude" ]]; then
+  ln -s "../../.claude" "$path/.claude" 2>/dev/null || err "could not link .claude"
+fi
+
 # Prefer a repository setup script, then provision uv projects. Provisioning is
 # best-effort because the branch and worktree already exist at this point.
 log_file="${XDG_STATE_HOME:-$HOME/.local/state}/agent-worktree-create.log"
