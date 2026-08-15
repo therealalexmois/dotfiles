@@ -28,7 +28,8 @@ Picked up via `$XDG_CONFIG_HOME=$HOME/.dotfiles` (no symlink; see `zsh/.zshenv`)
 - `git/` - `ignore`, the global git excludes file. git identity (`user.name`/`email`) is
   deliberately not tracked anywhere in this repo.
 - `lazydocker/` - lazydocker configuration (`config.yml`, tracked).
-- `mise/` - `config.toml`, Node (and other runtime) version pins (tracked).
+- `mise/` - `config.toml`, Node (and other runtime) version pins plus the global npm CLIs
+  installed through mise's `npm:` backend, so they survive a Node version bump (tracked).
 - `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile. No
   symlink at `~/.config/nvim`; a launcher that doesn't inherit the shell's
   `XDG_CONFIG_HOME` (e.g. a non-terminal GUI wrapper) falls back to an empty directory.
@@ -41,12 +42,12 @@ Picked up via `$XDG_CONFIG_HOME=$HOME/.dotfiles` (no symlink; see `zsh/.zshenv`)
   `$STARSHIP_CONFIG` rather than a default path.
 
 Local-only, not part of a reproducible install (present on this machine, but excluded from
-git either by `.gitignore` or by a machine-local `.git/info/exclude`, so a fresh clone
-won't reproduce them):
+git by the committed `.gitignore`, so a fresh clone won't reproduce them):
 
-- `glab-cli/`, `k9s/` - excluded via `.git/info/exclude` (not the committed `.gitignore`).
-- `homebrew/`, `htop/`, `lazygit/`, `openspec/` - excluded via the committed `.gitignore`
-  as pure runtime/telemetry/preference state.
+- `gh/`, `glab-cli/` - CLI auth state; `gh/hosts.yml` and `glab-cli/config.yml` hold
+  tokens, so they must never be tracked.
+- `homebrew/`, `htop/`, `k9s/`, `lazygit/`, `openspec/config.json` - excluded as pure
+  runtime/telemetry/preference state.
 - `goose/` - empty; the tool isn't in `mac-setup/Brewfile` and has no documented install
   step yet.
 
