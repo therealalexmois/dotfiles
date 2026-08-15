@@ -254,6 +254,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
+| design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
 | database schema design | `database-schema-designer` | manual |
