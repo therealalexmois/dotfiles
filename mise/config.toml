@@ -1,2 +1,6 @@
 [tools]
 node = "lts"
+"npm:@fission-ai/openspec" = "latest"
+"npm:defuddle" = "latest"
+"npm:mcp-gsheets" = "latest"
+"npm:pyright" = "latest"
