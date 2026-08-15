@@ -25,6 +25,10 @@ export STARSHIP_CONFIG="${XDG_CONFIG_HOME}/starship.toml"
 export GOPATH="$XDG_DATA_HOME/go"
 export PATH="$GOPATH/bin:$PATH"
 
+# mise shims: `mise activate` runs only in .zshrc, so non-interactive shells
+# (scripts, launchd, MCP servers) would not see mise-managed CLIs without this.
+export PATH="$XDG_DATA_HOME/mise/shims:$PATH"
+
 # Default editor (Claude Code Ctrl+G uses $VISUAL, then $EDITOR)
 if command -v nvim >/dev/null 2>&1; then
   export EDITOR="nvim"
