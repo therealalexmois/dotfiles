@@ -230,6 +230,16 @@
   }
  },
  {
+  "skill": "cli-developer",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "close-my-day",
   "verdict": "PASS",
   "counts": {
