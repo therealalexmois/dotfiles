@@ -19,12 +19,12 @@ fi
 note "bash lint: AI CLI shell scripts"
 if command -v shellcheck >/dev/null 2>&1; then
   if shellcheck \
-    "${repo_dir}/ai-agents/.agents/skills/git-worktree/scripts/agent-worktree-create" \
+    "${repo_dir}/ai-agents/.agents/skills/git-worktree/scripts/create-worktree" \
     "${repo_dir}/ai-agents/.claude/hooks/worktree-create.sh" \
     "${repo_dir}/ai-agents/.claude/hooks/worktree-remove.sh" \
     "${repo_dir}/ai-agents/.claude/statusline.sh" \
     "${repo_dir}/scripts/check-ai-cli.sh" \
-    "${repo_dir}/scripts/test-agent-worktree-create.sh" \
+    "${repo_dir}/scripts/test-create-worktree.sh" \
     "${repo_dir}/scripts/test-skill-discovery-names.sh"; then
     echo "ok"
   else
@@ -67,11 +67,11 @@ else
   fail "a tracked Codex TOML failed to parse"
 fi
 
-note "agent worktree create integration"
-if "${repo_dir}/scripts/test-agent-worktree-create.sh"; then
+note "create-worktree integration"
+if "${repo_dir}/scripts/test-create-worktree.sh"; then
   echo "ok"
 else
-  fail "agent worktree create integration failed"
+  fail "create-worktree integration failed"
 fi
 
 note "skill discovery names"

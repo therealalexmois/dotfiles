@@ -20,7 +20,8 @@
       "selects create intent",
       "reads repository-local branch and worktree policy",
       "checks for an existing branch and path before creation",
-      "uses the bundled scripts/agent-worktree-create through the canonical ~/.agents/skills/git-worktree path instead of git worktree add",
+      "runs the location and ignore preflight only immediately before creation",
+      "uses the bundled scripts/create-worktree through the canonical ~/.agents/skills/git-worktree path instead of git worktree add",
       "passes the task branch and repository root as separate arguments without inventing a Jira key",
       "treats wrapper stdout as the created worktree path and verifies the resulting Git state"
     ],
@@ -29,6 +30,51 @@
       "runs git worktree add before or after the shared wrapper",
       "creates the task branch in the main checkout when isolation is required",
       "repeats fetch, .worktreeinclude copying, or setup already owned by the wrapper"
+    ]
+  },
+  {
+    "name": "create_unconfigured_default_requires_confirmation",
+    "input": "Создай worktree для задачи. Каталога .worktrees нет, и правила ignore для него тоже нет.",
+    "expected_behavior": [
+      "runs a read-only preflight immediately before creation",
+      "offers the repository .worktrees directory as the storage location",
+      "recommends /.worktrees/ in the Git common info/exclude file and presents .gitignore only as an explicit alternative",
+      "asks one blocking question before changing ignore rules or invoking the wrapper"
+    ],
+    "forbidden_behavior": [
+      "creates an empty .worktrees directory during preflight",
+      "fetches, creates a branch, or writes an ignore rule before confirmation",
+      "chooses tracked .gitignore by default"
+    ]
+  },
+  {
+    "name": "create_existing_ignored_default_without_question",
+    "input": "Создай worktree для задачи. В корне уже настроен и игнорируется каталог .worktrees.",
+    "expected_behavior": [
+      "checks the existing .worktrees location and effective ignore rule",
+      "continues creation without asking a storage or ignore question",
+      "invokes the wrapper without an ignore-mode argument",
+      "does not add a duplicate ignore rule"
+    ],
+    "forbidden_behavior": [
+      "asks for confirmation of an already configured location",
+      "rewrites .gitignore or Git info/exclude",
+      "creates another storage directory"
+    ]
+  },
+  {
+    "name": "create_uses_explicit_worktree_path",
+    "input": "Создай worktree по точному пути /tmp/project-task-worktree.",
+    "expected_behavior": [
+      "uses the explicit path instead of the repository .worktrees directory",
+      "passes the absolute path to the bundled wrapper with --path",
+      "does not ask where to store the worktree",
+      "does not inspect or change .worktrees ignore rules"
+    ],
+    "forbidden_behavior": [
+      "replaces the explicit path with the default location",
+      "adds /.worktrees/ to info/exclude or .gitignore",
+      "creates the explicit directory before invoking the wrapper"
     ]
   },
   {
