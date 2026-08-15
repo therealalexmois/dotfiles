@@ -171,6 +171,25 @@ Observability Designer enables you to create production-ready observability stra
 - **Ingestion Rate Limiting:** Controlled data ingestion to manage costs
 - **Cardinality Management:** High-cardinality metric detection and mitigation
 
+## Reference Files
+
+The competencies above are the working summary. The files below go deeper on a single
+topic each; read one when the task actually lands on that topic, so the rest stays out of
+context.
+
+| Reference | Read when |
+|-----------|-----------|
+| `references/slo_cookbook.md` | Picking SLI types, setting SLO targets, sizing error budgets |
+| `references/alert_design_patterns.md` | Writing or de-noising alert rules, choosing burn-rate windows |
+| `references/dashboard_best_practices.md` | Laying out a dashboard, deciding what belongs on the first screen |
+| `references/capacity_planning.md` | Forecasting growth and sizing CPU, memory, or connection pools ahead of it |
+
+Capacity planning sits here rather than in a profiling skill because the inputs are the
+same metrics this skill already instruments: the forecast is only as good as the retention
+and cardinality decisions made in Cost Optimization above. Its linear-projection example
+pulls in pandas, numpy, and scikit-learn for a fit over twelve points - the PromQL trend
+queries and the resource formulas are the parts worth reusing.
+
 ## Scripts Overview
 
 This skill includes three powerful Python scripts for comprehensive observability design:
