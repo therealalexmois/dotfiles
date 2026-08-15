@@ -1,12 +1,13 @@
 # OpenSpec review rubric
 
-Использовать эту рубрику для финальной проверки. Сначала применять официальный baseline, затем project-specific contract и только потом усиленные эвристики по риску.
+Использовать эту рубрику только внутри scope, который пользователь задал для текущего review. Не превращать ее в обязательный checklist всего change. Сначала применять относящийся к scope официальный baseline, затем project-specific contract и только потом усиленные эвристики по риску.
 
 ## Официальный baseline OpenSpec
 
 Источники:
 
 - [Reviewing a Change](https://github.com/Fission-AI/OpenSpec/blob/main/docs/reviewing-changes.md)
+- [OpenSpec on a Team](https://github.com/Fission-AI/OpenSpec/blob/main/docs/team-workflow.md#reviewing-specs-in-a-pull-request)
 - [Writing Good Specs](https://github.com/Fission-AI/OpenSpec/blob/main/docs/writing-specs.md)
 - [Core Concepts](https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md)
 - [Using OpenSpec in an Existing Project](https://github.com/Fission-AI/OpenSpec/blob/main/docs/existing-projects.md)
@@ -18,6 +19,8 @@
 
 - Ревьюировать план после propose/ff до apply; после реализации проверять код через verify или эквивалентное сопоставление.
 - Читать proposal → delta specs → design при необходимости → tasks. Если intent неверен, сначала исправить proposal.
+- При review реализации читать proposal → delta specs → code diff и проверять, что код доставляет ровно согласованные requirements.
+- Считать PR или MR контейнером для change и кода, а не условием запуска review.
 - Держать в change один intent и подбирать глубину review по риску.
 - Описывать в spec наблюдаемое поведение, а не код.
 - Формулировать один requirement как одно поведение с одним `SHALL`/`MUST`.
@@ -31,9 +34,17 @@
 - Помнить, что project context, per-artifact rules и custom schema являются частью фактического контракта генерации. Operation guidance остается advisory и не должно автоматически копироваться в артефакты.
 - Использовать Explore для исследования и выбора пути, не для создания артефактов или изменения кода.
 
+## Scope filter
+
+- Один файл или diff не равен полному review change.
+- Набор артефактов не разрешает автоматически проверять остальные артефакты.
+- Дополнительный файл можно читать как evidence, не включая его в verdict.
+- Отсутствие out-of-scope файла не блокирует scoped verdict.
+- Полный gate, capability inventory, strict validation и delivery statuses применять только когда они входят в scope или необходимы для конкретного finding.
+
 ## Project-aware проверка
 
-Перед содержательным verdict ответить:
+Если verdict зависит от project contract, проверить относящиеся к нему вопросы:
 
 - Какая schema реально разрешена для change: CLI override, `.openspec.yaml`, project config или default?
 - Какие artifacts, templates, `requires` и rules фактически действуют?
@@ -99,7 +110,7 @@ Custom schema может добавлять артефакты и gates, но и
 
 ## Coverage matrix
 
-Построить мысленно или явно для сложного change:
+Построить мысленно или явно для полного или сложного change, выбранного набора артефактов либо проверки реализации:
 
 | Intent/constraint | Requirement + scenario | Design decision | Task/test | Evidence |
 |---|---|---|---|---|
@@ -128,10 +139,10 @@ Custom schema может добавлять артефакты и gates, но и
 
 | Verdict | Значение |
 |---|---|
-| `PASS` | Внутренних BLOCKER/MAJOR нет; artifacts согласованы и достаточно проверяемы. |
-| `PASS с внешним delivery-blocker` | Сам OpenSpec готов, но конкретная внешняя зависимость блокирует названные delivery stages. |
-| `CHANGES REQUIRED` | Есть исправимые внутренние BLOCKER/MAJOR. |
-| `BLOCKED` | Нужен недоступный факт или human decision; задать один точный вопрос. |
+| `PASS` | В проверенном scope нет внутренних BLOCKER/MAJOR. Для ограниченного review назвать scope. |
+| `PASS с внешним delivery-blocker` | Полный OpenSpec готов, но конкретная внешняя зависимость блокирует названные delivery stages. |
+| `CHANGES REQUIRED` | В проверенном scope есть исправимые внутренние BLOCKER/MAJOR. |
+| `BLOCKED` | Для запрошенного verdict нужен недоступный факт или human decision; задать один точный вопрос. |
 
 При PASS завершить цикл. Не требовать новый round из-за MINOR/SUGGESTION, если они не нарушают явный acceptance gate.
 
@@ -149,12 +160,12 @@ Closed when: для каждого владельца указан наблюд�
 
 ## Bounded self-review success gate
 
-Включать только критерии, относящиеся к текущему change:
+Включать только критерии, относящиеся к исходному scope:
 
 - все открытые BLOCKER/MAJOR закрыты по их success conditions;
 - новых регрессий и cross-artifact contradictions нет;
-- full files и full diff проверены;
-- strict OpenSpec validation и `git diff --check` успешны либо честно указан environment blocker;
+- все файлы и diff внутри scope проверены полностью;
+- strict OpenSpec validation и `git diff --check` успешны, если scope требовал эти проверки, либо честно указан environment blocker;
 - evidence приведено прямо в transcript, а не скрыто во временном файле;
 - semantic review и delivery statuses указаны раздельно;
 - loop ограничен по turns и останавливается на новом human decision.
