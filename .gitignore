@@ -24,6 +24,12 @@ openspec/config.json
 # GitHub CLI: hosts.yml holds auth tokens, config is machine state
 gh/
 
+# GitLab CLI: config.yml holds auth tokens, aliases are machine state
+glab-cli/
+
+# k9s: skins, views, and cluster-specific runtime state
+k9s/
+
 # Homebrew: trust.json and its lock are runtime state, not config
 homebrew/
 
