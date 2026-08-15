@@ -690,6 +690,16 @@
   }
  },
  {
+  "skill": "microservices-architect",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "migration-architect",
   "verdict": "PASS",
   "counts": {
