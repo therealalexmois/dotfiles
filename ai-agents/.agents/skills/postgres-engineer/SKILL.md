@@ -1,5 +1,6 @@
 ---
 name: postgres-engineer
+disable-model-invocation: true
 description: Evidence-based PostgreSQL engineering for schema and migration review, query and index optimization, transactions and MVCC, VACUUM and bloat, locks, connection and memory troubleshooting, partitioning, JSONB, extensions, WAL, replication, backup, recovery, failover, and production incident analysis. Use when Codex needs to design, diagnose, review, explain, or safely implement PostgreSQL-specific changes in self-hosted or managed environments.
 ---
 
