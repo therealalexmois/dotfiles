@@ -262,6 +262,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | chaos experiments, fault injection, game days, blast radius | `chaos-engineering` | manual |
 | improve code architecture | `improve-codebase-architecture` | manual |
 | microservices, monolith decomposition, bounded contexts, DDD | `microservices-architect` | manual |
+| build a CLI tool: arg parsing, shell completions, terminal UX | `cli-developer` | manual |
 | security review | `security-guidance` | yes |
 | tech debt audit | `tech-debt-tracker` | manual |
 | review before completing a task | `review-before-completion` | yes |
