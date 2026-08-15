@@ -259,8 +259,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
 | database schema design | `database-schema-designer` | manual |
 | observability, SLO, metrics | `observability-designer` | manual |
-| design chaos experiments, fault injection, game days | `chaos-engineer` | yes |
-| chaos experiments with blast-radius calculator and postmortem scripts | `chaos-engineering` | manual |
+| chaos experiments, fault injection, game days, blast radius | `chaos-engineering` | manual |
 | improve code architecture | `improve-codebase-architecture` | manual |
 | security review | `security-guidance` | yes |
 | tech debt audit | `tech-debt-tracker` | manual |
