@@ -1,0 +1,4 @@
+interface:
+  display_name: "PostgreSQL Engineer"
+  short_description: "Проектирование, диагностика и эксплуатация PostgreSQL"
+  default_prompt: "Use $postgres-engineer to diagnose this PostgreSQL problem and propose a safe, evidence-based solution."
