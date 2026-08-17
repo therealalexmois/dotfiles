@@ -11,11 +11,13 @@ settings so one laptop can reproduce a consistent interactive development enviro
 Stow-managed (see README.md "The role of GNU Stow"):
 
 - `ai-agents/` - Stow package for AI CLI agents. Holds `.codex/` (Codex `AGENTS.md`,
-  `config.shared.toml`, `config.local.toml.example`, and `*.config.toml` reasoning/mode
-  profiles), `.claude/` (`CLAUDE.md`, `settings.json`, `statusline.sh`, and `agents/`
-  tracked Claude Code subagents), and `.agents/skills/` (shared agent skills, the source of
-  truth for both CLIs). Runtime state, secrets, and the rendered `config.toml` are
-  git-ignored. Also stows a legacy top-level `ai-agents/rules/` (empty) to `~/rules`.
+  `config.shared.toml` including `[mcp_servers.*]`, `config.local.toml.example`, and
+  `*.config.toml` reasoning/mode profiles), `.claude/` (`CLAUDE.md`, `settings.json`,
+  `statusline.sh`, `mcp-servers.json` (declares user-scope MCP servers synced by
+  `scripts/install-ai-cli-dotfiles.sh`), and `agents/` tracked Claude Code subagents), and
+  `.agents/skills/` (shared agent skills, the source of truth for both CLIs). Runtime state,
+  secrets, and the rendered `config.toml` are git-ignored. Also stows a legacy top-level
+  `ai-agents/rules/` (empty) to `~/rules`.
 - `alacritty/` - Alacritty terminal configuration, key bindings, color script, and themes.
 - `bootstrap/` - Stow package for home-level bootstrap files that redirect shell startup
   into repo config, plus `install-alacritty.sh` (separate `stow` invocation for the
@@ -196,7 +198,8 @@ AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
         ai-agents/.codex/*.config.toml          → ~/.codex/ (child links)
 ```
 
-- `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600).
+- `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600), including Codex MCP servers declared under `[mcp_servers.*]` in `config.shared.toml`.
+- `scripts/install-ai-cli-dotfiles.sh` syncs Claude Code's user-scope MCP servers from `ai-agents/.claude/mcp-servers.json` via `claude mcp remove`/`claude mcp add-json -s user` (idempotent; Claude has no declarative config file for MCP servers, so this JSON is the tracked source of truth). Restart `claude`/`codex` after adding or changing an MCP server for the new server to load.
 - `ai-agents/.claude/settings.json` and the tracked `ai-agents/.codex/*.config.toml` profiles use `--skip-worktree`, so runtime rewrites (model, theme, effort, project trust, TUI NUX) do not churn the tracked defaults; to edit them, temporarily `--no-skip-worktree`.
 - CodeCompanion `claude` profile requires the `claude-code-acp` bridge; `claudecode.nvim` needs only the `claude` CLI.
 - `~/.codex/skills/.system` is never replaced by the install script.
@@ -430,6 +433,8 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | Claude subagent | `ai-agents/.claude/agents/<name>.md` | Stow-folded to `~/.claude/agents/` |
 | Codex reasoning profile | `ai-agents/.codex/<name>.config.toml` | Symlinked to `~/.codex/` |
 | Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |
+| Codex MCP server | `ai-agents/.codex/config.shared.toml` `[mcp_servers.<name>]` | Rendered by `render-codex-config.py` |
+| Claude MCP server | `ai-agents/.claude/mcp-servers.json` | Synced to user scope by `scripts/install-ai-cli-dotfiles.sh` |
 | CodeCompanion AI profile | `nvim/lua/config/ai/codecompanion_profiles.lua` | |
 | Neovim plugin | `nvim/lua/plugins/` domain subdir | AstroCommunity in `community.lua` |
 | tmux plugin | `tmux/tmux.conf` | `set -g @plugin ...` |

@@ -155,6 +155,23 @@ ensure_correct_profile_link() {
   echo "created profile link: $link_path -> $target"
 }
 
+sync_claude_mcp_servers() {
+  local mcp_file="${repo_dir}/ai-agents/.claude/mcp-servers.json"
+  [[ -f "$mcp_file" ]] || return 0
+  command -v claude >/dev/null 2>&1 || {
+    echo "claude CLI not found; skipping MCP server sync" >&2
+    return 0
+  }
+
+  local name desired
+  for name in $(jq -r 'keys[]' "$mcp_file"); do
+    desired="$(jq -c --arg n "$name" '.[$n]' "$mcp_file")"
+    claude mcp remove "$name" -s user >/dev/null 2>&1 || true
+    claude mcp add-json "$name" "$desired" -s user >/dev/null
+    echo "synced Claude MCP server: $name"
+  done
+}
+
 validate_sources() {
   for skill in "${skills[@]}"; do
     if [[ ! -d "${repo_dir}/ai-agents/.agents/skills/${skill}" ]]; then
@@ -221,6 +238,8 @@ main() {
   for profile in "${codex_profiles[@]}"; do
     ensure_correct_profile_link "$profile"
   done
+
+  sync_claude_mcp_servers
 
   # Claude rewrites runtime keys (model, theme, effort) into settings.json. Hide those
   # local edits from git so the tracked defaults stay stable across machines.
