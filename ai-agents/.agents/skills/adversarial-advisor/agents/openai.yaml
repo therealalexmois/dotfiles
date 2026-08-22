@@ -1,0 +1,12 @@
+interface:
+  display_name: Adversarial Advisor
+  short_description: Stress-test plans with rigorous pushback
+  default_prompt: Use $adversarial-advisor to stress-test this plan and recommend
+    the strongest path.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

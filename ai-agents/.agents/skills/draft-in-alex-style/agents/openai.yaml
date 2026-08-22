@@ -1,0 +1,14 @@
+interface:
+  display_name: Draft In Alex's Style
+  short_description: Черновики в вашем техническом стиле
+  default_prompt: Используй $draft-in-alex-style, чтобы подготовить черновик в моём
+    русском техническом стиле.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

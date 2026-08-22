@@ -1,0 +1,15 @@
+interface:
+  display_name: Human Architect Mindset
+  short_description: Systematic architectural thinking for irreplaceable human capabilities
+    - domain modeling, systems thinking, constraint navigation, and AI-aware problem
+    decomposition. Use proactively when detecting architectural decisions, system
+    design discussions, or multi-component planning.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
