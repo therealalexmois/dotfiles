@@ -1,0 +1,14 @@
+interface:
+  display_name: Technical Content Marketing
+  short_description: Технический маркетинговый контент и SEO
+  default_prompt: Используй $create-technical-marketing-content, чтобы подготовить
+    доказательный маркетинговый материал для технической аудитории.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
