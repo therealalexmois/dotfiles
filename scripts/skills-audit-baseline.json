@@ -310,6 +310,16 @@
   }
  },
  {
+  "skill": "data-visualization",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "database-designer",
   "verdict": "PASS",
   "counts": {
@@ -370,7 +380,7 @@
   }
  },
  {
-  "skill": "documentation-writer",
+  "skill": "distill-thoughts",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -420,6 +430,16 @@
   }
  },
  {
+  "skill": "failure-handling-patterns",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "fastapi-python",
   "verdict": "PASS",
   "counts": {
@@ -441,6 +461,16 @@
  },
  {
   "skill": "find-skills",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "git-worktree",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -900,6 +930,26 @@
   }
  },
  {
+  "skill": "review-openspec-change",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "rfc-authoring",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "runbook-generator",
   "verdict": "PASS",
   "counts": {
@@ -921,6 +971,16 @@
  },
  {
   "skill": "security-guidance",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "select-reasoning-effort",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -1151,6 +1211,26 @@
  },
  {
   "skill": "writing-prd-draft",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "writing-technical-documentation",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "writing-technical-marketing-content",
   "verdict": "PASS",
   "counts": {
    "critical": 0,

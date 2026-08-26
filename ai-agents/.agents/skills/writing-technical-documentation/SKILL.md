@@ -1,5 +1,5 @@
 ---
-name: write-technical-documentation
+name: writing-technical-documentation
 description: "Создает, редактирует и проверяет техническую документацию для программных продуктов и инженерных систем: tutorial, how-to, reference, API и CLI documentation, troubleshooting, README, FAQ, runbook и технические release notes. Использовать, когда основная цель читателя - изучить систему, выполнить техническую задачу, найти точный контракт, понять устройство или устранить сбой. Не использовать для RFC, ADR, PRD, рекламных статей, лендингов и другого маркетингового контента."
 ---
 

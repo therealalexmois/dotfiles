@@ -1,7 +1,7 @@
 interface:
   display_name: Technical Documentation
   short_description: Создание и review технической документации
-  default_prompt: Используй $write-technical-documentation, чтобы создать или проверить
+  default_prompt: Используй $writing-technical-documentation, чтобы создать или проверить
     техническую документацию.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
