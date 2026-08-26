@@ -12,6 +12,7 @@ zsh/*
 .pyenv
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # Misc
 fontforge
