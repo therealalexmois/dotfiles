@@ -1,6 +1,6 @@
 # Review вне репозитория
 
-Использовать этот режим, только если review-агент не может сам читать project worktree. Это evidence-policy skill, а не требование OpenSpec.
+Использовать этот режим, только если scope требует полного review, capability decision или base contract, а review-агент не может сам читать project worktree. Не применять его к отдельному proposal, design, tasks или diff, если запрошенный verdict не зависит от project inventory. Это evidence-policy skill, а не требование OpenSpec.
 
 ## Выбрать источник evidence
 

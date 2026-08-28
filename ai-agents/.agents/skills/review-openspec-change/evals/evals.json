@@ -1,0 +1,76 @@
+{
+  "skill_name": "review-openspec-change",
+  "mode": "dry-run",
+  "note": "Проверять фактический scope ответа. Дополнительное чтение допустимо только как необходимое evidence и не должно расширять verdict.",
+  "global_invariants": [
+    "Явный scope пользователя имеет приоритет над стадией lifecycle и доступностью дополнительных файлов.",
+    "PR или MR не является trigger, обязательным режимом или prerequisite.",
+    "Отсутствие out-of-scope артефактов не блокирует scoped verdict.",
+    "Полный verdict не выдается после review одного файла или diff."
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "name": "proposal-only-keeps-scope",
+      "prompt": "Проверь только предоставленный proposal.md. Полный OpenSpec change сейчас не ревьюируется. Нужен verdict по intent и scope этого файла.",
+      "expected_behavior": [
+        "Проверяет intent, scope и локальную согласованность разделов proposal.md.",
+        "Называет verdict ограниченным proposal.md.",
+        "Не требует specs, design, tasks, code или project inventory для scoped verdict.",
+        "Не объявляет весь change готовым."
+      ],
+      "forbidden_behavior": [
+        "Переходит к полному capability decision без зависимости proposal verdict от него.",
+        "Возвращает BLOCKED только из-за отсутствия остальных файлов.",
+        "Запускает полный validation gate."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "design-only-reviews-requested-dimensions",
+      "prompt": "Сделай review только design.md: проверь техническое решение, failure semantics и достаточность тестового подхода. Не оценивай proposal, specs, tasks, capability taxonomy или готовность всего change.",
+      "expected_behavior": [
+        "Проверяет только названные аспекты design.md.",
+        "Привязывает findings к design.md.",
+        "Ограничивает verdict этим файлом."
+      ],
+      "forbidden_behavior": [
+        "Запрашивает полный review-комплект.",
+        "Выполняет repo-wide capability inventory.",
+        "Выносит verdict по всему change."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "implementation-conformance-without-pr",
+      "prompt": "Проверь, соответствует ли реализация приложенному OpenSpec change. Доступны proposal.md, delta spec, code diff и tests. PR или MR нет.",
+      "expected_behavior": [
+        "Читает proposal, затем delta spec, затем code diff и tests.",
+        "Сопоставляет requirements и scenarios с реализацией и тестами.",
+        "Проверяет лишнее observable behavior вне согласованного scope.",
+        "Не требует PR или MR."
+      ],
+      "forbidden_behavior": [
+        "Требует PR description или branch metadata.",
+        "Считает отсутствие archive дефектом.",
+        "Проверяет design и tasks без связи с найденным расхождением."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "explicit-full-change-preserves-full-gate",
+      "prompt": "Проведи полное review OpenSpec change перед apply. Все файлы и project worktree доступны.",
+      "expected_behavior": [
+        "Проверяет proposal, delta specs, design при необходимости, tasks и сквозную согласованность.",
+        "Проверяет target capability и base contract.",
+        "Запускает подходящую strict validation и git diff --check.",
+        "Выносит verdict по всему change."
+      ],
+      "forbidden_behavior": [
+        "Ограничивается одним артефактом.",
+        "Пропускает capability boundary без основания.",
+        "Называет structural validation доказательством semantic correctness."
+      ]
+    }
+  ]
+}

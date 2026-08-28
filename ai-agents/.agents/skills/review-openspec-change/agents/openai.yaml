@@ -1,8 +1,8 @@
 interface:
   display_name: OpenSpec Reviewer
-  short_description: Ревью intent, capability и OpenSpec-дельт
-  default_prompt: Используй $review-openspec-change, чтобы проверить intent, границу
-    capability и все артефакты OpenSpec change, затем дать итоговый verdict.
+  short_description: Ревью заданного scope OpenSpec change
+  default_prompt: Используй $review-openspec-change, чтобы проверить указанный файл,
+    набор артефактов, весь change или соответствие реализации без расширения scope.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
