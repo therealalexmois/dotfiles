@@ -1070,16 +1070,6 @@
   }
  },
  {
-  "skill": "skill-creator",
-  "verdict": "WARN",
-  "counts": {
-   "critical": 0,
-   "high": 1,
-   "info": 0,
-   "total": 1
-  }
- },
- {
   "skill": "skill-param-auditor",
   "verdict": "PASS",
   "counts": {
