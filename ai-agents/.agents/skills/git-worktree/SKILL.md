@@ -35,7 +35,7 @@ description: >-
 
 1. Найти repository root из явного пути или текущей рабочей директории. Не сканировать домашнюю директорию целиком.
 2. Прочитать применимые `AGENTS.md`, `CLAUDE.md` и repository-local правила worktree, веток и setup.
-3. Определить remote, base branch, task branch и worktree path из явного запроса, Git state и repository policy. Для `create` учесть контракт общей команды ниже: она использует `origin`, `origin/HEAD` и каталог `.worktrees/`. Если repository policy с ним конфликтует, остановиться и показать конфликт вместо обхода wrapper.
+3. Определить remote, base branch, task branch и worktree path из явного запроса, Git state и repository policy. Для `create` учесть контракт общей команды ниже: она использует `origin`, `origin/HEAD`, явный путь пользователя либо каталог `.worktrees/`. Если repository policy с ним конфликтует, остановиться и показать конфликт вместо обхода wrapper.
 4. Выполнить `git status --porcelain=v1 -uall` только для рабочих копий, которые операция должна изменить.
 5. Получить точное соответствие worktree и веток через `git worktree list --porcelain`.
 6. Сохранить unrelated changes. Не выполнять reset, rebase, checkout с потерей данных или широкую очистку.
@@ -60,19 +60,28 @@ description: >-
 1. Проверить, не существуют ли уже точная task-ветка или worktree path.
 2. Если существует worktree той же задачи, перейти в `reuse`.
 3. Если ветка или путь заняты другой задачей, остановиться с точным конфликтом.
-4. В Codex вызвать bundled [scripts/agent-worktree-create](scripts/agent-worktree-create) вместо прямого `git worktree add`:
+4. Только непосредственно перед созданием выполнить read-only preflight расположения:
+   - если пользователь явно указал путь, использовать его как точный worktree path, разрешить относительно repository root до абсолютного пути и передать через `--path`; не предлагать `.worktrees/` и не менять ignore-правила;
+   - иначе проверить наличие каталога `<repo>/.worktrees/` через `test -d` и эффективное правило через `git check-ignore -v --no-index .worktrees/.git-worktree-preflight`; probe остается виртуальным, не создавать файл или каталог;
+   - если `.worktrees/` уже эффективно игнорируется, продолжить без вопроса и без `--ignore-mode`, независимо от того, существует ли каталог;
+   - если правило не настроено, предложить хранить worktree в `<repo>/.worktrees/` и задать один блокирующий вопрос до любой записи. Рекомендовать добавить `/.worktrees/` в `<git-common-dir>/info/exclude`; предлагать tracked `.gitignore` только как явную альтернативу пользователя;
+   - после выбора передать `--ignore-mode info-exclude` либо `--ignore-mode gitignore`. Этот аргумент фиксирует подтверждение пользователя; если подтверждения нет, остановиться без `fetch`, создания ветки, каталога или ignore-правила;
+   - не добавлять ignore-правило напрямую и не дублировать уже эффективное правило: wrapper проверяет его повторно перед записью.
+
+   Не выполнять этот preflight при простой активации skill и для intent `inspect`, `reuse`, `sync` или `cleanup`.
+5. В Codex вызвать bundled [scripts/create-worktree](scripts/create-worktree) вместо прямого `git worktree add`:
 
    ```sh
-   ~/.agents/skills/git-worktree/scripts/agent-worktree-create \
+   ~/.agents/skills/git-worktree/scripts/create-worktree \
      --name "$task_branch" \
      --cwd "$repo_root"
    ```
 
-   `~/.agents/skills/git-worktree` является canonical runtime-ссылкой на skill. Передать branch/name и repository root отдельными аргументами. Не собирать команду через `eval` и не передавать Claude hook JSON.
-5. По умолчанию wrapper печатает только абсолютный worktree path. Если пользователь или вызывающий workflow явно требует JSON output, добавить `--format json`. Для этого режима нужен `jq`; прочитать path из поля `worktree` и проверить `format_version`. Не включать JSON по умолчанию, чтобы не сломать Claude adapter и существующие вызовы.
-6. Не запускать wrapper после `git worktree add`: wrapper сам выполняет `git fetch origin`, создает ветку и `.worktrees/<type>-<name>`, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `scripts/worktree-setup.sh`.
-7. Если bundled script отсутствует или не executable, остановиться с blocker. Не подменять его прямым `git worktree add`.
-8. Прочитать абсолютный worktree path из stdout wrapper или поля `worktree` JSON и проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
+   `~/.agents/skills/git-worktree` является canonical runtime-ссылкой на skill. Передать branch/name и repository root отдельными аргументами. Добавить только выбранные на preflight аргументы `--path` или `--ignore-mode`. Не собирать команду через `eval` и не передавать Claude hook JSON.
+6. По умолчанию wrapper печатает только абсолютный worktree path. Если пользователь или вызывающий workflow явно требует JSON output, добавить `--format json`. Для этого режима нужен `jq`; прочитать path из поля `worktree` и проверить `format_version`. Не включать JSON по умолчанию, чтобы не сломать Claude adapter и существующие вызовы.
+7. Не запускать wrapper после `git worktree add`: wrapper сам проверяет подтвержденный ignore mode, выполняет `git fetch origin`, создает ветку и worktree, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `scripts/worktree-setup.sh`. Первый вызов `git worktree add` создает `.worktrees/` вместе с worktree; не создавать пустой каталог заранее.
+8. Если bundled script отсутствует или не executable, остановиться с blocker. Не подменять его прямым `git worktree add`.
+9. Прочитать абсолютный worktree path из stdout wrapper или поля `worktree` JSON и проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
 
 Не создавать task-ветку в основном checkout, если repository contract требует изоляцию.
 

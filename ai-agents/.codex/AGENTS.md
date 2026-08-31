@@ -1,278 +1,179 @@
 # Codex User Instructions
 
-These are user-level instructions.
-
 ## Applicability
 
-- Apply these instructions to coding, code review, repository work, technical documentation for software projects, tests, diffs, commits, and CLI-based software development.
+- Apply these instructions to coding, code review, repository work, software documentation, tests, diffs, commits, and CLI-based development.
 - Do not apply coding-specific rules to personal planning, Obsidian notes, journaling, knowledge management, or non-code writing unless explicitly requested.
-- For Obsidian and planning tasks, prefer the user's requested structure, vault conventions, and planning workflow over coding workflow rules.
-- Apply the Russian Technical Writing rules only when writing, editing, or shortening Russian technical text.
-- Apply the Git commit message rule whenever the user provides `git diff` and asks for a commit message.
+- For personal and planning tasks, follow the requested structure and source-of-truth conventions.
+- Apply the Russian technical writing rules only when writing, editing, or shortening Russian technical text.
+- Apply the Git commit message rule whenever the user provides a `git diff` and asks for a commit message.
 
-## Output Style
+## Response Style
 
-These rules apply to all output: chat, code, comments, and documentation, in any language.
-
-- Do not use emoji unless the user explicitly asks for them.
-- Do not use the em dash `—` in generated text. Use a hyphen, comma, colon, or split the sentence instead.
+- Use a formal and neutral tone unless the user requests another tone.
+- Respond in the language used by the user.
+- Answer concisely by default.
+- Lead with the result, decision, or blocker.
+- Do not repeat the request.
+- Do not describe routine actions, internal reasoning, or implementation details unless explicitly requested.
+- Do not add background, alternatives, recommendations, or next steps unless requested or necessary to explain a material risk, limitation, or blocker.
+- Never omit failed checks, skipped checks, material uncertainty, or unresolved risks.
+- Do not use emoji unless explicitly requested.
+- Do not use the em dash character. Use a hyphen, comma, colon, or separate sentence.
 - In Russian text, always write `е` instead of `ё`.
 
-## Working Style
+## Working Principles
 
-- Read the relevant files, contracts, and tests before changing behavior.
-- Keep changes scoped to the requested task and avoid unrelated rewrites.
-- Prefer existing local patterns and abstractions when their contract fits.
-- Avoid new dependencies unless they remove meaningful complexity or are explicitly required.
-- Keep implementations simple; add abstractions only when they reduce real duplication or clarify a contract.
-- Prefer explicit errors over hidden failures, empty fallback results, or warning-only output.
-- Do not add retries around side-effecting operations unless an idempotency contract is clear.
+- Read the relevant instructions, source files, contracts, and tests before changing behavior.
+- Follow repository-level and directory-level instructions when they apply.
+- Keep changes limited to the requested task.
+- Preserve unrelated files, user changes, and dirty working-tree state.
+- Reuse existing local patterns and abstractions when their current contract fits.
+- Follow KISS: choose the simplest implementation that fully satisfies the current contract.
+- Follow YAGNI: do not add features, abstractions, configuration, extension points, compatibility layers, dependencies, or infrastructure for hypothetical future needs.
+- Add an abstraction only when it removes meaningful current duplication or makes an existing contract materially clearer.
+- Do not change architecture to solve a local problem unless the current architecture prevents a correct solution.
+- Do not add dependencies unless explicitly required or they remove meaningful present complexity.
+- Prefer explicit errors over hidden failures, empty fallback results, or warning-only behavior.
+- Do not add retries around side-effecting operations unless an idempotency contract is explicit.
+- Do not add network calls, telemetry, or external side effects without user authorization.
+- If completion requires a material expansion of scope, explain why and request confirmation.
 
-## External documentation lookup
+## External Documentation
 
-Use the `context7` MCP server before answering questions about current library APIs, framework configuration, dependency setup, migration guides, or version-specific behavior.
-
-Do not use `context7` for generic programming concepts, local code review, repository-local behavior, or tasks fully answerable from the repository files.
+- Use the `context7` MCP server before answering questions about current library APIs, framework configuration, dependency setup, migration guides, or version-specific behavior.
+- Do not use `context7` for generic programming concepts, repository-local behavior, local code review, or tasks fully answerable from repository files.
+- Prefer official and primary documentation.
+- Do not invent current APIs, commands, configuration options, or platform behavior.
+- State uncertainty when current behavior cannot be verified.
 
 ## Code Quality
 
-- Use modern, precise type annotations such as `str | None`, `list[str]`, and `dict[str, Any]`.
+- Use precise modern type annotations such as `str | None`, `list[str]`, and `dict[str, Any]`.
 - Avoid bare collection annotations when element types are known.
-- Do not suppress lint or type-check violations without a narrow reason.
+- Do not suppress lint, type-check, or validation failures without a narrow documented reason.
+- Preserve public APIs unless the requested change requires modifying them.
 - Add or update tests for behavior changes and important failure cases.
+- Do not change unrelated formatting, naming, or structure.
 
-## Python docstrings
+## Python Docstrings
 
-When editing Python code, improve docstrings without changing runtime behavior.
-
-Rules:
+When editing Python code:
 
 - Use Google Python Style docstrings.
 - Write docstring content in Russian.
-- Keep section headers in English: `Args`, `Returns`, `Raises`, `Yields`, `Attributes`, `Examples`.
-- Add module, class, function and method docstrings when they are missing or weak.
-- Keep docstrings concise: explain purpose, contract, important constraints and non-obvious behavior.
-- Do not restate the function name or obvious implementation details.
-- Add `Attributes` for dataclasses, Pydantic models, DTOs and classes with meaningful public fields.
-- Add `Args`, `Returns` and `Raises` only when they add useful information.
-- Do not document exceptions that are not visible from code or explicit contract.
-- Preserve technical identifiers, API names, field names, enum values, file names and established project terms.
-- Avoid unnecessary English words in Russian text when a precise Russian equivalent exists.
-- Do not create Russian-English hybrids with endings; use a Russian generic word instead, for example: `компонент Router`, `сервис builder`, `контекст runtime preflight`.
-- Add or adjust type annotations only when explicitly requested or when the type is obvious and the change is safe.
-- Do not change business logic, control flow, constants, public API, log event names, error messages or tests unless explicitly requested.
+- Keep section headers in English: `Args`, `Returns`, `Raises`, `Yields`, `Attributes`, and `Examples`.
+- Add or improve docstrings only for touched public modules, classes, functions, and methods when their contract is missing or unclear.
+- Do not expand the diff solely to edit unrelated docstrings.
+- Keep docstrings concise and describe purpose, contract, constraints, and non-obvious behavior.
+- Do not restate names or obvious implementation details.
+- Use `Attributes` for dataclasses, Pydantic models, DTOs, and classes when public fields require explanation.
+- Add `Args`, `Returns`, and `Raises` only when they provide useful contract information.
+- Do not document exceptions that are not visible from the code or explicit contract.
+- Preserve technical identifiers, API names, field names, enum values, file names, and established project terms.
+- Avoid unnecessary English words when a precise Russian equivalent exists.
+- Do not create Russian-English hybrids with grammatical endings. Use a Russian generic word, for example: `компонент Router`, `сервис builder`, `контекст runtime preflight`.
+- Change type annotations only when requested or when the type is obvious and the change is safe.
+- Do not change business logic, control flow, constants, public APIs, log event names, error messages, or tests solely to improve documentation.
 
-## Test Writing
+## Tests
 
-Use these rules when writing, modifying, or reviewing tests.
+- Inspect the production code and existing test style before writing or modifying tests.
+- Use real imports, types, and signatures.
+- Test observable behavior, not incidental implementation details.
+- Keep each test focused on one scenario or one behavior branch.
+- Make important input conditions visible.
+- Keep tests isolated and reproducible.
+- Do not mask production defects in the test layer.
+- Do not write or modify tests unless explicitly requested or required to verify the requested behavior change.
 
-### Test-writing principles
+### Structure
 
-A test must verify observable behavior, not incidental implementation details.
-
-A good test:
-
-- fixes a real contract;
-- is isolated and reproducible;
-- covers one scenario or one clear behavior branch;
-- uses meaningful assertions only;
-- makes important input conditions visible;
-- does not mask production defects;
-- does not add unnecessary test-layer complexity;
-- can be understood on review without opening many helper layers.
-
-When writing tests, first inspect the real source code and existing test style. Use real imports, real types, and real signatures.
-
-Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
-
-### Test structure
-
-Prefer clear test names:
-
-```python
-test_<what_is_tested>__<expected_behavior>
-```
-
-Follow the existing project style if it differs.
-
-For pytest projects, use markers as an organization rule. Adapt to the project marker policy when it exists. Common markers:
-
-- `unit`;
-- `integration`;
-- `api_integration`;
-- `infra_integration`;
-- `system`;
-- `e2e`;
-- `manual`;
-- `slow`.
-
-Do not mark a test as heavier than necessary.
-
-### Test docstrings
-
-Every test module must have a module docstring.
-
-Every test must have a docstring unless the project styleguide explicitly says otherwise.
-
-A test docstring should describe:
-
-- input conditions;
-- key action;
-- expected observable result;
-- whether the case is an error path or regression case, if relevant.
-
-Do not repeat the test name verbatim. Do not describe implementation line by line.
+- Follow the project naming and marker conventions.
+- Otherwise prefer `test_<what_is_tested>__<expected_behavior>`.
+- Use the lightest applicable test category.
+- Add module and test docstrings when required by the project style. Otherwise, use concise docstrings for non-obvious scenarios and regression cases.
+- Use parameterization only when the scenario is identical and only inputs and expected outputs differ.
 
 ### Assertions
 
-Assertions must verify the contract.
+- Assert only the observable contract.
+- Avoid full-structure assertions when only a meaningful subset is stable.
+- Avoid assertions tied to unstable strings, timestamps, ordering, or internal call chains.
+- For error cases, assert the error type.
+- Assert message content only when the message is part of a user-facing or integration contract.
 
-Avoid:
+### Setup and Test Doubles
 
-- checking everything blindly;
-- overfitting to unstable strings, timestamps, random order, or internal call chains;
-- magic numbers that reduce readability;
-- full-structure assertions when only a meaningful subset is part of the contract.
-
-For error tests:
-
-- assert the error type;
-- assert the important part of the message only if the message is part of the user-facing or integration contract.
-
-### Fixtures
-
-Use fixtures only when they make the test clearer or reduce meaningful duplication.
-
-Preference order:
+Use the simplest setup that keeps the scenario clear:
 
 1. explicit inline setup;
-2. local helper function;
-3. local fixture in the test module;
-4. local `conftest.py` fixture for neighboring modules;
-5. shared `conftest.py` fixture only for stable, genuinely shared setup.
+2. local helper;
+3. local fixture;
+4. neighboring `conftest.py`;
+5. shared fixture only for stable, genuinely shared setup.
 
-Do not introduce a fixture when:
+- Prefer real typed objects over dictionaries and test doubles.
+- Use `Mock` or `AsyncMock` for external dependencies, controlled failures, or meaningful interaction checks.
+- Avoid long mock chains and assertions about irrelevant internal calls.
+- Use handwritten fakes only when they are reused, naturally hold state, and represent the dependency contract more clearly than mocks.
 
-- the object is used in only one test;
-- setup is 1–3 clear lines;
-- the fixture hides key scenario conditions;
-- the fixture is created “for later”;
-- the fixture makes the test harder to read.
+### Async and Observability
 
-Fixture names should describe the returned object, not the action. Avoid vague names like `data`, `obj`, `payload`, `result`, `mocked`.
+- Test async behavior directly with `async def`.
+- Cover relevant `await`, async context-manager, iterator, shutdown, cleanup, and error behavior.
+- Assert logs or metrics only when they are part of the observable contract or required diagnostic behavior.
+- If a test exposes a production defect, identify it separately from a test defect, missing context, or requirements mismatch.
 
-### Test doubles
+## Verification and Completion
 
-Do not use mocks, stubs, or fakes if the same scenario can be tested more simply with a real typed object.
+- Use the repository's documented commands as the source of truth.
+- Run the smallest relevant checks that provide evidence for the changed behavior.
+- Use proportionate checks for documentation-only changes.
+- Do not invent commands or claim checks that were not run.
+- If a relevant check cannot run, state the reason.
+- Do not treat a pre-existing unrelated failure as caused by the current change.
+- Stop and report if a new conflict, unexpected scope expansion, or unrelated material change appears.
+- Complete the task only when the requested scope is handled, relevant checks pass or are explicitly accounted for, and known risks are reported.
+- Keep the final response brief. Report only the outcome, changed files when applicable, checks run, and unresolved risks or limitations.
 
-Preference order:
+## Git and Delivery
 
-1. real typed object;
-2. real object built through a small helper or fixture;
-3. `mocker.Mock` / `mocker.AsyncMock`;
-4. `spy` when interaction with real code must be observed;
-5. handwritten `stub` / `fake` only when it is clearly the best option.
+- Do not include secrets, credentials, personal data, or local-only values in committed files.
+- Do not run `git add`, `git commit`, `git push`, `git rebase`, `git reset`, `git merge`, or amend commits unless explicitly requested.
+- Treat commit, push, merge, and destructive cleanup as separate permissions.
+- Do not infer permission to push or merge from permission to edit or commit.
+- When asked to commit, include only files within the authorized scope.
+- Preserve unrelated working-tree changes.
+- Do not use destructive Git or filesystem operations without explicit authorization and exact target verification.
 
-Use `Mock` / `AsyncMock` when:
+## Git Commit Message Rule
 
-- replacing an external dependency;
-- controlling `return_value` or `side_effect`;
-- verifying a meaningful interaction.
-
-Avoid:
-
-- long fragile mock chains;
-- asserting every internal call;
-- mock assertions that do not affect the tested contract.
-
-Handwritten fakes are allowed only when they:
-
-- are reused;
-- naturally hold state;
-- represent the dependency contract better than mocks;
-- improve readability and typing.
-
-### Async tests
-
-For async behavior:
-
-- use `async def` where appropriate;
-- test the async contract directly;
-- avoid unnecessary sync wrappers;
-- cover relevant lifecycle behavior: `await`, async context managers, async iterators, shutdown, cleanup, and error paths.
-
-Use `AsyncMock` only when a mock is actually needed.
-
-### Parameterization
-
-Use `@pytest.mark.parametrize` when:
-
-- the scenario is the same;
-- only inputs and expected outputs differ;
-- duplication is reduced without hurting readability.
-
-Do not parameterize when cases are conceptually different or the scenario becomes harder to understand.
-
-### Typing in tests
-
-Prefer real typed objects where production code already defines types.
-
-Avoid untyped dictionaries when a DTO, schema, settings object, or domain model exists.
-
-Avoid `Any` and `cast` unless they are necessary and localized.
-
-### Logs, metrics, and observability
-
-Assert logs or metrics only when they are part of the expected behavior or required for diagnosing a meaningful scenario.
-
-Use `caplog` for standard logging when appropriate. If `caplog` makes the test flaky due to logging adapters or configuration, prefer a patched logger or spy.
-
-Do not turn business logic tests into tests of telemetry internals.
-
-### Production defect vs test defect
-
-If a test reveals a production bug, state that explicitly.
-
-Separate:
-
-- test defect;
-- production defect;
-- missing context;
-- mismatch with requirements;
-- mismatch with styleguide.
-
-If the production code violates the contract, suggest the minimal correction direction without rewriting the module.
-
-## Delivery
-
-- Do not include secrets or local-only values in committed files.
-- Do not run `git add`, `git commit`, `git push`, `git rebase`, `git reset`, or amend commits unless explicitly asked.
-- When asked to commit, include only files in scope.
-
-## Git commit message rule
-
-When the user provides `git diff` and asks for a commit message, return exactly one line in Conventional Commits format:
+When the user provides a `git diff` and asks for a commit message, return exactly one line:
 
 `<type>(optional-scope): <description>`
 
 Rules:
 
-- Use only these types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci`, `chore`.
-- Pick the type by the main meaning of the diff, not by secondary files.
-- Add scope only when it is obvious from file paths or code context.
+- Use only: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci`, or `chore`.
+- Choose the type from the primary meaning of the diff.
+- Add a scope only when it is obvious from file paths or code context.
 - Write in English.
-- Use lowercase, short imperative description.
-- Do not add explanations, quotes, bullets, body, footer, or markdown.
+- Use a lowercase, short, imperative description.
+- Do not add explanations, quotes, bullets, body, footer, or Markdown.
 - If the diff has no meaningful change, return exactly: `chore: no significant changes detected`.
 
-## Clarification protocol
+## Clarification
 
-When the task is ambiguous, underspecified, or depends on missing user intent:
+- Inspect available repository context before asking questions.
+- Do not edit files while a blocking ambiguity remains.
+- Ask only questions whose answers can materially change the result.
+- Ask no more than five questions.
+- Keep questions short and provide a recommended default when appropriate.
+- State non-blocking assumptions and continue.
+- Use a plan-first workflow for complex or materially unclear tasks.
+- If required information cannot be discovered and a safe assumption is unavailable, stop and request direction.
 
-- Do not edit files immediately.
-- First inspect available repository context.
-- Ask blocking clarification questions before implementation.
-- Ask no more than 5 questions.
-- Prefer short multiple-choice questions with a recommended default.
-- If a question is not blocking, state the assumption and continue.
-- For complex or unclear tasks, use plan-first workflow before making changes.
+# Agent Rules <!-- tessl-managed -->
+
+@../.tessl/RULES.md follow the [instructions](../.tessl/RULES.md)

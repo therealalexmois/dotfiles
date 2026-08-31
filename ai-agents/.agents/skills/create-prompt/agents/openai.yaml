@@ -1,0 +1,14 @@
+interface:
+  display_name: Create Prompt
+  short_description: Создаёт точные промпты из абстрактных задач
+  default_prompt: Используй $create-prompt, чтобы превратить мою задачу в готовый
+    промпт.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

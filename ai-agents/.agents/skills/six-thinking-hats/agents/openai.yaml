@@ -1,0 +1,19 @@
+interface:
+  display_name: Six Thinking Hats
+  short_description: 'Apply Edward de Bono''s parallel thinking framework to analyze
+    a decision, idea, or problem from six independent perspectives simultaneously.
+    Use when: making complex decisions that require multiple perspectives; evaluating
+    new products, offers, or strategies before launch; breaking out of analysis paralysis
+    with structured thinking; running productive meetings where everyone thinks in
+    the same direction; balancing optimism with caution in strategic planning. Each
+    perspective runs as an independent agent — results are uncontaminated by other
+    hats.'
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

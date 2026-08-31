@@ -11,11 +11,13 @@ settings so one laptop can reproduce a consistent interactive development enviro
 Stow-managed (see README.md "The role of GNU Stow"):
 
 - `ai-agents/` - Stow package for AI CLI agents. Holds `.codex/` (Codex `AGENTS.md`,
-  `config.shared.toml`, `config.local.toml.example`, and `*.config.toml` reasoning/mode
-  profiles), `.claude/` (`CLAUDE.md`, `settings.json`, `statusline.sh`, and `agents/`
-  tracked Claude Code subagents), and `.agents/skills/` (shared agent skills, the source of
-  truth for both CLIs). Runtime state, secrets, and the rendered `config.toml` are
-  git-ignored. Also stows a legacy top-level `ai-agents/rules/` (empty) to `~/rules`.
+  `config.shared.toml` including `[mcp_servers.*]`, `config.local.toml.example`, and
+  `*.config.toml` reasoning/mode profiles), `.claude/` (`CLAUDE.md`, `settings.json`,
+  `statusline.sh`, `mcp-servers.json` (declares user-scope MCP servers synced by
+  `scripts/install-ai-cli-dotfiles.sh`), and `agents/` tracked Claude Code subagents), and
+  `.agents/skills/` (shared agent skills, the source of truth for both CLIs). Runtime state,
+  secrets, and the rendered `config.toml` are git-ignored. Also stows a legacy top-level
+  `ai-agents/rules/` (empty) to `~/rules`.
 - `alacritty/` - Alacritty terminal configuration, key bindings, color script, and themes.
 - `bootstrap/` - Stow package for home-level bootstrap files that redirect shell startup
   into repo config, plus `install-alacritty.sh` (separate `stow` invocation for the
@@ -28,7 +30,8 @@ Picked up via `$XDG_CONFIG_HOME=$HOME/.dotfiles` (no symlink; see `zsh/.zshenv`)
 - `git/` - `ignore`, the global git excludes file. git identity (`user.name`/`email`) is
   deliberately not tracked anywhere in this repo.
 - `lazydocker/` - lazydocker configuration (`config.yml`, tracked).
-- `mise/` - `config.toml`, Node (and other runtime) version pins (tracked).
+- `mise/` - `config.toml`, Node (and other runtime) version pins plus the global npm CLIs
+  installed through mise's `npm:` backend, so they survive a Node version bump (tracked).
 - `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile. No
   symlink at `~/.config/nvim`; a launcher that doesn't inherit the shell's
   `XDG_CONFIG_HOME` (e.g. a non-terminal GUI wrapper) falls back to an empty directory.
@@ -41,12 +44,12 @@ Picked up via `$XDG_CONFIG_HOME=$HOME/.dotfiles` (no symlink; see `zsh/.zshenv`)
   `$STARSHIP_CONFIG` rather than a default path.
 
 Local-only, not part of a reproducible install (present on this machine, but excluded from
-git either by `.gitignore` or by a machine-local `.git/info/exclude`, so a fresh clone
-won't reproduce them):
+git by the committed `.gitignore`, so a fresh clone won't reproduce them):
 
-- `glab-cli/`, `k9s/` - excluded via `.git/info/exclude` (not the committed `.gitignore`).
-- `homebrew/`, `htop/`, `lazygit/`, `openspec/` - excluded via the committed `.gitignore`
-  as pure runtime/telemetry/preference state.
+- `gh/`, `glab-cli/` - CLI auth state; `gh/hosts.yml` and `glab-cli/config.yml` hold
+  tokens, so they must never be tracked.
+- `homebrew/`, `htop/`, `k9s/`, `lazygit/`, `openspec/config.json` - excluded as pure
+  runtime/telemetry/preference state.
 - `goose/` - empty; the tool isn't in `mac-setup/Brewfile` and has no documented install
   step yet.
 
@@ -195,7 +198,8 @@ AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
         ai-agents/.codex/*.config.toml          → ~/.codex/ (child links)
 ```
 
-- `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600).
+- `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600), including Codex MCP servers declared under `[mcp_servers.*]` in `config.shared.toml`.
+- `scripts/install-ai-cli-dotfiles.sh` syncs Claude Code's user-scope MCP servers from `ai-agents/.claude/mcp-servers.json` via `claude mcp remove`/`claude mcp add-json -s user` (idempotent; Claude has no declarative config file for MCP servers, so this JSON is the tracked source of truth). Restart `claude`/`codex` after adding or changing an MCP server for the new server to load.
 - `ai-agents/.claude/settings.json` and the tracked `ai-agents/.codex/*.config.toml` profiles use `--skip-worktree`, so runtime rewrites (model, theme, effort, project trust, TUI NUX) do not churn the tracked defaults; to edit them, temporarily `--no-skip-worktree`.
 - CodeCompanion `claude` profile requires the `claude-code-acp` bridge; `claudecode.nvim` needs only the `claude` CLI.
 - `~/.codex/skills/.system` is never replaced by the install script.
@@ -253,11 +257,15 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
+| design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
 | database schema design | `database-schema-designer` | manual |
 | observability, SLO, metrics | `observability-designer` | manual |
+| chaos experiments, fault injection, game days, blast radius | `chaos-engineering` | manual |
 | improve code architecture | `improve-codebase-architecture` | manual |
+| microservices, monolith decomposition, bounded contexts, DDD | `microservices-architect` | manual |
+| build a CLI tool: arg parsing, shell completions, terminal UX | `cli-developer` | manual |
 | security review | `security-guidance` | yes |
 | tech debt audit | `tech-debt-tracker` | manual |
 | review before completing a task | `review-before-completion` | yes |
@@ -426,6 +434,8 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | Claude subagent | `ai-agents/.claude/agents/<name>.md` | Stow-folded to `~/.claude/agents/` |
 | Codex reasoning profile | `ai-agents/.codex/<name>.config.toml` | Symlinked to `~/.codex/` |
 | Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |
+| Codex MCP server | `ai-agents/.codex/config.shared.toml` `[mcp_servers.<name>]` | Rendered by `render-codex-config.py` |
+| Claude MCP server | `ai-agents/.claude/mcp-servers.json` | Synced to user scope by `scripts/install-ai-cli-dotfiles.sh` |
 | CodeCompanion AI profile | `nvim/lua/config/ai/codecompanion_profiles.lua` | |
 | Neovim plugin | `nvim/lua/plugins/` domain subdir | AstroCommunity in `community.lua` |
 | tmux plugin | `tmux/tmux.conf` | `set -g @plugin ...` |

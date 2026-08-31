@@ -1,23 +1,28 @@
 #!/usr/bin/env bash
 # Bundled git-worktree command for creating a named branch and worktree.
 #
-# Contract: accept --name and --cwd, print only the absolute worktree path on
-# stdout by default, and return non-zero before creation when the remote base
-# cannot be refreshed. Optional JSON output is machine-readable. Provisioning
-# after creation remains best-effort.
+# Contract: accept --name and --cwd, honor an explicit absolute --path, and
+# require a confirmed ignore mode before configuring the default `.worktrees/`
+# location. Print only the absolute worktree path on stdout by default, and
+# return non-zero before creation when preflight or remote refresh fails.
+# Optional JSON output is machine-readable. Provisioning remains best-effort.
 
 set -uo pipefail
 
-err() { printf 'agent-worktree-create: %s\n' "$1" >&2; }
+err() { printf 'create-worktree: %s\n' "$1" >&2; }
 
 usage() {
-  printf 'usage: agent-worktree-create --name <name> --cwd <repository-path> [--format path|json]\n' >&2
+  printf '%s\n' \
+    'usage: create-worktree --name <name> --cwd <repository-path> [--path <absolute-path>]' \
+    '       [--ignore-mode info-exclude|gitignore] [--format path|json]' >&2
 }
 
 worktree_name=""
 cwd=""
+requested_path=""
 name_set=0
 output_format="path"
+ignore_mode="existing"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -30,6 +35,19 @@ while [[ $# -gt 0 ]]; do
     --cwd)
       [[ $# -ge 2 ]] || { err "--cwd requires a value"; usage; exit 2; }
       cwd="$2"
+      shift 2
+      ;;
+    --path)
+      [[ $# -ge 2 ]] || { err "--path requires a value"; usage; exit 2; }
+      requested_path="$2"
+      shift 2
+      ;;
+    --ignore-mode)
+      [[ $# -ge 2 ]] || { err "--ignore-mode requires a value"; usage; exit 2; }
+      case "$2" in
+        info-exclude | gitignore) ignore_mode="$2" ;;
+        *) err "--ignore-mode must be info-exclude or gitignore"; usage; exit 2 ;;
+      esac
       shift 2
       ;;
     --format)
@@ -64,6 +82,17 @@ repo_root=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || {
   exit 1
 }
 
+if [[ -n "$requested_path" ]]; then
+  case "$requested_path" in
+    /*) ;;
+    *) err "--path must be absolute"; exit 2 ;;
+  esac
+  [[ "$ignore_mode" == "existing" ]] || {
+    err "--ignore-mode cannot be used with --path"
+    exit 2
+  }
+fi
+
 # conventionalbranch.org: lowercase a-z0-9, hyphens between words, dots only
 # in release versions. Keep `/` so an existing `type/...` prefix survives.
 sanitize() {
@@ -95,7 +124,55 @@ git check-ref-format --branch "$branch" >/dev/null 2>&1 || {
 
 # Keep worktrees flat even though branches keep their conventional type prefix.
 dir_name=$(printf '%s' "$branch" | tr '/' '-')
-path="$repo_root/.worktrees/$dir_name"
+if [[ -n "$requested_path" ]]; then
+  path="$requested_path"
+  default_location=false
+else
+  path="$repo_root/.worktrees/$dir_name"
+  default_location=true
+fi
+
+# The caller performs the conversational preflight. This guard keeps direct
+# callers from changing ignore files or fetching before that choice is explicit.
+if [[ "$default_location" == true ]]; then
+  ignore_probe=".worktrees/.git-worktree-preflight"
+  if ! git -C "$repo_root" check-ignore -q --no-index "$ignore_probe" 2>/dev/null; then
+    case "$ignore_mode" in
+      existing)
+        err ".worktrees is not ignored; confirm --ignore-mode info-exclude or gitignore"
+        exit 3
+        ;;
+      info-exclude)
+        git_common=$(git -C "$repo_root" rev-parse --git-common-dir 2>/dev/null) || {
+          err "cannot resolve Git common directory"
+          exit 1
+        }
+        case "$git_common" in
+          /*) ;;
+          *) git_common="$repo_root/$git_common" ;;
+        esac
+        ignore_file="$git_common/info/exclude"
+        ;;
+      gitignore)
+        ignore_file="$repo_root/.gitignore"
+        ;;
+    esac
+
+    if grep -Fqx '/.worktrees/' "$ignore_file" 2>/dev/null; then
+      err "existing /.worktrees/ rule in $ignore_file is not effective; refusing to duplicate it"
+      exit 1
+    fi
+    mkdir -p "$(dirname "$ignore_file")"
+    printf '/.worktrees/\n' >>"$ignore_file" || {
+      err "cannot update ignore rules in $ignore_file"
+      exit 1
+    }
+    git -C "$repo_root" check-ignore -q --no-index "$ignore_probe" 2>/dev/null || {
+      err "added ignore rule is not effective: $ignore_file"
+      exit 1
+    }
+  fi
+fi
 
 # Refresh the canonical remote before resolving origin/HEAD. A failed fetch is
 # an explicit blocker so the command cannot silently branch from stale state.
@@ -107,18 +184,7 @@ fi
 base_ref=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
 [[ -n "$base_ref" ]] || base_ref=HEAD
 
-# Keep `.worktrees/` out of status without changing the tracked .gitignore.
-git_common=$(git -C "$repo_root" rev-parse --git-common-dir 2>/dev/null)
-case "$git_common" in
-  /*) ;;
-  *) git_common="$repo_root/$git_common" ;;
-esac
-if ! git -C "$repo_root" check-ignore -q .worktrees 2>/dev/null; then
-  printf '.worktrees/\n' >>"$git_common/info/exclude" 2>/dev/null || true
-fi
-
 # Git writes progress to stderr so stdout remains machine-readable for callers.
-mkdir -p "$(dirname "$path")"
 if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
   branch_created=false
   git -C "$repo_root" worktree add "$path" "$branch" >&2
@@ -161,15 +227,21 @@ fi
 # Share the repo's `.claude` (project skills, commands, local settings) with the
 # worktree. It is gitignored, so `git worktree add` never brings it in. Symlink
 # rather than copy so project skills stay in sync with the main worktree. The
-# worktree always lives at `<repo>/.worktrees/<dir>`, so `../../.claude` resolves
-# back to the repo root. Best-effort: never aborts a created worktree.
+# default worktree lives at `<repo>/.worktrees/<dir>`, so `../../.claude`
+# resolves back to the repo root. Explicit paths use the absolute source.
+# Best-effort: never aborts a created worktree.
 if [[ -e "$repo_root/.claude" && ! -e "$path/.claude" ]]; then
-  ln -s "../../.claude" "$path/.claude" 2>/dev/null || err "could not link .claude"
+  if [[ "$default_location" == true ]]; then
+    claude_source="../../.claude"
+  else
+    claude_source="$repo_root/.claude"
+  fi
+  ln -s "$claude_source" "$path/.claude" 2>/dev/null || err "could not link .claude"
 fi
 
 # Prefer a repository setup script, then provision uv projects. Provisioning is
 # best-effort because the branch and worktree already exist at this point.
-log_file="${XDG_STATE_HOME:-$HOME/.local/state}/agent-worktree-create.log"
+log_file="${XDG_STATE_HOME:-$HOME/.local/state}/create-worktree.log"
 mkdir -p "$(dirname "$log_file")" 2>/dev/null || true
 setup=""
 provisioning_method="none"

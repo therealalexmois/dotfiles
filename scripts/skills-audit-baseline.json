@@ -70,6 +70,16 @@
   }
  },
  {
+  "skill": "api-designer",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "api-test-suite-builder",
   "verdict": "PASS",
   "counts": {
@@ -211,6 +221,16 @@
  },
  {
   "skill": "claude-coach",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "cli-developer",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -670,6 +690,16 @@
   }
  },
  {
+  "skill": "microservices-architect",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "migration-architect",
   "verdict": "PASS",
   "counts": {
@@ -1037,6 +1067,16 @@
    "high": 0,
    "info": 0,
    "total": 0
+  }
+ },
+ {
+  "skill": "skill-creator",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 1,
+   "info": 0,
+   "total": 1
   }
  },
  {

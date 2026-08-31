@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude WorktreeCreate adapter. Claude supplies JSON on stdin; the shared
-# agent-worktree-create command owns Git, naming, copying, and provisioning.
+# create-worktree command owns Git, naming, copying, and provisioning.
 
 set -uo pipefail
 
@@ -19,7 +19,7 @@ worktree_name=$(printf '%s' "$input" | jq -r '.name // empty')
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
 [[ -n "$cwd" ]] || { err "no cwd in hook input"; exit 1; }
 
-wrapper="$HOME/.agents/skills/git-worktree/scripts/agent-worktree-create"
+wrapper="$HOME/.agents/skills/git-worktree/scripts/create-worktree"
 [[ -x "$wrapper" ]] || { err "shared command is not executable: $wrapper"; exit 1; }
 
 exec "$wrapper" --name "$worktree_name" --cwd "$cwd"

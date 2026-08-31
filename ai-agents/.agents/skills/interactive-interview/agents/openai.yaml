@@ -1,0 +1,14 @@
+interface:
+  display_name: Interactive Interview
+  short_description: Проводит интервью через интерактивные вопросы
+  default_prompt: Используй $interactive-interview, чтобы провести со мной интервью
+    из 15 вопросов по указанной теме.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
