@@ -18,9 +18,9 @@ allowlist и набор правил, а не требование исполь�
 ### AI и ML
 
 `AI`, `LLM`, `RAG`, `embedding`, `evaluation`, `benchmark`, `grounding`,
-`tool call`, `agent`, `skill`, `MCP`, `latency`, `trace`, `span`, `prompt`,
-`context window`, `fine-tuning`, `inference`, `evals`, `LLM-as-a-judge`,
-`HITL`, `ReAct`, `BYOK`, `harness`, `grader`.
+`tool`, `tool call`, `agent`, `skill`, `MCP`, `latency`, `trace`, `span`,
+`prompt`, `context window`, `fine-tuning`, `inference`, `evals`,
+`LLM-as-a-judge`, `HITL`, `ReAct`, `BYOK`, `harness`, `grader`.
 
 ### Software и инфраструктура
 
@@ -153,7 +153,9 @@ runtime`, если компонент развивается отдельно; `
 - `закрыл боль` - решил названную проблему;
 - `почистил код` - укажи, что удалено или переработано;
 - `снес слой` - удалил слой;
-- `прогон` - `run`: `run тестов`, `run pipeline`.
+- `прогон` - `run`: `run тестов`, `run pipeline`;
+- `инструменты с подтверждением` - `tools с HITL`, если подтверждение
+  человека является контрактом, а не разовой оговоркой.
 
 Это контекстные подсказки, а не таблица автоматических замен. Не переводи
 официальное название `Evidence Registry`, имя раздела, поле или закрепленный
