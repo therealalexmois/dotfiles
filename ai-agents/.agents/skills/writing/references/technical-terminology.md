@@ -188,7 +188,7 @@ owner -> владелец, если это не формальная роль
 `scripts/lint_banned_terms.py`, который вырезает код, frontmatter и URL и ищет
 запрещенные основы только в прозе.
 
-Прогон по редактируемым файлам:
+Запуск линтера по редактируемым файлам:
 
 ```sh
 uv run scripts/lint_banned_terms.py FILE.md
