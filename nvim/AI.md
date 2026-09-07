@@ -1,6 +1,6 @@
 # AI в Neovim — памятка
 
-Две независимые поверхности работают рядом:
+Три независимые поверхности работают рядом:
 
 - **CodeCompanion** (`<leader>A`) — мультимодельные операции с кодом: чат, inline-правки,
   библиотека промптов. Адаптеры переключаются: локальный Ollama, рабочий HTTP-прокси и
@@ -8,6 +8,52 @@
 - **claudecode.nvim** (`<leader>C`) — `claude` CLI по официальному IDE-протоколу для
   агентной и research-работы с нативными diff (accept/reject). Наследует MCP-серверы,
   сабагентов, skills и rules из CLI — в Neovim настраивать нечего.
+- **Фоновые AI jobs** (`<leader>Ar/Aj/Ao/Ax`) — тонкая оболочка для `codex exec` и
+  `claude --bg`. Neovim запускает задачу в отдельной worktree, хранит локальный статус и
+  открывает вывод или логи в read-only scratch-буфере. Это не harness: нет очереди,
+  semantic parser, subagents или автоматического применения изменений.
+
+## Фоновые jobs
+
+### JTBD
+
+- Запустить read-задачу для проверки нескольких вариантов и продолжить работу в основном
+  checkout: `:AIJobStart codex read Сравни варианты реализации`.
+- Запустить write-задачу для изолированного прототипа: `:AIJobStart claude write Добавь
+  прототип без коммита`.
+- Посмотреть активные задачи: `:AIJobList` или `<leader>Aj`.
+- Открыть результат Codex или логи Claude: `:AIJobOpen [job-id]` или `<leader>Ao`.
+- Отменить активную задачу: `:AIJobCancel [job-id]` или `<leader>Ax`.
+
+Если provider, режим или prompt не указаны, команда последовательно спрашивает их через
+стандартный Neovim UI. Completion `:AIJobStart` предлагает provider и режим, а
+`:AIJobOpen` и `:AIJobCancel` — известные ids; `:AIJobList` аргументов не имеет.
+
+### Граница CLI и Neovim
+
+Neovim отвечает только за dispatch, in-memory registry, process-level status, список,
+открытие и отмену. Codex запускается асинхронно через `codex exec`; Claude передает
+lifecycle нативному `claude --bg`, а статус периодически читается через
+`claude agents --json --all`. Статус `working|blocked|done|failed|stopped` не трактуется
+как semantic успех задачи.
+
+Перед каждым provider вызывается canonical `git-worktree` wrapper. Worktree создается
+от зафиксированного Git-состояния под `stdpath("state")/ai-jobs/worktrees/`, и provider
+получает только ее `cwd`. Основной checkout не передается provider. Для Codex prompt идет
+через stdin, а sandbox использует `read-only` либо `workspace-write` с отключенной сетью.
+Claude использует `plan` для read и `auto` для write внутри уже созданной worktree.
+
+### Восстановление и ограничения
+
+Jobs не сохраняются после перезапуска Neovim. Codex принадлежит текущему процессу Neovim
+и получает SIGTERM на `VimLeavePre`; Claude background job продолжает жить под нативным
+supervisor и после закрытия Neovim. Незавершенную Claude-задачу можно найти командой
+`claude agents` и остановить `claude stop <id>`.
+
+Neovim не делает commit, push, PR, merge, обход permissions или автоматическую cleanup
+worktree и ветки. После завершения результат остается в worktree для отдельного review и
+ручного cleanup. Для проверки вывода используйте `<leader>Ao`; изменения применяются и
+доставляются только отдельным согласованным Git-процессом.
 
 ---
 
@@ -25,6 +71,8 @@
   `claude`.
 - `:AIProfileStatus` — показать активный профиль и результат preflight-проверки.
 - Профиль меняется через env и применяется при старте: `NVIM_AI_PROFILE=claude nvim`.
+- Для профиля `work` обязательны `NVIM_AI_WORK_URL`, `NVIM_AI_WORK_API_KEY` и
+  `NVIM_AI_WORK_MODEL`; значения остаются только в локальном окружении.
 - Claude-чат доступен из любого профиля по `<leader>Al`.
 - Модель в `claudecode.nvim` — `<leader>Cm`.
 
@@ -40,6 +88,15 @@
 | `<leader>Ac` | Тоггл чата |
 | `<leader>Aq` | Добавить выделение в чат (visual) |
 | `<leader>Al` | Claude-чат по ACP |
+
+### Фоновые AI jobs
+
+| Клавиши | Действие |
+| --- | --- |
+| `<leader>Ar` | Запустить job (provider, режим и prompt спросит UI) |
+| `<leader>Aj` | Показать список jobs |
+| `<leader>Ao` | Открыть вывод или логи выбранного job |
+| `<leader>Ax` | Отменить выбранный job |
 
 ### claudecode.nvim (`<leader>C`)
 
@@ -132,6 +189,11 @@
 
 ## Файлы
 
+- `nvim/lua/config/ai/headless_jobs.lua` — команды, completion, registry UI, scratch-буферы,
+  polling и shutdown hook для фоновых jobs.
+- `nvim/lua/config/ai/headless_runner.lua` — изоляция worktree и process lifecycle.
+- `nvim/lua/config/ai/headless_providers.lua` — безопасные argv и provider contracts.
+- `nvim/lua/plugins/ai/headless-jobs.lua` — mappings фоновых jobs.
 - `nvim/lua/plugins/ai/claudecode.lua` — спека claudecode.nvim, keymaps, `:ClaudeResearch`.
 - `nvim/lua/plugins/ai/codecompanion.lua` — адаптеры (acp/http) и keymaps CodeCompanion.
 - `nvim/lua/config/ai/codecompanion_profiles.lua` — выбор профиля, preflight, `:AIProfileStatus`.

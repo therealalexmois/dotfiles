@@ -29,4 +29,8 @@ memories = true
 
 [mcp_servers.context7]
 command = "npx"
-args = ["-y", "@upstash/context7-mcp"]
+args = ["--yes", "--prefer-offline", "@upstash/context7-mcp"]
+startup_timeout_sec = 60
+
+[mcp_servers.singularity]
+url = "https://mcp.singularity-app.com/mcp?toolsets=tasks,projects,meta"
