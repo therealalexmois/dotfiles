@@ -225,7 +225,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | Prefix | Domain |
 | --- | --- |
 | `work-` | planning, reflection, and work processes |
-| `writing` / `writing-` | Russian writing and text editing |
+| `writing` / `writing-` | Russian writing, text editing, and long-form documents (technical documentation, marketing content, plans, PRD) |
 | `anthropic-` | skills imported from or based on Anthropic workflows |
 | `python-` | Python coding conventions |
 | `jira-` | Jira workflows |
@@ -270,7 +270,8 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | tech debt audit | `tech-debt-tracker` | manual |
 | review before completing a task | `review-before-completion` | yes |
 | generate a runbook | `runbook-generator` | manual |
-| write technical documentation | `documentation-writer` | manual |
+| write, edit, or review technical documentation (tutorial, how-to, reference, API/CLI, troubleshooting, README, runbook) | `writing-technical-documentation` | yes |
+| plan, write, edit, or review technical marketing content (blog post, case study, white paper, landing page, announcement) | `writing-technical-marketing-content` | yes |
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |

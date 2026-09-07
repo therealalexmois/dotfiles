@@ -410,16 +410,6 @@
   }
  },
  {
-  "skill": "documentation-writer",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "env-secrets-manager",
   "verdict": "FAIL",
   "counts": {
@@ -1080,16 +1070,6 @@
   }
  },
  {
-  "skill": "skill-creator",
-  "verdict": "WARN",
-  "counts": {
-   "critical": 0,
-   "high": 1,
-   "info": 0,
-   "total": 1
-  }
- },
- {
   "skill": "skill-param-auditor",
   "verdict": "PASS",
   "counts": {
@@ -1261,6 +1241,26 @@
  },
  {
   "skill": "writing-prd-draft",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "writing-technical-documentation",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "writing-technical-marketing-content",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
