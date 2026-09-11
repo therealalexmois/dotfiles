@@ -32,5 +32,7 @@ command = "npx"
 args = ["--yes", "--prefer-offline", "@upstash/context7-mcp"]
 startup_timeout_sec = 60
 
-[mcp_servers.singularity]
-url = "https://mcp.singularity-app.com/mcp?toolsets=tasks,projects,meta"
+# singularity MCP отключен: требовал регулярной OAuth-переавторизации.
+# Чтобы вернуть: раскомментировать и выполнить `codex mcp login singularity`.
+# [mcp_servers.singularity]
+# url = "https://mcp.singularity-app.com/mcp?toolsets=tasks,projects,meta"
