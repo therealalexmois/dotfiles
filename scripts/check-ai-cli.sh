@@ -25,7 +25,7 @@ if command -v shellcheck >/dev/null 2>&1; then
     "${repo_dir}/ai-agents/.claude/statusline.sh" \
     "${repo_dir}/scripts/check-ai-cli.sh" \
     "${repo_dir}/scripts/test-create-worktree.sh" \
-    "${repo_dir}/scripts/test-skill-discovery-names.sh"; then
+    "${repo_dir}/scripts/check-skills.sh"; then
     echo "ok"
   else
     fail "shellcheck reported issues"
@@ -74,11 +74,18 @@ else
   fail "create-worktree integration failed"
 fi
 
-note "skill discovery names"
-if bash "${repo_dir}/scripts/test-skill-discovery-names.sh"; then
-  echo "ok"
+note "skill invariants (sources + installed link layers)"
+if bash "${repo_dir}/scripts/check-skills.sh"; then
+  :
 else
-  fail "skill discovery names are inconsistent"
+  fail "skill invariants are violated"
+fi
+
+note "prune_stray_skill_links unit test"
+if zsh "${repo_dir}/scripts/test-prune-stray-skill-links.sh"; then
+  :
+else
+  fail "prune_stray_skill_links does not prune stray or dangling links"
 fi
 
 note "result"

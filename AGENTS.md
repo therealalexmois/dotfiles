@@ -63,7 +63,11 @@ Everything else:
 - `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
 - `scripts/` - Repo tooling: `install-ai-cli-dotfiles.sh` (Stow + skill/profile symlinks),
   `render-codex-config.py` (merge shared + local Codex TOML into `~/.codex/config.toml`),
-  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `audit-skills.sh` (security
+  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `check-skills.sh` (validates
+  the skill invariants: SKILL.md presence, directory name equal to the frontmatter
+  `name`, no stray nested SKILL.md, no dangling links in the three installed layers),
+  `test-prune-stray-skill-links.sh` (unit test for the installer's link pruning),
+  `audit-skills.sh` (security
   audit of all skills via skill-security-auditor; compares with the committed
   `skills-audit-baseline.json`), and `dry-run-install.sh` (validates Stow-package and zsh
   startup symlinks against a throwaway fake `$HOME`; see README.md "Verifying the
@@ -124,6 +128,10 @@ zsh -n bootstrap/.zshenv zsh/.zshenv zsh/.zprofile zsh/.zshrc zsh/bootstrap.zsh
 # Lint + smoke the AI CLI tooling (zsh -n, shellcheck, py_compile, render --check,
 # TOML parse of shared/profile configs). Performs no writes to ~/.codex or ~/.claude.
 scripts/check-ai-cli.sh
+
+# Validate the skill layer: sources plus the installed ~/.agents, ~/.claude and
+# ~/.codex link layers. --repo-only skips the host-dependent checks.
+scripts/check-skills.sh
 
 # Security-audit all agent skills (skips *-workspace scratch dirs) and compare the
 # verdicts with scripts/skills-audit-baseline.json; --update-baseline rewrites it.
@@ -276,6 +284,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |
+| set up or audit analytics tracking (GA4, GTM, events) | `analytics-tracking` | manual |
 | TDD, test-first development, red-green-refactor | `test-driven-development` | yes |
 | quick brainstorm | `brainstorm-lite` | yes |
 | structured brainstorm | `six-thinking-hats` | yes |
@@ -305,11 +314,15 @@ Rename checklist (every step is required, the link layers break silently):
 3. Recreate all three symlinks (`~/.agents/skills`, `~/.claude/skills`,
    `~/.codex/skills`) or rerun `scripts/install-ai-cli-dotfiles.sh`.
 4. Update cross-references to the old name in other `SKILL.md` files.
-5. Restart Claude Code and Codex so the renamed skill is picked up.
+5. Run `scripts/check-skills.sh` to confirm the directory name, the frontmatter
+   `name`, and all three link layers agree.
+6. Restart Claude Code and Codex so the renamed skill is picked up.
 
 ## Testing Strategy
 
-- Unit tests: no first-party unit test suite is documented.
+- Unit tests: `scripts/test-prune-stray-skill-links.sh` covers the installer's link
+  pruning (sourcing the installer does not run it; `main` is guarded). No other
+  first-party unit test suite is documented.
   > TODO: Add tests for `nvim/lua/config/ai/docstring/extractor.lua` if its behavior
   > becomes shared or regression-prone.
 - Integration checks: run `stylua --check nvim`, `(cd nvim && selene .)`, `zsh -n ...`, and
@@ -444,6 +457,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | Shell entrypoint | `bootstrap/.zshenv` / `zsh/bootstrap.zsh` | |
 | Starship module | `starship.toml` | |
 | Terminal config | `alacritty/` | |
+| Skill invariants | `scripts/check-skills.sh` | Names, SKILL.md presence, installed link layers |
 | Install validation | `scripts/dry-run-install.sh` | Fake-`$HOME` symlink check; full VM run documented in README.md "Verifying the install" |
 
 Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile variables in CodeCompanion config.

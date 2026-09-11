@@ -97,14 +97,15 @@ ensure_correct_skill_link() {
   echo "created skill link: $link_path -> $target"
 }
 
-# Remove leftover skill symlinks that point into our managed namespace but no
-# longer match a tracked source skill (renamed/removed skills, or broken links
-# from earlier botched runs, including array-collapse orphans whose name is the
-# whole skill list joined by spaces). Only symlinks whose target starts with the
-# given managed prefix are touched; real files, foreign symlinks, and the Codex
-# `.system` directory are left alone. `target_prefix` differs per namespace:
-# `~/.codex` and `~/.claude` links point at `../../.agents/skills/`, while
-# `~/.agents/skills` links point at `../../.dotfiles/ai-agents/.agents/skills/`.
+# Remove leftover skill symlinks that no longer correspond to a tracked skill:
+# links into our managed namespace whose skill was renamed or removed (including
+# array-collapse orphans whose name is the whole skill list joined by spaces),
+# and any dangling link regardless of where it points, since a link that does not
+# resolve cannot be anyone's working skill. Live symlinks outside the managed
+# namespace belong to another tool and are left alone, as are real files and the
+# Codex `.system` directory. `target_prefix` differs per namespace: `~/.codex`
+# and `~/.claude` links point at `../../.agents/skills/`, while `~/.agents/skills`
+# links point at `../../.dotfiles/ai-agents/.agents/skills/`.
 prune_stray_skill_links() {
   local skills_dir="$1"
   local target_prefix="$2"
@@ -123,8 +124,8 @@ prune_stray_skill_links() {
     name="${link:t}"
     [[ -n "${tracked[$name]:-}" ]] && continue
     target="$(readlink "$link")"
-    [[ "$target" == ${target_prefix}* ]] || continue
     if [[ -e "$link" ]]; then
+      [[ "$target" == ${target_prefix}* ]] || continue
       backup_item "$link" "${label}-stray-skills/${name}"
     fi
     rm "$link"
@@ -258,4 +259,8 @@ main() {
   find "${HOME}/.codex" -maxdepth 1 -name '*.config.toml' -type l -print | sort
 }
 
-main "$@"
+# Run the installer only when executed directly; sourcing the script exposes its
+# functions to scripts/test-prune-stray-skill-links.sh without installing anything.
+if [[ "${zsh_eval_context[-1]}" == "toplevel" ]]; then
+  main "$@"
+fi
