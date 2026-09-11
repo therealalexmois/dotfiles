@@ -1,0 +1,108 @@
+{
+  "skill_name": "create-prompt",
+  "evals": [
+    {
+      "id": 1,
+      "name": "agent-task-from-conversation",
+      "prompt": "Сделай промпт для Claude Code. Мы обсуждали, как сделать вызовы к Trino из Nessy устойчивее: смотрели circuit breaker, ретрай всего прогона графа и явные дедлайны на gRPC. Решили: только ретраи на уровне отдельного вызова, 3 попытки, экспоненциальный backoff от 0.5 с, ретраим только таймауты и 503. Клиент лежит в nessy/clients/trino.py.",
+      "expected_output": "Four parts with the selected retry policy and the path. Discarded alternatives are absent, even as non-goals. Criteria are the skill's own, so they are marked after the prompt.",
+      "files": [],
+      "expectations": [
+        "Prompt contains the path nessy/clients/trino.py",
+        "Prompt contains the retry policy: 3 attempts, backoff from 0.5 s, only timeouts and 503",
+        "Prompt does not mention circuit breaker, whole-run retry, or deadlines",
+        "Part 4 is the interactive variant (ask and wait)",
+        "The criteria marking line is present after the prompt"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "refine-overloaded-prompt",
+      "prompt": "Перепиши этот промпт, он слишком раздутый:\n\nТы — world-class senior Python engineer с 20-летним опытом. Твоя задача — провести code review модуля. Следуй шагам: 1) Внимательно прочитай весь код. 2) Проанализируй архитектуру. 3) Найди баги. 4) Проверь стиль по PEP8. 5) Оцени покрытие тестами. 6) Предложи улучшения. Правила: не галлюцинируй, будь точен, думай шаг за шагом. Формат: таблица с колонками Severity | File | Line | Issue | Fix. В конце дай общую оценку от 1 до 10. Модуль: async-клиент для S3 в storage/s3_client.py, главное — утечки соединений и обработка отмены задач.",
+      "expected_output": "Role, generic steps, and boilerplate removed; real scope, focus, table, and score kept. Criteria come from the user's prompt, so no criteria marking. One line lists what was removed.",
+      "files": [],
+      "expectations": [
+        "Prompt does not contain the role, 'думай шаг за шагом', or 'не галлюцинируй'",
+        "Prompt keeps bugs, PEP8, test coverage, improvements, and the focus on connection leaks and cancellation",
+        "Prompt keeps the table columns Severity | File | Line | Issue | Fix and the 1-10 score",
+        "No criteria marking line (criteria are the user's)",
+        "One line after the prompt lists removed items"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "web-model-data-analysis",
+      "prompt": "Напиши промпт для ChatGPT: я загружу CSV с инцидентами платформы за Q2, нужно понять топ-5 причин и что с ними делать. Читать будет руководитель. Ответ — короткий абзац и таблица.",
+      "expected_output": "Says the CSV is attached. Keeps 'топ-5' without inventing the ranking metric. User's format is a criterion; any added criterion is named as added.",
+      "files": [],
+      "expectations": [
+        "Prompt states that the CSV is attached",
+        "Prompt keeps 'топ-5' and does not define the ranking metric",
+        "Criteria include the paragraph + table format",
+        "Added criteria are named individually after the prompt"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "routine-git-cleanup",
+      "prompt": "Промпт для Codex: PR #412 с фичей экспорта в Parquet смержен, CI зелёный, ночной джоб тоже прошёл, с покрытием разобрались. Надо обновить локальный main и снести ветку feature/parquet-export и её worktree ../wt-parquet.",
+      "expected_output": "Two outcomes with exact targets. No git commands, CI, nightly job, coverage, or report.",
+      "files": [],
+      "expectations": [
+        "Prompt names feature/parquet-export and ../wt-parquet",
+        "Prompt contains no git commands",
+        "Prompt does not mention CI, the nightly job, or coverage",
+        "The criteria marking line is present after the prompt"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "unattended-agent-run",
+      "prompt": "Нужен промпт для фоновой задачи в Codex cloud, отвечать на вопросы там никто не будет: переименовать ключ конфига max_retries в retry_max_attempts во всём сервисе, поведение сохранить.",
+      "expected_output": "Unattended part 4. 'Сохранить поведение' kept at the user's level; the criterion checks it through existing tests instead of restating it. No new work added.",
+      "files": [],
+      "expectations": [
+        "Part 4 is the unattended variant and does not ask to wait for answers",
+        "Prompt does not require writing tests, docs, migrations, or release steps",
+        "No criterion merely restates the task"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "refine-real-routine-prompt",
+      "prompt": "Перепиши промпт для моего Claude Code routine, он запускается по расписанию:\n\nТы — напоминалка для Alex по личному coding-проекту «AI Agent Coding Rehabilitation» (цель: восстановить навык production Python, написав AI-агента с нуля руками).\n\nЗадача каждого запуска:\n1. Прочитай файл `5_Project Notes/AI Agent Coding Rehabilitation/Chat summary – scope and open questions.md`. Также проверь, не появилось ли в папке `5_Project Notes/AI Agent Coding Rehabilitation/` других заметок с зафиксированными ответами/решениями.\n2. Определи, пройдено ли scope-интервью. Эвристика: если в summary в разделе «Текущее состояние» всё ещё сказано, что задача — уточнение scope, и нигде в папке нет зафиксированных ответов на вопросы 1–6 и выбора приоритетных тем — значит интервью НЕ пройдено.\n3. Если НЕ пройдено — выдай короткое дружелюбное напоминание (на русском): ответить на вопросы 1–6 и выбрать 2–3 приоритетные темы (вопрос 8). Подчеркни: проходить все 35 вопросов НЕ обязательно. Перечисли вопросы 1–6 списком.\n4. Если интервью УЖЕ пройдено — сообщи об этом и предложи отключить routine на https://claude.ai/code/routines.\n\nНичего не меняй в репозитории — только читай и формируй текст.",
+      "expected_output": "Scheduled run is detected as unattended. The heuristic, both branches, the path, the URL, and the read-only boundary are preserved; the role is removed.",
+      "files": [],
+      "expectations": [
+        "Part 4 is the unattended variant",
+        "Prompt keeps the folder path, the heuristic, both branches, and the routines URL",
+        "Read-only boundary is kept",
+        "Prompt does not start with the role 'Ты — напоминалка'"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "system-prompt-out-of-scope",
+      "prompt": "Перепиши системный промпт нашего агента, он длинный:\n\nТы — Data Agent платформы данных. Помогаешь аналитикам через доступные инструменты. Не выдумывай факты, ID, имена таблиц и результаты вызовов. Действуй только через доступные инструменты. Если данных не хватает, скажи об этом и спроси.",
+      "expected_output": "Recognizes a system prompt, does not restructure it into four parts, says so in one line and asks how to proceed.",
+      "files": [],
+      "expectations": [
+        "Output contains no four-part prompt",
+        "Output explains in one line that the skill targets one-off task prompts",
+        "Output asks how to proceed"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "user-supplied-criteria",
+      "prompt": "Промпт для Claude Code: добавь в CLI nessy-eval флаг --dry-run. Критерии: с --dry-run команда ничего не пишет на диск и печатает список файлов, которые записала бы.",
+      "expected_output": "Uses the user's criteria verbatim in meaning, adds nothing, and has no marking line. No context section restating the task.",
+      "files": [],
+      "expectations": [
+        "Criteria are exactly the two the user gave",
+        "No criteria marking line",
+        "No context section that restates the task"
+      ]
+    }
+  ]
+}
