@@ -229,6 +229,28 @@ scripts/install-ai-cli-dotfiles.sh creates:
 
 Skills load only at CLI startup. Restart Claude Code and Codex after adding or renaming.
 
+Layout follows the [Agent Skills specification](https://agentskills.io/specification):
+
+```
+<skill>/
+├── SKILL.md        # required; keep under 500 lines
+├── references/     # documentation the agent reads on demand
+├── scripts/        # executable code
+├── assets/         # templates and static resources
+└── README.md, LICENSE   # package-level files stay at the root
+```
+
+Frontmatter carries only the spec fields - `name` (must equal the directory name,
+lowercase letters, digits and single hyphens), `description` (max 1024 characters),
+and optionally `license`, `compatibility` (max 500), `metadata` (string values only)
+and `allowed-tools` (space-separated). Everything else belongs under `metadata`. The
+exception is the client-specific keys Claude Code actually reads, which stay at the
+top level: `disable-model-invocation`, `argument-hint`, `user-invocable`.
+
+Link bundled files with paths relative to the skill root (`references/tests.md`), one
+level deep. A file sitting next to `SKILL.md` instead of in `references/` is invisible
+to `tessl review`, which reports every such link as missing.
+
 Naming convention for first-party skills: the directory name and the `name:` field in
 `SKILL.md` frontmatter must carry a domain prefix:
 
