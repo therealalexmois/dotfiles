@@ -173,7 +173,3 @@ Rules:
 - State non-blocking assumptions and continue.
 - Use a plan-first workflow for complex or materially unclear tasks.
 - If required information cannot be discovered and a safe assumption is unavailable, stop and request direction.
-
-# Agent Rules <!-- tessl-managed -->
-
-@../.tessl/RULES.md follow the [instructions](../.tessl/RULES.md)
