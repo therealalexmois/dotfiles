@@ -2,9 +2,9 @@
 name: prompt-review
 disable-model-invocation: true
 description: Critique and improve an existing prompt without breaking its purpose. Use when the user hands over a prompt they already have and wants an evidence-based review plus a strengthened version — every finding tied to a verbatim quote and a concrete failure mechanism, with a verdict (PASS/PARTIAL/FAIL/BLOCKED). Not for designing a prompt from scratch.
-version: 1.0.0
 metadata:
   origin: first-party
+  version: 1.0.0
 ---
 
 # Prompt Review

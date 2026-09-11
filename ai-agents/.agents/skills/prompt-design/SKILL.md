@@ -2,11 +2,11 @@
 name: prompt-design
 disable-model-invocation: true
 description: Design a new prompt from a brief. Use when the user wants a prompt built for a specific task (extraction, review/gate, transformation, structured generation, document Q&A, data analysis, brainstorming, conversational, etc.), and wants a self-contained final prompt plus a testing checklist — built strictly to the brief, without trend-chasing or over-engineering.
-version: 1.0.0
-created: 2026-06-02T09:04
-updated: 2026-06-02T09:04
 metadata:
   origin: first-party
+  version: 1.0.0
+  created: "2026-06-02T09:04"
+  updated: "2026-06-02T09:04"
 ---
 
 # Prompt Design

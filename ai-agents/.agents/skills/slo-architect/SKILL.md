@@ -2,16 +2,16 @@
 name: slo-architect
 disable-model-invocation: true
 description: Use when defining, reviewing, or operating SLOs/SLIs/error budgets. Triggers on "define an SLO", "what should our SLO be", "error budget", "burn rate", "SLI", "service level objective", "Google SRE workbook", "multi-window burn-rate alert", or any reliability-target question. Ships SLO designer, error-budget calculator with multi-window burn-rate thresholds, and SLO reviewer that catches the common bugs (target too aggressive, window too short, conflicting SLOs, no SLI definition). 4 references on SLO principles + SLI design + error budget math + composition with feature-flags-architect/chaos-engineering/kubernetes-operator. NOT a generic observability skill — specifically the SLO discipline.
-context: fork
-version: 2.9.0
-author: claude-code-skills
 license: MIT
-tags: [slo, sli, sla, error-budget, burn-rate, sre, reliability, google-sre-workbook, observability]
-compatible_tools: [claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli]
 metadata:
   origin: vendored
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/slo-architect
   imported_at: 2026-06-04
+  context: fork
+  version: 2.9.0
+  author: claude-code-skills
+  tags: slo, sli, sla, error-budget, burn-rate, sre, reliability, google-sre-workbook, observability
+  compatible_tools: claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli
 ---
 
 # SLO Architect
