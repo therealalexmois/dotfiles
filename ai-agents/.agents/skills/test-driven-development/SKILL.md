@@ -58,8 +58,8 @@ Before writing any test or code:
 
 - [ ] Confirm with the user what interface changes are needed
 - [ ] Confirm with the user which behaviors to test, in priority order
-- [ ] Identify opportunities for [deep modules](deep-modules.md) - small interface, deep implementation
-- [ ] Design interfaces for [testability](interface-design.md)
+- [ ] Identify opportunities for [deep modules](references/deep-modules.md) - small interface, deep implementation
+- [ ] Design interfaces for [testability](references/interface-design.md)
 - [ ] List behaviors to test, not implementation steps
 - [ ] Get the user's approval on that list
 
@@ -154,7 +154,7 @@ Vague name, tests the mock rather than the code.
 - Clear name describing the behavior
 - Real code; no mocks unless unavoidable
 
-See [tests.md](tests.md) for more good and bad test examples, and [mocking.md](mocking.md) for where mocking is legitimate.
+See [references/tests.md](references/tests.md) for more good and bad test examples, and [references/mocking.md](references/mocking.md) for where mocking is legitimate.
 
 ### Verify RED - Watch It Fail
 
@@ -239,7 +239,7 @@ Only after green. Never refactor while red.
 - [ ] Consider what the new code reveals about the existing code
 - [ ] Run the tests after each refactoring step
 
-See [refactoring.md](refactoring.md) for the candidate list and [deep-modules.md](deep-modules.md) for the interface-depth criterion. Keep the tests green and add no behavior.
+See [references/refactoring.md](references/refactoring.md) for the candidate list and [references/deep-modules.md](references/deep-modules.md) for the interface-depth criterion. Keep the tests green and add no behavior.
 
 ## Good Tests
 
@@ -252,11 +252,11 @@ See [refactoring.md](refactoring.md) for the candidate list and [deep-modules.md
 
 ## Mocking
 
-Mock at system boundaries only - external APIs, time, randomness, sometimes the database or file system. Do not mock your own classes, internal collaborators, or anything you control. See [mocking.md](mocking.md).
+Mock at system boundaries only - external APIs, time, randomness, sometimes the database or file system. Do not mock your own classes, internal collaborators, or anything you control. See [references/mocking.md](references/mocking.md).
 
 **Before extending an existing test file, audit it.** Do not inherit its mocking style. Check whether it mocks internal collaborators, asserts on call counts or call arguments, or verifies behavior through anything other than the public interface. If it does, say so and propose the behavioral version instead of adding one more test in the same shape.
 
-When adding mocks or test utilities, read [testing-anti-patterns.md](testing-anti-patterns.md) to avoid:
+When adding mocks or test utilities, read [references/testing-anti-patterns.md](references/testing-anti-patterns.md) to avoid:
 
 - Testing mock behavior instead of real behavior
 - Adding test-only methods to production classes
@@ -272,7 +272,7 @@ The three most common, and the answer to each:
 | "Deleting X hours of work is wasteful" | Sunk cost. The real waste is keeping code you cannot trust. |
 | "Keep it as reference, write the tests first" | You will adapt it. That is testing after. Delete means delete. |
 
-Hearing a different excuse - yours or the user's - or unsure whether a situation is a genuine exception? Read [rationalizations.md](rationalizations.md) for the full table and the red-flag list that means "start over".
+Hearing a different excuse - yours or the user's - or unsure whether a situation is a genuine exception? Read [references/rationalizations.md](references/rationalizations.md) for the full table and the red-flag list that means "start over".
 
 ## When Stuck
 

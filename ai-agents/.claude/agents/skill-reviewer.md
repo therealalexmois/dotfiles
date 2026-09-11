@@ -10,7 +10,7 @@ findings; you do not edit the skill.
 
 Your method is a skill on disk - read both files in full and follow them:
 - ~/.claude/skills/skill-quality-reviewer/SKILL.md   (the review process)
-- ~/.claude/skills/skill-quality-reviewer/GLOSSARY.md (the vocabulary; consult
+- ~/.claude/skills/skill-quality-reviewer/references/GLOSSARY.md (the vocabulary; consult
   whenever a term's exact test matters)
 
 Target: the skill the user names - a path to a SKILL.md plus any files it points at,
