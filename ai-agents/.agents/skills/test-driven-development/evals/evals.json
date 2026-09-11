@@ -1,0 +1,146 @@
+{
+  "skill_name": "test-driven-development",
+  "notes": "Cases 1-8 exercise the skill's own rules; cases 9-10 are anti-trigger and boundary cases where applying the full Iron Law would be wrong. Prompts are in Russian because that is the user's working language; expectations are in English to match the skill text.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "plan-before-first-test",
+      "prompt": "Давай сделаем по TDD: нужна функция расчета скидки для корзины. Правила скидок обсудим по ходу.",
+      "expected_output": "The agent plans before writing anything: proposes the public interface, asks which behaviors matter and in what order, and gets approval before the first test.",
+      "files": [],
+      "expectations": [
+        "Agent asks what the public interface should look like before writing any test",
+        "Agent asks which behaviors to test and in what priority order",
+        "Agent produces a list of behaviors, not a list of implementation steps",
+        "Agent waits for user approval before writing the first test",
+        "No production code is written before the plan is confirmed"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "tracer-bullet-then-increment",
+      "prompt": "Интерфейс согласован: calculate_discount(cart, promo) -> Discount. Поведения по приоритету: 1) промокод на 10 процентов, 2) истекший промокод игнорируется, 3) скидка не превышает суммы корзины. Поехали по TDD.",
+      "expected_output": "One test, then the minimal implementation for it, then the next test. Each RED is run and observed before GREEN.",
+      "files": [],
+      "expectations": [
+        "Agent writes exactly one failing test first, for the first behavior only",
+        "Agent runs the test and reports the failure before writing implementation",
+        "Implementation added for behavior 1 is minimal and does not handle behaviors 2 or 3",
+        "Agent runs the test again after implementing and confirms it passes",
+        "Only after the first cycle completes does the agent write the test for behavior 2"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "reject-horizontal-slicing",
+      "prompt": "Напиши сразу все пять тестов на парсер конфига, а потом реализацию под них - так быстрее, чем бегать туда-сюда.",
+      "expected_output": "The agent names this as horizontal slicing, explains why bulk tests verify imagined behavior, and proposes vertical slices instead.",
+      "files": [],
+      "expectations": [
+        "Agent declines to write all five tests before any implementation",
+        "Agent names the problem as horizontal slicing or bulk-written tests",
+        "Agent explains that bulk tests verify imagined rather than actual behavior",
+        "Agent proposes one test, one implementation, repeated per behavior",
+        "Agent starts with a single tracer-bullet test"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "iron-law-code-written-first",
+      "prompt": "Я уже написал клиент с ретраями, вот он. Добавь к нему тесты, чтобы закрыть поведение ретраев.",
+      "expected_output": "The agent surfaces the Iron Law: this code has no failing test behind it. It offers to delete and reimplement test-first, and does not silently write tests-after; it asks the user before making an exception.",
+      "files": [
+        "evals/fixtures/retry_client.py"
+      ],
+      "expectations": [
+        "Agent states that production code written before its test violates TDD",
+        "Agent offers to delete the implementation and rebuild it test-first",
+        "Agent does not propose keeping the code as a reference while writing tests around it",
+        "Agent asks for the user's explicit decision instead of granting the exception itself",
+        "Agent does not simply write passing tests against the existing implementation without raising the issue"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "verify-red-is-mandatory",
+      "prompt": "Тест на пустой email готов, он точно упадет - можешь сразу писать валидацию, не гоняй прогон.",
+      "expected_output": "The agent runs the test anyway and confirms both that it fails and that it fails for the expected reason.",
+      "files": [],
+      "expectations": [
+        "Agent runs the test before writing implementation",
+        "Agent states that verifying RED is mandatory and cannot be assumed",
+        "Agent checks that the test fails rather than errors",
+        "Agent checks that the failure reason is the missing feature, not a typo or import error"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "green-minimal-no-speculation",
+      "prompt": "Тест 'retries failed operations 3 times' падает как надо. Пиши реализацию, и сразу заложи настраиваемое число попыток, exponential backoff и хук on_retry - потом пригодится.",
+      "expected_output": "The agent writes only what the current failing test requires and defers the extra options to their own tests.",
+      "files": [],
+      "expectations": [
+        "Implementation passes the current test and adds no configuration options",
+        "Agent declines to add backoff strategy or on_retry hook at this step",
+        "Agent explains that unrequested features are speculative until a test demands them",
+        "Agent offers to add each extra capability through its own red-green cycle"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "bugfix-starts-with-failing-test",
+      "prompt": "Баг в проде: submit_form принимает пустой email. Почини, там правка на одну строчку.",
+      "expected_output": "The agent writes a test that reproduces the bug, watches it fail, then fixes it.",
+      "files": [],
+      "expectations": [
+        "Agent writes a failing test reproducing the empty-email bug before touching the implementation",
+        "Agent runs the test and confirms it reproduces the reported behavior",
+        "Fix is applied only after the reproducing test fails",
+        "Agent re-runs the test to confirm it passes",
+        "Agent does not accept 'one-line fix' as a reason to skip the test"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "mocking-at-boundaries-only",
+      "prompt": "Вот текущий тест чекаута. Расширь его: добавь проверку, что при недоступной корзине платеж не вызывается.",
+      "expected_output": "The agent points out that the existing test mocks internal collaborators and asserts on mock calls, and rewrites toward behavior through the public interface, mocking only the external payment boundary.",
+      "files": [
+        "evals/fixtures/test_checkout_mocked.py"
+      ],
+      "expectations": [
+        "Agent identifies that Cart pricing and inventory are internal collaborators that should not be mocked",
+        "Agent identifies assertions on call counts and call arguments as implementation-detail testing",
+        "Agent keeps or allows a mock only at the external payment boundary",
+        "New test asserts on the observable checkout result rather than on mock interactions",
+        "Agent references the mocking or testing-anti-patterns guidance rather than inventing its own rule"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "anti-trigger-characterization-tests",
+      "prompt": "Поведение менять не надо. Нужно просто покрыть тестами существующий модуль отчетов, он давно без тестов, а мы собираемся его рефакторить.",
+      "expected_output": "The agent adds tests for the existing code without demanding that working production code be deleted; the Iron Law applies to new production code, not to characterizing code that already ships.",
+      "files": [],
+      "expectations": [
+        "Agent does not demand deleting the existing module",
+        "Agent writes tests that capture current observable behavior through the public interface",
+        "Agent notes that these tests are the safety net for the upcoming refactor",
+        "Agent applies TDD to any new behavior that appears during the refactor"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "prototype-exception-needs-user-approval",
+      "prompt": "Накидай одноразовый скрипт, чтобы просто посмотреть, как выглядит ответ нового API. Выкину сразу после.",
+      "expected_output": "The agent treats this as an exception category, says so, and asks the user rather than either enforcing TDD silently or dropping it silently.",
+      "files": [],
+      "expectations": [
+        "Agent recognizes a throwaway prototype as a listed exception category",
+        "Agent asks the user to confirm skipping TDD instead of deciding alone",
+        "Agent states that anything kept from the exploration must be reimplemented test-first",
+        "Agent does not write a full test suite for the throwaway script without being asked"
+      ]
+    }
+  ]
+}
