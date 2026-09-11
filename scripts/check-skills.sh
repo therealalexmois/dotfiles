@@ -115,6 +115,25 @@ for skill in "${tracked_skills[@]}"; do
 done
 printf 'checked %d skill directories\n' "${#tracked_skills[@]}"
 
+printf '\n== frontmatter parses as YAML ==\n'
+# A plain (unquoted) scalar containing ': ' makes the frontmatter invalid YAML, which
+# silently breaks every consumer that parses it - tessl refuses such a skill outright.
+yaml_bad=0
+for skill in "${tracked_skills[@]}"; do
+  skill_md="$skills_dir/$skill/SKILL.md"
+  [[ -f "$skill_md" ]] || continue
+  offenders="$(awk '
+    NR == 1 && $0 != "---" { exit }
+    NR > 1 && $0 == "---" { exit }
+    /^[A-Za-z_][A-Za-z0-9_-]*: [^>|"'"'"'].*: / { print NR ": " $0 }
+  ' "$skill_md")"
+  if [[ -n "$offenders" ]]; then
+    fail "$skill/SKILL.md: unquoted frontmatter value contains ': ' (quote it or use a block scalar): ${offenders%%$'\n'*}"
+    yaml_bad=1
+  fi
+done
+(( yaml_bad )) || printf 'ok\n'
+
 printf '\n== skill sources: no stray nested SKILL.md ==\n'
 nested_found=0
 while IFS= read -r nested; do
