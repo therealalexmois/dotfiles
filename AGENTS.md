@@ -272,6 +272,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | generate a runbook | `runbook-generator` | manual |
 | write, edit, or review technical documentation (tutorial, how-to, reference, API/CLI, troubleshooting, README, runbook) | `writing-technical-documentation` | yes |
 | plan, write, edit, or review technical marketing content (blog post, case study, white paper, landing page, announcement) | `writing-technical-marketing-content` | yes |
+| build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | yes |
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |

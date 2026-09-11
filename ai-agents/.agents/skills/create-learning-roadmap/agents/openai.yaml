@@ -1,0 +1,14 @@
+interface:
+  display_name: Learning Roadmap
+  short_description: Создаёт исследованный интерактивный план обучения
+  default_prompt: Use $create-learning-roadmap to build a personalized interactive
+    learning roadmap for my topic.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learning Roadmap</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div><p id="roadmap-eyebrow" class="eyebrow">Personal learning roadmap</p><h1 id="roadmap-title">Learning Roadmap</h1><p id="roadmap-goal" class="goal"></p></div>
+    <div class="progress-card" aria-live="polite"><strong id="progress-label">0% complete</strong><div class="progress-track"><span id="progress-bar"></span></div></div>
+  </header>
+  <nav class="toolbar" aria-label="Roadmap controls">
+    <div class="filters" role="group" aria-label="Depth filter"><button class="filter active" data-filter="base">Base route</button><button class="filter" data-filter="all">All branches</button><button class="filter" data-filter="deep">Deep dives</button></div>
+    <div class="actions"><button id="export-progress">Export progress</button><label class="button-label">Import progress<input id="import-progress" type="file" accept="application/json"></label><button id="download-anki">Download Anki TSV</button></div>
+  </nav>
+  <main>
+    <section class="orientation" aria-labelledby="orientation-title">
+      <div><p class="eyebrow">Current route</p><h2 id="orientation-title">Where to start</h2><p id="next-step"></p></div>
+      <ol id="how-to-use" class="how-to-use"></ol>
+    </section>
+    <section id="project-brief" class="project-brief" hidden></section>
+    <section id="assumptions" class="assumptions" hidden></section>
+    <div id="roadmap" class="roadmap"></div>
+  </main>
+  <dialog id="node-dialog"><form method="dialog"><button class="dialog-close" aria-label="Close">×</button></form><div id="dialog-content"></div></dialog>
+  <footer>Progress is stored in this browser. Export it for a portable backup.</footer>
+  <script src="roadmap-data.js"></script><script src="app.js"></script>
+</body>
+</html>
