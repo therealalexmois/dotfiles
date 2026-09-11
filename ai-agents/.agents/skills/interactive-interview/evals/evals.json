@@ -1,0 +1,90 @@
+{
+  "skill_name": "interactive-interview",
+  "evals": [
+    {
+      "id": 1,
+      "name": "first-batch-with-count",
+      "prompt": "Проведи со мной интервью из 12 вопросов, чтобы составить план перехода с Neovim-конфига на LazyVim. Итог — план миграции по шагам.",
+      "expected_output": "Progress line, then a real widget call with up to three mutually independent questions; turn ends right after it.",
+      "files": [],
+      "expectations": [
+        "Response starts with a progress line like «Вопросы 1–3 из 12»",
+        "The structured-question tool is actually called; no JSON or questions printed as text",
+        "The batch has at most three questions and none depends on another's answer",
+        "No text after the tool call"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "no-count-given",
+      "prompt": "Проинтервьюируй меня, чтобы понять, какой домашний NAS мне нужен.",
+      "expected_output": "No setup question about depth. The model picks a budget and shows it in the progress line, then starts the first batch.",
+      "files": [],
+      "expectations": [
+        "No setup question about the number of questions or depth",
+        "Progress line shows a model-chosen budget such as «из ~7»",
+        "First batch is presented through the tool"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "text-mode-without-widget",
+      "prompt": "[Environment: ChatGPT web, no structured-question tool] Проведи интервью из 6 вопросов, чтобы выбрать формат еженедельного отчёта для руководителя.",
+      "expected_output": "One line saying the widget is unavailable and the interview runs in text; then a batch of up to three numbered questions with lettered options and an answer hint. No permission request.",
+      "files": [],
+      "expectations": [
+        "States once that there is no widget and continues in text mode",
+        "Does not ask for permission to use text mode",
+        "Batch has at most three numbered questions with lettered options",
+        "Includes a one-line answer hint"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "saturation-offer",
+      "prompt": "[Mid-interview, budget 15, questions 1–9 answered] Цель: выбрать стек для внутреннего сервиса. Ответы: Python-команда из 3 человек; нагрузка до 50 RPS; Postgres уже есть; деплой в k8s; нужен REST; асинхронность обязательна; ORM не нужен; срок — 2 недели; поддерживать будет та же команда. Продолжай интервью.",
+      "expected_output": "Recognizes that further answers would not change the recommendation and offers to stop or continue; does not pad with filler questions.",
+      "files": [],
+      "expectations": [
+        "Offers «продолжить или перейти к итогу» with the remaining count",
+        "Does not ask a filler question that restates earlier answers",
+        "The offer is not counted as an interview question"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "early-stop-synthesis",
+      "prompt": "[Mid-interview, budget 12, questions 1–6 answered, question 4 skipped] Хватит, давай итог.",
+      "expected_output": "Goes straight to the deliverable. Separates what the user answered from inferences; lists the skipped question and unasked dimensions as gaps.",
+      "files": [],
+      "expectations": [
+        "No further interview questions",
+        "Inferences are marked as such",
+        "Skipped question 4 appears as a gap, not as an assumption"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "open-question-in-text",
+      "prompt": "[Mid-interview for an incident-process retro, budget 10, questions 1–3 answered] Следующее, что нужно узнать: как выглядел последний болезненный инцидент от начала до конца.",
+      "expected_output": "Asks this one question in plain text, alone in the turn, counted in the budget; does not force it into four options.",
+      "files": [],
+      "expectations": [
+        "Question is asked in plain text, not through the widget",
+        "It is the only question in the turn",
+        "Progress line counts it (e.g., «Вопрос 4 из 10»)"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "non-interactive-session",
+      "prompt": "[Environment: codex exec, non-interactive] Проведи интервью из 10 вопросов по требованиям к новому CLI.",
+      "expected_output": "Does not start; says the interview needs an interactive session.",
+      "files": [],
+      "expectations": [
+        "No interview questions are asked",
+        "States that an interactive session is required"
+      ]
+    }
+  ]
+}
