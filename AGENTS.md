@@ -67,6 +67,8 @@ Everything else:
   the skill invariants: SKILL.md presence, directory name equal to the frontmatter
   `name`, no stray nested SKILL.md, no dangling links in the three installed layers),
   `test-prune-stray-skill-links.sh` (unit test for the installer's link pruning),
+  `skills-provenance-unresolved.txt` (allowlist of skills whose upstream is not
+  established yet),
   `audit-skills.sh` (security
   audit of all skills via skill-security-auditor; compares with the committed
   `skills-audit-baseline.json`), and `dry-run-install.sh` (validates Stow-package and zsh
@@ -129,8 +131,8 @@ zsh -n bootstrap/.zshenv zsh/.zshenv zsh/.zprofile zsh/.zshrc zsh/bootstrap.zsh
 # TOML parse of shared/profile configs). Performs no writes to ~/.codex or ~/.claude.
 scripts/check-ai-cli.sh
 
-# Validate the skill layer: sources plus the installed ~/.agents, ~/.claude and
-# ~/.codex link layers. --repo-only skips the host-dependent checks.
+# Validate the skill layer: sources (SKILL.md, names, provenance) plus the installed
+# ~/.agents, ~/.claude and ~/.codex link layers. --repo-only skips host-dependent checks.
 scripts/check-skills.sh
 
 # Security-audit all agent skills (skips *-workspace scratch dirs) and compare the
@@ -284,6 +286,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |
+| Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
 | set up or audit analytics tracking (GA4, GTM, events) | `analytics-tracking` | manual |
 | TDD, test-first development, red-green-refactor | `test-driven-development` | yes |
 | quick brainstorm | `brainstorm-lite` | yes |
@@ -306,6 +309,30 @@ Vault skills (`~/Workspace/vault/.claude/skills/`) are not listed here; they hav
 > TODO: Rename the unprefixed first-party skills to follow the convention: `wiki`,
 > `daas-k8s-debug`, `incident-triage`, `time-messenger`. (`to-prd` renamed to
 > `writing-prd-draft`.)
+
+### Skill Provenance
+
+Every `SKILL.md` declares where its text came from, in the frontmatter `metadata`
+block. `scripts/check-skills.sh` enforces it:
+
+```yaml
+metadata:
+  origin: vendored          # first-party | vendored | derived | unresolved
+  upstream: https://github.com/owner/repo/tree/main/skills/name  # required for vendored/derived
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-06-19   # date of the commit that added it here
+```
+
+- `first-party` - written in this repository. No upstream.
+- `vendored` - copied from upstream; the local text still matches it closely.
+- `derived` - based on upstream but reworked here.
+- `unresolved` - the upstream was searched for and not found. Accepted only for
+  the names in `scripts/skills-provenance-unresolved.txt`; every other skill
+  declaring it fails the check, and so does a stale line in that file.
+
+The provenance lives in the skill rather than in a separate registry so a skill
+directory stays self-describing. When re-importing an upstream version, re-apply
+these keys - they are local additions and upstream will not carry them.
 
 Rename checklist (every step is required, the link layers break silently):
 
@@ -366,6 +393,8 @@ Rename checklist (every step is required, the link layers break silently):
   `git update-index --skip-worktree` because Codex and Claude write runtime state (model choices,
   project trust, TUI NUX) back into these files via their symlinks. To change tracked defaults:
   temporarily `--no-skip-worktree`, edit, commit, then re-apply `--skip-worktree`.
+- `ai-agents/.agents/skills/yandex-metrica/config/.env` holds a Yandex OAuth token. The
+  skill's own `.gitignore` keeps it and `cache/*.json` untracked; never commit either.
 - `nvim/lazy-lock.json` pins Neovim plugin revisions; update it only through plugin update
   workflows, not hand edits.
 - Vendored upstream plugin directories may carry their own licenses, but they are ignored

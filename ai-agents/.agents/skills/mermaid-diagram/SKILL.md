@@ -4,6 +4,11 @@ description: "Generate Mermaid diagrams from user requirements. Supports flowcha
 argument-hint: [diagram description or requirements]
 allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
 disable-model-invocation: true
+metadata:
+  origin: vendored
+  upstream: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/tree/main/skills/mermaid-diagram
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-06-12
 ---
 
 # Mermaid Diagram Generator

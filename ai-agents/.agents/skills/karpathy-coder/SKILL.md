@@ -7,6 +7,10 @@ author: claude-code-skills
 license: MIT
 tags: [code-quality, discipline, karpathy, simplicity, surgical-changes, anti-patterns, review]
 compatible_tools: [claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli]
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/karpathy-coder
+  imported_at: 2026-06-04
 ---
 
 # Karpathy Coder — Active Coding Discipline

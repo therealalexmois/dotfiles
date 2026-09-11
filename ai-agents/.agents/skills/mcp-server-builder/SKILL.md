@@ -2,6 +2,10 @@
 name: "mcp-server-builder"
 disable-model-invocation: true
 description: "Design and ship production-ready MCP (Model Context Protocol) servers from OpenAPI contracts instead of hand-written tool wrappers. Python and TypeScript support, schema validation, safe evolution. Use when exposing an existing API as an MCP server, building tool integrations for Claude or Codex or Cursor, or scaffolding an MCP project from scratch."
+metadata:
+  origin: derived
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/mcp-server-builder
+  imported_at: 2026-06-07
 ---
 
 # MCP Server Builder

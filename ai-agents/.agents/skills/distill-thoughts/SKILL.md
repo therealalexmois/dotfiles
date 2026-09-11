@@ -1,6 +1,8 @@
 ---
 name: distill-thoughts
 description: Distill raw user-authored thoughts and text transcripts into concise, coherent text while preserving every material claim, qualifier, uncertainty, tone, and intended meaning. Use when the user explicitly asks to distill, formulate, organize, clean up, or turn rambling, repetitive, or disjointed thoughts or voice-to-text transcripts into clear text. Do not use for generic proofreading, creative rewriting, summarizing external source material, or expanding or strengthening ideas.
+metadata:
+  origin: first-party
 ---
 
 # Distill Thoughts

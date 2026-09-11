@@ -4,6 +4,9 @@ disable-model-invocation: true
 description: Docs-anchored grilling session — challenges a plan against the project's existing language (CONTEXT.md) and recorded decisions (docs/adr/), and updates those files inline as terminology and decisions crystallise. Use when user wants to stress-test a plan against documented domain language, or mentions "grill with docs".
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/grill-with-docs
+  imported_at: 2026-06-03
   derived_from: "https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs"
   original_author: "Matt Pocock (@mattpocock)"
   original_license: MIT

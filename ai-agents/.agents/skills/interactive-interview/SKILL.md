@@ -1,6 +1,8 @@
 ---
 name: interactive-interview
 description: Conduct a structured, multi-turn interview with tappable answers through the environment's structured-question tool (ask_user_input_v0 in Claude.ai, AskUserQuestion in Claude Code, request_user_input in Codex), falling back to a compact text mode where no such tool exists. Use when the user explicitly asks to conduct an interview, questionnaire, assessment, or discovery session, asks to be asked a number of questions, or invokes $interactive-interview. Do not use for an ordinary one-off clarification, a factual question, or a simple A-versus-B recommendation.
+metadata:
+  origin: first-party
 ---
 
 # Interactive Interview

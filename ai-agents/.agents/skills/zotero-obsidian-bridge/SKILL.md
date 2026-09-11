@@ -3,6 +3,10 @@ name: zotero-obsidian-bridge
 disable-model-invocation: true
 description: Use this skill when Zotero is the literature source of truth and the project KB should receive source notes under Sources/Papers plus project-linked synthesis in Knowledge and Writing.
 version: 0.3.0
+metadata:
+  origin: vendored
+  upstream: https://github.com/Galaxy-Dawn/claude-scholar/tree/main/skills/zotero-obsidian-bridge
+  imported_at: 2026-06-07
 ---
 
 # Zotero Obsidian Bridge

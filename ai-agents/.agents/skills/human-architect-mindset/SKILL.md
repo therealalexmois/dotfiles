@@ -1,6 +1,10 @@
 ---
 name: human-architect-mindset
 description: Systematic architectural thinking for irreplaceable human capabilities - domain modeling, systems thinking, constraint navigation, and AI-aware problem decomposition. Use proactively when detecting architectural decisions, system design discussions, or multi-component planning.
+metadata:
+  origin: derived
+  upstream: https://github.com/bencium/bencium-claude-code-design-skill
+  imported_at: 2026-06-08
 ---
 
 # Human Architect Mindset

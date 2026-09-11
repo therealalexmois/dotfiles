@@ -1,6 +1,10 @@
 ---
 name: security-guidance
 description: Safety net during Claude Code sessions that edit security-sensitive code (auth, payments, user input, IaC). Catches command injection, XSS, SQL injection, unsafe deserialization, and eval/code-injection patterns before an Edit/Write/MultiEdit completes.
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/security-guidance
+  imported_at: 2026-06-04
 ---
 
 # Security Guidance Hook

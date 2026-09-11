@@ -2,6 +2,10 @@
 name: context-optimization
 disable-model-invocation: true
 description: This skill should be used for improving context efficiency: context budgeting, observation masking, prefix or KV-cache strategy, partitioning, token-cost reduction, retrieval scoping, and extending effective context capacity without lowering answer quality.
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-optimization
+  imported_at: 2026-06-09
 ---
 
 # Context Optimization Techniques

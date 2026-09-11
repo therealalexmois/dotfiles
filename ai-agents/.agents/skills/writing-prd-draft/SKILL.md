@@ -2,6 +2,8 @@
 name: writing-prd-draft
 description: Turn current conversation context into a PRD draft and offer to save it to a file. Use only when the user invokes /writing-prd-draft or explicitly asks «создай PRD», «сделай PRD из контекста», or to draft a PRD from this conversation without an interview.
 disable-model-invocation: true
+metadata:
+  origin: first-party
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a PRD. Do NOT interview the user — just synthesize what you already know.

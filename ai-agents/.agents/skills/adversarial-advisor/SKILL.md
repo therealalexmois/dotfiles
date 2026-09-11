@@ -1,6 +1,8 @@
 ---
 name: adversarial-advisor
 description: Critically stress-test ideas, plans, proposals, and decisions; expose hidden assumptions, failure modes, trade-offs, and stronger alternatives; and give an evidence-calibrated recommendation. Use when the user explicitly requests devil's advocacy, honest pushback, critique, a pre-mortem, or help deciding whether to pursue a plan, or asks for a substantive evaluation of a material strategic decision. Do not use for narrow code review, pure fact-finding, proofreading, or open-ended brainstorming unless the user explicitly asks for adversarial analysis.
+metadata:
+  origin: unresolved
 ---
 
 # Adversarial Advisor

@@ -4,6 +4,9 @@ description: "Autonomous measured optimization loop for one target file using a 
 disable-model-invocation: true
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/autoresearch-agent
+  imported_at: 2026-06-04
   version: 2.0.0
   author: Alireza Rezvani
   category: engineering

@@ -1,6 +1,10 @@
 ---
 name: subagent-driven-development
 description: Use when executing implementation plans with independent tasks in the current session
+metadata:
+  origin: derived
+  upstream: https://github.com/obra/superpowers/tree/main/skills/subagent-driven-development
+  imported_at: 2026-06-28
 ---
 
 # Subagent-Driven Development

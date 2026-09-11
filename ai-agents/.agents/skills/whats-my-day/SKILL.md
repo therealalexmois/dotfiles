@@ -2,6 +2,8 @@
 name: whats-my-day
 disable-model-invocation: true
 description: "Show today's open tasks and schedule from an Obsidian Markdown vault as a quick self-contained HTML view. Reads the daily note's open tasks and schedule section — no news, no app-hopping. Use when the user explicitly asks: what's my day, today's tasks, my schedule, daily overview. Markdown-only, no Notion/Google Calendar. Explicit invocation only to avoid colliding with daily-log/daily-note routers."
+metadata:
+  origin: first-party
 ---
 
 # What's My Day

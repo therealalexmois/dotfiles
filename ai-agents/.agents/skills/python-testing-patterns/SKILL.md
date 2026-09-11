@@ -2,6 +2,10 @@
 name: python-testing-patterns
 disable-model-invocation: true
 description: Implement comprehensive testing strategies with pytest, fixtures, mocking, and test-driven development. Use when writing Python tests, setting up test suites, or implementing testing best practices.
+metadata:
+  origin: vendored
+  upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-testing-patterns
+  imported_at: 2026-06-07
 ---
 
 # Python Testing Patterns

@@ -2,6 +2,10 @@
 name: "sql-database-assistant"
 disable-model-invocation: true
 description: "Use when the user asks to write SQL queries, optimize database performance, generate migrations, explore database schemas, or work with ORMs like Prisma, Drizzle, TypeORM, or SQLAlchemy."
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/sql-database-assistant
+  imported_at: 2026-06-07
 ---
 
 # SQL Database Assistant - POWERFUL Tier Skill

@@ -2,6 +2,10 @@
 name: brainstorming
 disable-model-invocation: true
 description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+metadata:
+  origin: derived
+  upstream: https://github.com/obra/superpowers/tree/main/skills/brainstorming
+  imported_at: 2026-06-03
 ---
 
 # Brainstorming Ideas Into Designs

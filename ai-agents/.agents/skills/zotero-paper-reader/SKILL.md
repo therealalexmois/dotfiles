@@ -2,6 +2,10 @@
 name: zotero-paper-reader
 disable-model-invocation: true
 description: Read and analyze academic papers from Zotero library. Use when the user requests to read, access, or analyze a paper by title, author, or topic from their Zotero library. Automatically searches Zotero, converts PDFs to markdown, saves to Notes/PaperInMarkdown, and provides analysis.
+metadata:
+  origin: vendored
+  upstream: https://github.com/FuZhiyu/ResearchProjectTemplate/tree/main/ProjectExample/.claude/skills/zotero-paper-reader
+  imported_at: 2026-06-07
 ---
 
 # Zotero Paper Reader

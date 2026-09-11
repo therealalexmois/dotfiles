@@ -2,6 +2,8 @@
 name: failure-handling-patterns
 description: >-
   Объясняет, сравнивает и помогает выбирать минимально достаточные failure-handling и resilience patterns: fail-fast, fail-open, fail-closed, fail-safe, fallback, failover, graceful degradation, timeout, deadline, retry, circuit breaker, bulkhead, backpressure, load shedding, compensation, Saga и self-healing. Используй для разбора паттернов, проектирования обработки конкретного отказа и read-only review текущего git diff, диапазона коммитов, переданного кода или репозитория. В mode review возвращает доказательное заключение и не изменяет код. Не используй для общего code review без фокуса на обработке отказов.
+metadata:
+  origin: first-party
 ---
 
 # Паттерны обработки отказов

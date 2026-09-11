@@ -7,6 +7,10 @@ description: >
   graph or vector retrieval, memory consolidation, and memory benchmark selection.
   Route file-backed scratchpads to filesystem-context, handoff summaries to
   context-compression, and token-efficiency tactics to context-optimization.
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/memory-systems
+  imported_at: 2026-06-09
 ---
 
 # Memory System Design

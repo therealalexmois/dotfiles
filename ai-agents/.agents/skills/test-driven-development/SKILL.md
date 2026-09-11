@@ -1,6 +1,10 @@
 ---
 name: test-driven-development
 description: Test-first implementation with the red-green-refactor loop - plan testable interfaces, write one failing test, write minimal code to pass, then refactor. Use when the user asks for TDD, test-first development, red-green-refactor, or a tracer-bullet approach, or when a task states that tests are part of the implementation to deliver. Do not use for adding tests to code that already exists without a behavior change, for throwaway prototypes, or for generated code.
+metadata:
+  origin: derived
+  upstream: https://github.com/obra/superpowers/tree/main/skills/test-driven-development
+  imported_at: 2026-06-09
 ---
 
 # Test-Driven Development (TDD)

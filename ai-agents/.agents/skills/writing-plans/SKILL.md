@@ -1,6 +1,10 @@
 ---
 name: writing-plans
 description: Use when you have a spec or requirements for a multi-step task, before touching code
+metadata:
+  origin: derived
+  upstream: https://github.com/obra/superpowers/tree/main/skills/writing-plans
+  imported_at: 2026-06-07
 ---
 
 # Writing Plans

@@ -4,6 +4,10 @@ disable-model-invocation: true
 description: Optimize for search engine visibility and ranking. Use when asked to "improve SEO", "optimize for search", "fix meta tags", "add structured data", "sitemap optimization", or "search engine optimization".
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/Dicklesworthstone/pi_agent_rust/tree/main/tests/ext_conformance/artifacts
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-06-07
   author: web-quality-skills
   version: "1.0"
 ---

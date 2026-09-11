@@ -2,6 +2,10 @@
 name: "secrets-vault-manager"
 disable-model-invocation: true
 description: "Use when the user asks to set up secret management infrastructure, integrate HashiCorp Vault, configure cloud secret stores (AWS Secrets Manager, Azure Key Vault, GCP Secret Manager), implement secret rotation, or audit secret access patterns."
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/secrets-vault-manager
+  imported_at: 2026-06-07
 ---
 
 # Secrets Vault Manager

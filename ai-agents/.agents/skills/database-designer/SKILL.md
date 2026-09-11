@@ -2,6 +2,10 @@
 name: "database-designer"
 disable-model-invocation: true
 description: "Use when the user asks to design database schemas, plan data migrations, optimize queries, choose between SQL and NoSQL, or model data relationships."
+metadata:
+  origin: derived
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/database-designer
+  imported_at: 2026-06-07
 ---
 
 # Database Designer - POWERFUL Tier Skill

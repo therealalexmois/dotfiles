@@ -1,6 +1,10 @@
 ---
 name: "agent-workflow-designer"
 description: "Design production-grade multi-agent workflows with clear pattern choice (sequential, parallel, hierarchical), handoff contracts, failure handling, and cost/context controls. Use when architecting a multi-step agent pipeline, choosing between single-agent vs multi-agent approaches, or refactoring an LLM workflow that suffers from context bloat or unreliable handoffs."
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/agent-workflow-designer
+  imported_at: 2026-06-04
 ---
 
 # Agent Workflow Designer

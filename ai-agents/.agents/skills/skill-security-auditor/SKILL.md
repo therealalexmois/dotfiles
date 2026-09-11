@@ -11,6 +11,10 @@ description: >
   chain risks, (7) verifying file system access stays within skill boundaries.
   Triggers: "audit this skill", "is this skill safe", "scan skill for security",
   "check skill before install", "skill security check", "skill vulnerability scan".
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/skill-security-auditor
+  imported_at: 2026-06-04
 ---
 
 # Skill Security Auditor

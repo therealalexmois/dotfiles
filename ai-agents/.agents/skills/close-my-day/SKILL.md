@@ -2,6 +2,8 @@
 name: close-my-day
 disable-model-invocation: true
 description: "Close out the day inside an Obsidian Markdown vault. Reviews today's open tasks, confirms which to mark done with an explicit YES gate, marks them complete in Markdown, carries unfinished work forward, and previews tomorrow's schedule. Use when the user explicitly asks: close my day, end of day, wrap up, close out. Markdown-only, no Notion/Google Calendar. Never writes without explicit confirmation."
+metadata:
+  origin: first-party
 ---
 
 # Close My Day

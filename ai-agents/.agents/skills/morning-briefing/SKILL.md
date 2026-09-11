@@ -2,6 +2,8 @@
 name: morning-briefing
 disable-model-invocation: true
 description: "Run a full morning briefing from an Obsidian Markdown vault. Reads today's open tasks and the day's schedule section from the daily note, pulls a few relevant news headlines from the web, and renders a self-contained HTML dashboard opened in the browser. Use when the user explicitly asks: morning briefing, start my day, daily briefing. Markdown-only, no Notion/Google Calendar/Gmail. Explicit invocation only to avoid colliding with daily-log routers."
+metadata:
+  origin: first-party
 ---
 
 # Morning Briefing

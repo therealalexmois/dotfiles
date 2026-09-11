@@ -2,6 +2,11 @@
 name: claude-automation-recommender
 description: Analyze a codebase and recommend Claude Code automations (hooks, subagents, skills, plugins, MCP servers). Use when user asks for automation recommendations, wants to optimize their Claude Code setup, mentions improving Claude Code workflows, asks how to first set up Claude Code for a project, or wants to know what Claude Code features they should use.
 tools: Read, Glob, Grep, Bash
+metadata:
+  origin: vendored
+  upstream: https://github.com/AWS-Educate/template-nextjs-sanity-tailwind-amplify/tree/main/.agents/skills/claude-automation-recommender
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-06-13
 ---
 
 # Claude Automation Recommender

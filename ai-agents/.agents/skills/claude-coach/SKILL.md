@@ -10,6 +10,10 @@ Dependencies: python3.11
 Version: 1.0.0
 version: 2.9.0
 license: MIT
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/claude-coach
+  imported_at: 2026-06-04
 ---
 
 # Claude Coach — Your Power-User Companion

@@ -11,6 +11,8 @@ description: >-
   fix-prompt или bounded self-review loop. Не расширяет запрос до полного change
   автоматически и не считает CLI validation доказательством семантической
   готовности.
+metadata:
+  origin: first-party
 ---
 
 # Review OpenSpec Change

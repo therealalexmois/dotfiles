@@ -2,6 +2,10 @@
 name: github-actions-templates
 disable-model-invocation: true
 description: Create production-ready GitHub Actions workflows for automated testing, building, and deploying applications. Use when setting up CI/CD with GitHub Actions, automating development workflows, or creating reusable workflow templates.
+metadata:
+  origin: vendored
+  upstream: https://github.com/wshobson/agents/tree/main/plugins/cicd-automation/skills/github-actions-templates
+  imported_at: 2026-06-07
 ---
 
 # GitHub Actions Templates

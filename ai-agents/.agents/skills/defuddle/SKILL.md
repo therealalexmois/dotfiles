@@ -2,6 +2,11 @@
 name: defuddle
 disable-model-invocation: true
 description: Extract clean markdown content from web pages using Defuddle CLI, removing clutter and navigation to save tokens. Use instead of WebFetch when the user provides a URL to read or analyze, for online documentation, articles, blog posts, or any standard web page. Do NOT use for URLs ending in .md — those are already markdown, use WebFetch directly.
+metadata:
+  origin: vendored
+  upstream: https://github.com/MrZhang123/ai-workspace/tree/main/skills/defuddle
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-05-31
 ---
 
 # Defuddle

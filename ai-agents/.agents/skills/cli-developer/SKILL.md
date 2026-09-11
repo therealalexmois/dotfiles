@@ -4,6 +4,9 @@ disable-model-invocation: true
 description: Use when building CLI tools, implementing argument parsing, or adding interactive prompts. Invoke for parsing flags and subcommands, displaying progress bars and spinners, generating bash/zsh/fish completion scripts, CLI design, shell completions, and cross-platform terminal applications using commander, click, typer, or cobra.
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/Jeffallan/claude-skills/tree/main/skills/cli-developer
+  imported_at: 2026-08-15
   author: https://github.com/Jeffallan
   version: "1.1.0"
   domain: devops

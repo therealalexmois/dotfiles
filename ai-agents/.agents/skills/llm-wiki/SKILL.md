@@ -8,6 +8,10 @@ author: claude-code-skills
 license: MIT
 tags: [knowledge-management, obsidian, second-brain, pkm, rag-alternative, wiki, karpathy, memex]
 compatible_tools: [claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli]
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/llm-wiki
+  imported_at: 2026-06-04
 ---
 
 # LLM Wiki — Second Brain for Claude Code + Obsidian

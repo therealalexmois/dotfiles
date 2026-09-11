@@ -3,6 +3,7 @@ name: arxiv-doc-builder
 disable-model-invocation: true
 description: Convert a single arXiv paper into a markdown reference note with YAML frontmatter, abstract, and links. Use when the user gives an arXiv ID or URL and asks to "make a note", "save this paper as markdown", "add to my notes", or wants a reference document for an arXiv paper. Pairs with arxiv-search, which finds the paper to convert.
 metadata:
+  origin: unresolved
   version: "1.0"
 ---
 

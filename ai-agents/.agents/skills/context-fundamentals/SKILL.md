@@ -2,6 +2,10 @@
 name: context-fundamentals
 disable-model-invocation: true
 description: This skill should be used to explain or reason about the foundational concepts of context engineering: what context is, the anatomy of a context window, how attention mechanics work, the U-shaped attention curve, why context quality matters more than quantity, and the mental models needed to interpret every other context-engineering decision. Use this for conceptual explanation, onboarding, and background reading. Route operational work to the specialized skills: debugging attention failures goes to context-degradation, token-efficiency work goes to context-optimization, conversation summarization goes to context-compression, and project-shape decisions go to project-development.
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-fundamentals
+  imported_at: 2026-06-09
 ---
 
 # Context Engineering Fundamentals

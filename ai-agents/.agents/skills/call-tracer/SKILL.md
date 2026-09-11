@@ -2,6 +2,8 @@
 name: call-tracer
 disable-model-invocation: true
 description: Trace a function or method call chain across the layers of a codebase and render it as a clean ASCII tree. Use whenever the user wants to understand how a symbol is called through the system, trace its dependencies, see the full call stack, or asks about method flow, call graph, or execution path. Handles both upstream (callers) and downstream (callees) tracing with depth control.
+metadata:
+  origin: unresolved
 ---
 
 <!-- Provenance: adapted from hwaas/hwaas-go .nessy/skills/call-tracer, MR 1150. Tool vocabulary and examples generalized for Claude Code. -->

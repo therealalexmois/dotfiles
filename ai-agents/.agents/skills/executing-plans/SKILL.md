@@ -1,6 +1,10 @@
 ---
 name: executing-plans
 description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+metadata:
+  origin: derived
+  upstream: https://github.com/obra/superpowers/tree/main/skills/executing-plans
+  imported_at: 2026-06-07
 ---
 
 # Executing Plans

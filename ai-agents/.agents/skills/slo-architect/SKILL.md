@@ -8,6 +8,10 @@ author: claude-code-skills
 license: MIT
 tags: [slo, sli, sla, error-budget, burn-rate, sre, reliability, google-sre-workbook, observability]
 compatible_tools: [claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli]
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/slo-architect
+  imported_at: 2026-06-04
 ---
 
 # SLO Architect

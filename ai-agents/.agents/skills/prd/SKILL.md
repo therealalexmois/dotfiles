@@ -3,6 +3,11 @@ name: prd
 disable-model-invocation: true
 description: 'Generate high-quality Product Requirements Documents (PRDs) for software systems and AI-powered features. Includes executive summaries, user stories, technical specifications, and risk analysis.'
 license: MIT
+metadata:
+  origin: vendored
+  upstream: https://github.com/github/awesome-copilot
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-05-31
 ---
 
 # Product Requirements Document (PRD)

@@ -1,6 +1,8 @@
 ---
 name: create-prompt
 description: Create or refine a compact, self-contained task prompt for a capable model — a web chat (ChatGPT, Claude, Gemini) or a coding agent (Codex, Claude Code). Default structure is four parts — context, a task in a few sentences, verifiable success criteria, and an instruction to analyze and ask questions before executing. Use whenever the user asks to write, formulate, improve, shorten, or adapt a prompt, or to turn an idea or a conversation into a task for another model or agent — including requests like «напиши промпт», «сформулируй задачу для агента», «сделай промпт для Codex», «перепиши этот промпт». Not for system prompts, prompts for weaker or production models, or reusable prompt templates; for continuing already started work in a new session, use handoff instead.
+metadata:
+  origin: first-party
 ---
 
 # Create Prompt

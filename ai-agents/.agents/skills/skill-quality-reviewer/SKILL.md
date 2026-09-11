@@ -2,6 +2,8 @@
 name: skill-quality-reviewer
 description: Review a SKILL.md for predictability against the writing-great-skills doctrine and report findings by failure mode. Complements anthropic-skill-creator; invoke by name after drafting or editing a skill.
 disable-model-invocation: true
+metadata:
+  origin: first-party
 ---
 
 A skill exists to wrangle determinism out of a stochastic system. **Predictability** — the agent taking the same _process_ every run, not producing the same output — is the root virtue you review for; every lever below serves it. Full definitions of the **bold terms** live in [`references/GLOSSARY.md`](references/GLOSSARY.md); consult it whenever a term's exact test matters.

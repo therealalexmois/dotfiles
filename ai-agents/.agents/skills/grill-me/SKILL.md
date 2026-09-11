@@ -4,6 +4,9 @@ disable-model-invocation: true
 description: Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get grilled on their design, or mentions "grill me".
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/grill-me
+  imported_at: 2026-06-03
   derived_from: "https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me"
   original_author: "Matt Pocock (@mattpocock)"
   original_license: MIT

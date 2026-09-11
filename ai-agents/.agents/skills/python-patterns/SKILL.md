@@ -2,7 +2,10 @@
 name: python-patterns
 description: Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications.
 metadata:
-  origin: ECC
+  origin: vendored
+  upstream: https://github.com/affaan-m/everything-claude
+  upstream_note: "upstream frontmatter carried origin: ECC (Everything Claude Code); matched content-identically, exact publisher unconfirmed"
+  imported_at: 2026-06-25
 ---
 
 # Python Development Patterns

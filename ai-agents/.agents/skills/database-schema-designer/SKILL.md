@@ -2,6 +2,10 @@
 name: "database-schema-designer"
 disable-model-invocation: true
 description: "Use when the user asks to create ERD diagrams, normalize database schemas, design table relationships, or plan schema migrations."
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/database-schema-designer
+  imported_at: 2026-06-04
 ---
 
 # Database Schema Designer

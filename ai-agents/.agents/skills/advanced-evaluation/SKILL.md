@@ -2,6 +2,10 @@
 name: advanced-evaluation
 disable-model-invocation: true
 description: This skill should be used for advanced LLM evaluation: LLM-as-judge systems, direct scoring, pairwise comparison, rubric calibration, evaluator bias mitigation, confidence scoring, and automated quality assessment.
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/advanced-evaluation
+  imported_at: 2026-06-09
 ---
 
 # Advanced Evaluation

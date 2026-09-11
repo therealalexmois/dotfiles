@@ -2,6 +2,10 @@
 name: context-compression
 disable-model-invocation: true
 description: This skill should be used when long-running agent sessions need context compression, structured summarization, compaction, token-per-task optimization, or durable handoff summaries that preserve decisions, files, risks, and next actions.
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-compression
+  imported_at: 2026-06-09
 ---
 
 # Context Compression Strategies

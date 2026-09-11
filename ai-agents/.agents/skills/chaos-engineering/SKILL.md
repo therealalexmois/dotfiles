@@ -8,6 +8,10 @@ author: claude-code-skills
 license: MIT
 tags: [chaos-engineering, resilience, fault-injection, gameday, sre, reliability, chaos-toolkit, chaos-mesh, litmus, gremlin, aws-fis]
 compatible_tools: [claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli]
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/chaos-engineering
+  imported_at: 2026-06-04
 ---
 
 # Chaos Engineering

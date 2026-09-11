@@ -1,0 +1,24 @@
+# Skills whose upstream could not be established yet.
+#
+# Every skill declares metadata.origin in its SKILL.md; `unresolved` is only
+# accepted for the names listed here, so the debt stays visible and shrinks by
+# deletion. scripts/check-skills.sh fails on any other skill that declares
+# `unresolved`, and on any name listed here that no longer does.
+#
+# Searched: the GitHub trees of every known upstream of this collection, the
+# claude-skill-registry mirror index (162k skills), and content comparison
+# against every name-matching candidate. Nothing matched.
+adversarial-advisor
+arxiv-doc-builder
+arxiv-search
+call-tracer
+caveman-commit
+codebase-onboarding
+find-skills
+github-actions-docs
+postgres-engineer
+productivity-coach
+prompt-design
+prompt-review
+skill-tester
+uml

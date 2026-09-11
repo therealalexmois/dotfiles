@@ -8,6 +8,8 @@ description: >
   проверить или исправить agent instruction artifact. Не используй для обычной
   документации, разовых пользовательских prompt, code review, архитектурного
   проектирования или domain workflow, который инструкция должна только описывать.
+metadata:
+  origin: first-party
 ---
 
 # Agent Instruction

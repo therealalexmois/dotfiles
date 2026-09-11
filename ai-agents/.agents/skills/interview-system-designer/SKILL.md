@@ -2,6 +2,10 @@
 name: "interview-system-designer"
 disable-model-invocation: true
 description: This skill should be used when the user asks to "design interview processes", "create hiring pipelines", "calibrate interview loops", "generate interview questions", "design competency matrices", "analyze interviewer bias", "create scoring rubrics", "build question banks", or "optimize hiring systems". Use for designing role-specific interview loops, competency assessments, and hiring calibration systems.
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/interview-system-designer
+  imported_at: 2026-06-07
 ---
 
 # Interview System Designer

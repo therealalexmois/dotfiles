@@ -16,6 +16,8 @@ description: >
   "audit" is not used. Works on a single SKILL.md, one skill directory, a folder of
   skills, or a repo subtree. Defaults to analyze-only and never edits files unless
   the user explicitly asks to fix, refactor, apply, or implement the changes.
+metadata:
+  origin: first-party
 ---
 
 # Skill Parameterization Auditor

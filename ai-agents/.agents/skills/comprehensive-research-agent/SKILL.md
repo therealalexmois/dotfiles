@@ -2,6 +2,10 @@
 name: comprehensive-research-agent
 disable-model-invocation: true
 description: "Ensure thorough validation, error recovery, and transparent reasoning in research tasks with multiple tool calls"
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/examples/interleaved-thinking/generated_skills/comprehensive-research-agent
+  imported_at: 2026-06-09
 ---
 
 # Comprehensive Research Agent Best Practices

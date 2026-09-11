@@ -1,6 +1,8 @@
 ---
 name: create-learning-roadmap
 description: Create evidence-based, personalized learning roadmaps as interactive local HTML/CSS/JS bundles with dependency-aware topics, verified tiered sources, hands-on practice, completion criteria, progress tracking, and source-linked Anki cards. Use when a user asks to build, generate, design, personalize, extend, or research a roadmap, study plan, learning path, curriculum, or structured path for mastering a topic or closing a knowledge gap. Also use when the user wants a roadmap.sh-style experience enriched with practice, spaced-repetition cards, or an interactive visual artifact.
+metadata:
+  origin: first-party
 ---
 
 # Create Learning Roadmap

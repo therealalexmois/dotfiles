@@ -1,6 +1,10 @@
 ---
 name: redis-best-practices
 description: Redis development best practices for caching, data structures, and high-performance key-value operations
+metadata:
+  origin: vendored
+  upstream: https://github.com/mindrally/skills/tree/main/redis-best-practices
+  imported_at: 2026-06-25
 ---
 
 # Redis Best Practices

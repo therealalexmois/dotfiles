@@ -1,6 +1,10 @@
 ---
 name: python-packaging
 description: Create distributable Python packages with proper project structure, setup.py/pyproject.toml, and publishing to PyPI. Use when packaging Python libraries, creating CLI tools, or distributing Python code.
+metadata:
+  origin: vendored
+  upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-packaging
+  imported_at: 2026-06-13
 ---
 
 # Python Packaging

@@ -1,6 +1,8 @@
 ---
 name: writing-technical-marketing-content
 description: "Планирует, создает, редактирует и проверяет доказательный маркетинговый контент для технических продуктов и инженерной аудитории: technical blog posts, educational tutorials для привлечения аудитории, case studies, white papers, landing pages, product announcements, website copy, сравнения и SEO-оптимизацию. Использовать, когда основная цель текста - объяснить ценность, привлечь аудиторию, поддержать этап воронки или привести к целевому действию. Не использовать для нейтральной технической документации, API reference, troubleshooting, RFC, ADR и PRD."
+metadata:
+  origin: first-party
 ---
 
 # Технический маркетинговый контент

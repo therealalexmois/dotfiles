@@ -11,6 +11,8 @@ description: >-
   параллельном запуске сервисов из нескольких worktree. Не используй для
   создания или merge MR/PR, pipeline/CI, remote branch deletion, rebase/reset
   либо удаления dirty worktree.
+metadata:
+  origin: first-party
 ---
 
 # Git Worktree

@@ -6,7 +6,10 @@
 #   - every skill directory carries a SKILL.md;
 #   - the directory name equals the `name:` field in that SKILL.md;
 #   - no nested SKILL.md that Codex's recursive discovery would pick up as an
-#     extra skill (test fixtures must not look like skills).
+#     extra skill (test fixtures must not look like skills);
+#   - every skill declares metadata.origin, vendored/derived ones name their
+#     upstream, and `unresolved` appears only for the names listed in
+#     scripts/skills-provenance-unresolved.txt.
 #
 # Installed invariants (checked when the agent CLIs are installed on this host):
 #   - no dangling skill symlinks under ~/.agents, ~/.claude, ~/.codex;
@@ -63,6 +66,30 @@ frontmatter_name() {
   ' "$1"
 }
 
+# Reads one key out of the frontmatter `metadata:` block; prints nothing when the
+# block or the key is absent.
+metadata_value() {
+  awk -v want="$2" '
+    NR == 1 && $0 !~ /^---[[:space:]]*$/ { exit }
+    NR > 1 && /^---[[:space:]]*$/ { exit }
+    /^metadata:[[:space:]]*$/ { in_meta = 1; next }
+    in_meta && /^[^[:space:]]/ { in_meta = 0 }
+    in_meta {
+      line = $0
+      sub(/^[[:space:]]+/, "", line)
+      key = line
+      sub(/:.*$/, "", key)
+      if (key == want) {
+        sub(/^[^:]*:[[:space:]]*/, "", line)
+        gsub(/^["'"'"']|["'"'"']$/, "", line)
+        sub(/[[:space:]]+$/, "", line)
+        print line
+        exit
+      }
+    }
+  ' "$1"
+}
+
 tracked_skills=()
 for skill_path in "$skills_dir"/*/; do
   skill="$(basename "$skill_path")"
@@ -115,6 +142,63 @@ if [[ -d "$fixtures_dir" ]]; then
 else
   printf 'skip: %s does not exist\n' "$fixtures_dir"
 fi
+
+printf '\n== provenance (metadata.origin) ==\n'
+unresolved_file="$repo_root/scripts/skills-provenance-unresolved.txt"
+# macOS ships bash 3.2, which has no associative arrays; newline-separated lists
+# with grep -qx stand in for the sets this section needs.
+allowed_unresolved=""
+if [[ -f "$unresolved_file" ]]; then
+  allowed_unresolved="$(grep -vE '^[[:space:]]*(#|$)' "$unresolved_file" || true)"
+else
+  fail "missing $unresolved_file (the allowlist for skills with an unestablished upstream)"
+fi
+
+seen_unresolved=""
+count_first_party=0
+count_vendored=0
+count_derived=0
+count_unresolved=0
+for skill in "${tracked_skills[@]}"; do
+  skill_md="$skills_dir/$skill/SKILL.md"
+  [[ -f "$skill_md" ]] || continue
+  origin="$(metadata_value "$skill_md" origin)"
+  upstream="$(metadata_value "$skill_md" upstream)"
+  case "$origin" in
+    first-party)
+      count_first_party=$((count_first_party + 1))
+      ;;
+    vendored | derived)
+      [[ -n "$upstream" ]] || fail "$skill/SKILL.md: metadata.origin is '$origin' but metadata.upstream is missing"
+      if [[ "$origin" == "vendored" ]]; then
+        count_vendored=$((count_vendored + 1))
+      else
+        count_derived=$((count_derived + 1))
+      fi
+      ;;
+    unresolved)
+      count_unresolved=$((count_unresolved + 1))
+      seen_unresolved="${seen_unresolved}${skill}"$'\n'
+      printf '%s\n' "$allowed_unresolved" | grep -qx "$skill" ||
+        fail "$skill/SKILL.md: metadata.origin is 'unresolved' but the skill is not listed in ${unresolved_file##*/} (establish the upstream, or add it there together with the search you already did)"
+      ;;
+    "")
+      fail "$skill/SKILL.md: no metadata.origin (one of: first-party, vendored, derived, unresolved)"
+      ;;
+    *)
+      fail "$skill/SKILL.md: metadata.origin is '$origin' (must be first-party, vendored, derived or unresolved)"
+      ;;
+  esac
+done
+
+while IFS= read -r listed; do
+  [[ -n "$listed" ]] || continue
+  printf '%s\n' "$seen_unresolved" | grep -qx "$listed" ||
+    fail "$listed is listed in ${unresolved_file##*/} but does not declare metadata.origin: unresolved (drop the stale line)"
+done <<< "$allowed_unresolved"
+
+printf '  first-party %d, vendored %d, derived %d, unresolved %d\n' \
+  "$count_first_party" "$count_vendored" "$count_derived" "$count_unresolved"
 
 if [[ "$mode" == "--repo-only" ]]; then
   printf '\n== result ==\n'

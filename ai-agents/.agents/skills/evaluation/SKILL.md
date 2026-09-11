@@ -2,6 +2,10 @@
 name: evaluation
 disable-model-invocation: true
 description: This skill should be used when building agent evaluation systems: deterministic checks, regression suites, multi-dimensional rubrics, quality gates, production monitoring, baseline comparison, and outcome measurement for agent pipelines.
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/evaluation
+  imported_at: 2026-06-09
 ---
 
 # Evaluation Methods for Agent Systems
