@@ -4,18 +4,15 @@ disable-model-invocation: true
 description: >
   Audit agent skills for poor parameterization: hardcoded runtime data, brittle
   environment assumptions, and config values that should not live inside SKILL.md.
-  Detects hardcoded bot/thread/channel IDs, Kubernetes namespaces and cluster
-  names, environment names, URLs and endpoints, absolute paths, org/project/board
-  IDs, secrets and tokens, fixed model names, and magic constants. Classifies each
-  finding by risk (Critical / Major / Minor) and proposes the simplest extraction
-  strategy: invocation argument, config, env var, secret manager, resolver script,
-  runtime discovery, or MCP/tool call. Use this skill whenever the user wants to
-  review, audit, or harden a skill, mentions hardcoded values, brittle skills,
-  runtime config review, parameterization problems, "values that should be config",
-  or asks to extract IDs/namespaces/URLs out of a SKILL.md, even if the word
-  "audit" is not used. Works on a single SKILL.md, one skill directory, a folder of
-  skills, or a repo subtree. Defaults to analyze-only and never edits files unless
-  the user explicitly asks to fix, refactor, apply, or implement the changes.
+  Detects hardcoded bot/thread/channel IDs, Kubernetes namespaces and cluster names,
+  environment names, URLs, absolute paths, org/project/board IDs, secrets, fixed
+  model names, and magic constants. Classifies each finding by risk (Critical /
+  Major / Minor) and proposes the simplest extraction strategy: invocation argument,
+  config, env var, secret manager, resolver script, runtime discovery, or tool call.
+  Use whenever the user wants to review, audit, or harden a skill, mentions
+  hardcoded values, brittle skills, runtime config review, or parameterization, even
+  if the word "audit" is not used. Works on one SKILL.md, a skill directory, or a
+  repo subtree, and never edits files unless the user asks to fix them.
 metadata:
   origin: first-party
 ---
