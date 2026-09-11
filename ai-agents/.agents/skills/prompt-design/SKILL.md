@@ -6,7 +6,7 @@ version: 1.0.0
 created: 2026-06-02T09:04
 updated: 2026-06-02T09:04
 metadata:
-  origin: unresolved
+  origin: first-party
 ---
 
 # Prompt Design

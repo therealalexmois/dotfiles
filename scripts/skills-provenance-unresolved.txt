@@ -8,17 +8,10 @@
 # Searched: the GitHub trees of every known upstream of this collection, the
 # claude-skill-registry mirror index (162k skills), and content comparison
 # against every name-matching candidate. Nothing matched.
-adversarial-advisor
 arxiv-doc-builder
 arxiv-search
-call-tracer
 caveman-commit
 codebase-onboarding
 find-skills
 github-actions-docs
-postgres-engineer
-productivity-coach
-prompt-design
-prompt-review
 skill-tester
-uml
