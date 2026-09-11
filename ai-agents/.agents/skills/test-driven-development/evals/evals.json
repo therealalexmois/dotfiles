@@ -11,7 +11,7 @@
       "expectations": [
         "Agent asks what the public interface should look like before writing any test",
         "Agent asks which behaviors to test and in what priority order",
-        "Agent produces a list of behaviors, not a list of implementation steps",
+        "Agent frames what it needs as behaviors to test, not as implementation steps",
         "Agent waits for user approval before writing the first test",
         "No production code is written before the plan is confirmed"
       ]
@@ -41,7 +41,7 @@
         "Agent names the problem as horizontal slicing or bulk-written tests",
         "Agent explains that bulk tests verify imagined rather than actual behavior",
         "Agent proposes one test, one implementation, repeated per behavior",
-        "Agent starts with a single tracer-bullet test"
+        "Agent proposes a single tracer-bullet test as the immediate next step, or asks only for the interface it needs to write that one test"
       ]
     },
     {
@@ -57,7 +57,8 @@
         "Agent offers to delete the implementation and rebuild it test-first",
         "Agent does not propose keeping the code as a reference while writing tests around it",
         "Agent asks for the user's explicit decision instead of granting the exception itself",
-        "Agent does not simply write passing tests against the existing implementation without raising the issue"
+        "Agent does not simply write passing tests against the existing implementation without raising the issue",
+        "Agent does not classify freshly written untested code as existing code exempt from the Iron Law"
       ]
     },
     {
@@ -109,11 +110,12 @@
         "evals/fixtures/test_checkout_mocked.py"
       ],
       "expectations": [
-        "Agent identifies that Cart pricing and inventory are internal collaborators that should not be mocked",
+        "Agent classifies each injected dependency as a system boundary or an internal collaborator, or asks for the sources needed to classify them, instead of mocking all of them by default",
         "Agent identifies assertions on call counts and call arguments as implementation-detail testing",
         "Agent keeps or allows a mock only at the external payment boundary",
         "New test asserts on the observable checkout result rather than on mock interactions",
-        "Agent references the mocking or testing-anti-patterns guidance rather than inventing its own rule"
+        "Agent references the mocking or testing-anti-patterns guidance rather than inventing its own rule",
+        "Agent audits the existing test file before extending it, instead of copying its mocking style into the new test"
       ]
     },
     {

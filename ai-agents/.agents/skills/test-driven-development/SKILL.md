@@ -29,7 +29,9 @@ Violating the letter of the rules is violating the spirit of the rules.
 - Generated code
 - Configuration files
 
-**Not this skill's job:** covering already-shipped code with characterization tests when no behavior changes. Write those tests through the public interface as a safety net - the Iron Law below governs new production code, not code that already exists. As soon as the refactor introduces new behavior, TDD applies again.
+**Not this skill's job:** covering already-shipped code with characterization tests when no behavior changes. Write those tests through the public interface as a safety net, then apply TDD again the moment the refactor introduces new behavior.
+
+"Already shipped" means committed and running before this task started. Code that you or the user wrote minutes ago *instead of* a test is not existing code - it is untested new code, and the Iron Law below applies to it. When in doubt, ask: was this code already in production before the current request? If not, it is new.
 
 Thinking "skip TDD just this once"? Stop. That is rationalization.
 
@@ -251,6 +253,8 @@ See [refactoring.md](refactoring.md) for the candidate list and [deep-modules.md
 ## Mocking
 
 Mock at system boundaries only - external APIs, time, randomness, sometimes the database or file system. Do not mock your own classes, internal collaborators, or anything you control. See [mocking.md](mocking.md).
+
+**Before extending an existing test file, audit it.** Do not inherit its mocking style. Check whether it mocks internal collaborators, asserts on call counts or call arguments, or verifies behavior through anything other than the public interface. If it does, say so and propose the behavioral version instead of adding one more test in the same shape.
 
 When adding mocks or test utilities, read [testing-anti-patterns.md](testing-anti-patterns.md) to avoid:
 
