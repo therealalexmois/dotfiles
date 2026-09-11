@@ -25,9 +25,9 @@ Canonical wording for part 4:
 - RU: «Сначала проанализируй задачу и контекст. Показывать ли план, реши по сложности задачи. Если есть вопросы, от ответов на которые зависит результат, задай их и дождись ответа. Если вопросов нет, приступай к реализации.»
 - EN: "First, analyze the task and context; decide from its complexity whether to show a plan. If you have questions whose answers would change the result, ask them and wait for my reply. If you have none, proceed with the implementation."
 
-Adjust only the last phrase to the task type («приступай к ревью», «приступай к ответу»). Keep the filter "questions whose answers change the result": without it, models ask about things they can decide themselves. Leave the plan to the model: forcing a visible analysis on every task just moves the overhead from the prompt into the answer.
+Adjust only the last phrase to the task type («приступай к ревью», «приступай к ответу»). Both conditions earn their place: the filter stops the model asking what it could decide itself, and leaving plan visibility to the model keeps that overhead out of the answer.
 
-If nobody will answer questions during the run — a background task, a scheduled or cloud routine, `codex exec`, a CI job — replace part 4 with: «Сначала проанализируй задачу и контекст. Неоднозначности решай сам; если пришлось что-то допустить, перечисли допущения в конце.» The condition matters: when the output is a message to a person, such as a scheduled reminder, an unconditional assumptions list becomes noise in every run. Omit part 4 only when the user asks.
+If nobody will answer questions during the run — a background task, a scheduled or cloud routine, `codex exec`, a CI job — replace part 4 with: «Сначала проанализируй задачу и контекст. Неоднозначности решай сам; если пришлось что-то допустить, перечисли допущения в конце.» Keep that list conditional: when the output goes to a person, such as a scheduled reminder, an unconditional one is noise in every run. Omit part 4 only when the user asks.
 
 ## Optional sections
 
@@ -40,13 +40,19 @@ Do not add a role, examples, step-by-step procedures, commands, self-check secti
 
 ## Filling the parts
 
-**Context: the active state only.** When the source is a conversation, use the current decision, not the transcript. Include accepted decisions, exact identifiers, and facts the task depends on. Omit rejected alternatives, superseded decisions, deferred work, and exploratory ideas. Do not turn discarded options into "don't do X" lines unless the target model would plausibly reintroduce them within this task. Replace references like "as discussed above" with the actual content, because the prompt will be pasted into a fresh session.
+### Context: the active state only
+
+When the source is a conversation, use the current decision, not the transcript. Include accepted decisions, exact identifiers, and facts the task depends on. Omit rejected alternatives, superseded decisions, deferred work, and exploratory ideas. Do not turn discarded options into "don't do X" lines unless the target model would plausibly reintroduce them within this task. Replace references like "as discussed above" with the actual content, because the prompt will be pasted into a fresh session.
 
 A coding agent reads the repository itself, so give it paths, not file contents. A web model sees only the prompt and attachments, so put the source material into the prompt or say explicitly what is attached.
 
-**Task: the outcome, not the procedure.** State what should exist or be true afterwards. Keep the user's phrasing at its original level of abstraction: «сохрани текущее поведение» stays as is, not expanded into guessed invariants. Specify a mechanism (command, algorithm, sequence) only when the user requested it, it is part of the contract, or plausible approaches lead to materially different outcomes.
+### Task: the outcome, not the procedure
 
-**Success criteria: verifiable, and marked when they are yours.** If the user gave criteria, use them as stated. If not, write 1–3 criteria yourself. Each must be checkable by looking at the result: a state of the code, repository, or data, a behavior that can be triggered, the presence and shape of a requested output. "The code is clean" or «задача выполнена качественно» is not a criterion. A criterion may name a check of the requested result, such as "existing tests pass", but must not add new work the user did not ask for: writing tests, documentation, CI changes, reports. Phrase criteria as states, not as commands.
+State what should exist or be true afterwards. Keep the user's phrasing at its original level of abstraction: «сохрани текущее поведение» stays as is, not expanded into guessed invariants. Specify a mechanism (command, algorithm, sequence) only when the user requested it, it is part of the contract, or plausible approaches lead to materially different outcomes.
+
+### Success criteria: verifiable, and marked when they are yours
+
+If the user gave criteria, use them as stated. If not, write 1–3 criteria yourself. Each must be checkable by looking at the result: a state of the code, repository, or data, a behavior that can be triggered, the presence and shape of a requested output. "The code is clean" or «задача выполнена качественно» is not a criterion. A criterion may name a check of the requested result, such as "existing tests pass", but must not add new work the user did not ask for: writing tests, documentation, CI changes, reports. Phrase criteria as states, not as commands.
 
 Criteria you wrote are proposals, and the user should see that before sending the prompt. Mark them after the code block, not inside the prompt, so the prompt stays ready to copy: «Критерии успеха предложены мной — проверь перед отправкой.» If the user gave some criteria and you added others, name the added ones: «Критерий 3 добавлен мной».
 
