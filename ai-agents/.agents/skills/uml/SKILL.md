@@ -1,6 +1,13 @@
 ---
 name: uml
-description: Create UML diagrams using PlantUML syntax. Best for software modeling — Class, Sequence, Activity, State Machine, Component, Use Case, and Deployment diagrams with concise text-based notation and auto-layout.
+description: >-
+  Write UML diagrams as PlantUML text: pick the diagram type, declare the elements and their
+  relationships, apply styling, and return the source in a plantuml fence that renders in Markdown
+  and wikis. Covers class, sequence, activity, state machine, component, use case, deployment,
+  object, package, communication, composite structure, interaction overview and profile diagrams,
+  plus a bundled stencil reference for cloud, network and infrastructure icon sets. Use when the
+  user asks to draw, model or diagram a system, requests any of those diagram types by name, or
+  wants a diagram kept as text in a document rather than as an image file.
 metadata:
   version: "1.0"
   origin: first-party
@@ -20,28 +27,30 @@ metadata:
 - Notes use `note left of`, `note right of`, `note over`, or standalone `note "text" as N`
 
 ## UML Diagram Types
-| Type | Purpose | Key Syntax | Example |
-|------|---------|------------|---------|
-| Class | Class structure and relationships | `class`, `interface`, `<\|--` | `class-diagram.md` |
-| Sequence | Message interactions over time | `participant`, `->`, `-->` | `sequence-diagram.md` |
-| Activity | Workflow and process flow | `start`, `:action;`, `if/else` | `activity-diagram.md` |
-| Swimlane Activity | Multi-role activity with swimlanes | `\|Lane\|`, `:action;` | `swimlane-activity-diagram.md` |
-| State Machine | Object lifecycle states | `state`, `[*] -->` | `state-machine-diagram.md` |
-| Component | System component organization | `component`, `[name]`, `interface` | `component-diagram.md` |
-| Use Case | User-system interactions | `actor`, `usecase`, `(name)` | `use-case-diagram.md` |
-| Deployment | Physical deployment architecture | `node`, `artifact`, `database` | `deployment-diagram.md` |
-| Object | Runtime object snapshot | `object "name" as id` | `object-diagram.md` |
-| Package | Module organization | `package "name"` | `package-diagram.md` |
-| Communication | Object collaboration | Numbered messages with sequence syntax | `communication-diagram.md` |
-| Composite Structure | Internal class structure | `component` with nested `port` | `composite-structure-diagram.md` |
-| Interaction Overview | Activity + sequence combination | `group`, `ref over` | `interaction-overview-diagram.md` |
-| Profile | UML extension mechanisms | `<<stereotype>>` labels | `profile-diagram.md` |
+| Type | Purpose | Key Syntax |
+|------|---------|------------|
+| Class | Class structure and relationships | `class`, `interface`, `<\|--` |
+| Sequence | Message interactions over time | `participant`, `->`, `-->` |
+| Activity | Workflow and process flow | `start`, `:action;`, `if/else` |
+| Swimlane Activity | Multi-role activity with swimlanes | `\|Lane\|`, `:action;` |
+| State Machine | Object lifecycle states | `state`, `[*] -->` |
+| Component | System component organization | `component`, `[name]`, `interface` |
+| Use Case | User-system interactions | `actor`, `usecase`, `(name)` |
+| Deployment | Physical deployment architecture | `node`, `artifact`, `database` |
+| Object | Runtime object snapshot | `object "name" as id` |
+| Package | Module organization | `package "name"` |
+| Communication | Object collaboration | Numbered messages with sequence syntax |
+| Composite Structure | Internal class structure | `component` with nested `port` |
+| Interaction Overview | Activity + sequence combination | `group`, `ref over` |
+| Profile | UML extension mechanisms | `<<stereotype>>` labels |
+
+A minimal working diagram for each of these types lives in [references/diagram-examples.md](references/diagram-examples.md) - read it when the type is unfamiliar or the syntax tokens above are not enough.
 
 ## Mxgraph Stencil Icons
 
 draw-uml supports 9500+ mxgraph stencil icons (AWS, Azure, Cisco, Kubernetes, etc.) via the `mxgraph.*` syntax. Default colors are applied automatically — you do NOT need to specify `fillColor` or `strokeColor`.
 
-**Full stencil reference:** See [stencils/README.md](stencils/README.md).
+**Full stencil reference:** See [references/README.md](references/README.md).
 
 ### Syntax
 
