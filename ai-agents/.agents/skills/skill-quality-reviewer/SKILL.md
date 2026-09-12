@@ -1,13 +1,21 @@
 ---
 name: skill-quality-reviewer
-description: Review a SKILL.md for predictability against the writing-great-skills doctrine and report findings by failure mode. Complements anthropic-skill-creator; invoke by name after drafting or editing a skill.
+description: >-
+  Review a skill for quality and predictability: check the frontmatter and description, judge
+  whether each piece of content sits at the right level (step, in-file reference, or disclosed
+  file), test every step for a checkable completion criterion, and hunt duplication, stale text,
+  sprawl, and lines that change nothing the model would do anyway. Reports each finding with its
+  exact location and the specific edit that fixes it. Use when a skill has just been drafted or
+  edited and needs checking over - "review this skill", "QA my SKILL.md", "is this skill any
+  good", "what is wrong with this skill", "check my skill before I commit it". Complements
+  anthropic-skill-creator: draft and improve there, review here.
 disable-model-invocation: true
 metadata:
   version: "1.0"
   origin: first-party
 ---
 
-A skill exists to wrangle determinism out of a stochastic system. **Predictability** — the agent taking the same _process_ every run, not producing the same output — is the root virtue you review for; every lever below serves it. Full definitions of the **bold terms** live in [`references/GLOSSARY.md`](references/GLOSSARY.md); consult it whenever a term's exact test matters.
+**Predictability** — the agent taking the same _process_ every run, not producing the same output — is what you review for. Every lever below serves it. Full definitions of the **bold terms** live in [`references/GLOSSARY.md`](references/GLOSSARY.md); consult it whenever a term's exact test matters.
 
 This skill reviews one skill at a time. It pairs with `anthropic-skill-creator`, which drafts and improves: write there, review here.
 
@@ -34,7 +42,7 @@ Map each piece of content to its rung: **step**, in-file **reference**, or discl
 
 ### 3. Leading words
 
-Hunt restatements a **leading word** would retire, in body and description alike: a triad spelled out at three sites, a description spending a sentence to gesture at one idea. Each begs to collapse into a single pretrained token (e.g. "fast, deterministic, low-overhead" → _tight_). Propose the word, not just the flag.
+Hunt restatements a **leading word** would retire, in body and description alike. The test: a phrase of three or more words, or a sentence that only gestures at one idea, where a single common word carries the same meaning to the model (e.g. "fast, deterministic, low-overhead" → _tight_; "do not invent details the user did not give" → _faithful_). Quote the phrase, propose the word, and say where else the same idea is spelled out. If no single word covers it, leave the phrase and say so — a worse word costs more than the extra tokens.
 
 ### 4. Pruning
 
