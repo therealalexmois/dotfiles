@@ -14,7 +14,7 @@ metadata:
 
 ## Core principle
 
-The reason this works: each hat agent receives only the original problem — no other hat's output. This prevents context contamination. The Yellow Hat cannot be softened by the Black Hat's risks. The Black Hat cannot be dulled by optimism. Each perspective is genuinely independent, which is exactly what de Bono's "parallel thinking" requires.
+Each hat agent receives only the original problem, never another hat's output. That isolation is what de Bono's "parallel thinking" requires: no perspective gets softened or dulled by the others.
 
 ## How to run
 
@@ -37,22 +37,24 @@ Use the Agent tool to spawn all five agents **in the same message** (parallel ex
 
 | Agent | Instructions file | Focus |
 |-------|------------------|-------|
-| White Hat | `agents/white-hat.md` | Facts, data, information gaps |
-| Red Hat | `agents/red-hat.md` | Emotions, intuition, gut reactions |
-| Black Hat | `agents/black-hat.md` | Risks, weaknesses, failure modes |
-| Yellow Hat | `agents/yellow-hat.md` | Benefits, value, reasons for optimism |
-| Green Hat | `agents/green-hat.md` | Alternatives, creative approaches |
+| White Hat | `references/white-hat.md` | Facts, data, information gaps |
+| Red Hat | `references/red-hat.md` | Emotions, intuition, gut reactions |
+| Black Hat | `references/black-hat.md` | Risks, weaknesses, failure modes |
+| Yellow Hat | `references/yellow-hat.md` | Benefits, value, reasons for optimism |
+| Green Hat | `references/green-hat.md` | Alternatives, creative approaches |
 
 Read each agent's instructions file before composing its prompt so you pass them accurately.
 
 Agent prompt template:
 
 ```
-Read and follow the instructions in [agents/<hat>.md].
+Read and follow the instructions in [references/<hat>.md].
 
 Problem to analyze:
 [problem statement from Step 1]
 ```
+
+When an agent comes back empty or fails, respawn that one hat once with the same prompt. If the second attempt also fails, continue with the hats you have and open the synthesis by naming the missing perspective - a verdict built on four hats must say which lens is absent.
 
 ### Step 3 - Blue Hat synthesis
 
