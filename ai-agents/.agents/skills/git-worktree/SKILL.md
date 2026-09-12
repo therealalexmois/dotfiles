@@ -12,6 +12,7 @@ description: >-
   создания или merge MR/PR, pipeline/CI, remote branch deletion, rebase/reset
   либо удаления dirty worktree.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 
@@ -81,7 +82,7 @@ metadata:
 
    `~/.agents/skills/git-worktree` является canonical runtime-ссылкой на skill. Передать branch/name и repository root отдельными аргументами. Добавить только выбранные на preflight аргументы `--path` или `--ignore-mode`. Не собирать команду через `eval` и не передавать Claude hook JSON.
 6. По умолчанию wrapper печатает только абсолютный worktree path. Если пользователь или вызывающий workflow явно требует JSON output, добавить `--format json`. Для этого режима нужен `jq`; прочитать path из поля `worktree` и проверить `format_version`. Не включать JSON по умолчанию, чтобы не сломать Claude adapter и существующие вызовы.
-7. Не запускать wrapper после `git worktree add`: wrapper сам проверяет подтвержденный ignore mode, выполняет `git fetch origin`, создает ветку и worktree, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `scripts/worktree-setup.sh`. Первый вызов `git worktree add` создает `.worktrees/` вместе с worktree; не создавать пустой каталог заранее.
+7. Не запускать wrapper после `git worktree add`: wrapper сам проверяет подтвержденный ignore mode, выполняет `git fetch origin`, создает ветку и worktree, копирует ignored файлы из `.worktreeinclude` и запускает `.worktree-setup.sh` либо `<repo>/scripts/worktree-setup.sh`. Первый вызов `git worktree add` создает `.worktrees/` вместе с worktree; не создавать пустой каталог заранее.
 8. Если bundled script отсутствует или не executable, остановиться с blocker. Не подменять его прямым `git worktree add`.
 9. Прочитать абсолютный worktree path из stdout wrapper или поля `worktree` JSON и проверить зарегистрированный path, branch, HEAD и чистоту новой worktree.
 

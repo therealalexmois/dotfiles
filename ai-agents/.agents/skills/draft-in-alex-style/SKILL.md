@@ -2,6 +2,7 @@
 name: draft-in-alex-style
 description: Draft and edit Russian text in Alex's confirmed writing style. Use for technical messages, RFC and design documents, reviews, Jira tasks, status updates, prompts, and concise professional correspondence when the user asks to write, rewrite, polish, shorten, or adapt text in their style. Do not use for code or exact quotations unless explicitly requested.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 

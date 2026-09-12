@@ -12,6 +12,7 @@ description: >-
   автоматически и не считает CLI validation доказательством семантической
   готовности.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 

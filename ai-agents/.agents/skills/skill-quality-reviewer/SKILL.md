@@ -3,6 +3,7 @@ name: skill-quality-reviewer
 description: Review a SKILL.md for predictability against the writing-great-skills doctrine and report findings by failure mode. Complements anthropic-skill-creator; invoke by name after drafting or editing a skill.
 disable-model-invocation: true
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 

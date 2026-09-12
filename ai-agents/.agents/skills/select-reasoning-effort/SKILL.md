@@ -2,6 +2,7 @@
 name: select-reasoning-effort
 description: Recommend the reasoning-effort level for the next phase of software-development work and define when to reassess it. Use when the user asks which effort or intelligence level to choose, whether to raise or lower it, or how much reasoning a coding agent needs before or during implementation, debugging, review, research, architecture, brainstorming, migration, security, or other agentic work. Analyze context already available from any source, including tickets, code, documents, conversation, memory, or prior investigation.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 

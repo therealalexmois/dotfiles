@@ -2,6 +2,7 @@
 name: brainstorm-lite
 description: Lightweight brainstorming workflow for small and medium engineering tasks. Use before implementation to clarify a feature idea, compare 2 approaches, plan a small or medium code change, or decide between options instead of jumping straight into code. Not for large architecture redesigns, security-sensitive changes, database schema migrations, public API contract changes, or multi-service work.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 

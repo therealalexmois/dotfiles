@@ -14,6 +14,7 @@ description: >
   if the word "audit" is not used. Works on one SKILL.md, a skill directory, or a
   repo subtree, and never edits files unless the user asks to fix them.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 

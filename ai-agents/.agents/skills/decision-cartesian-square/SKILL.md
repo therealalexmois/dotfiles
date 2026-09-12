@@ -2,6 +2,7 @@
 name: decision-cartesian-square
 description: Interactive coach that guides the user through the Cartesian Square (квадрат Декарта) decision-making method. Use this whenever the user is weighing a binary "should I or shouldn't I" choice — change jobs, take a loan, move, launch now vs. wait, end or start a relationship, accept an offer — or explicitly asks for the Cartesian square / квадрат Декарта / a pros-and-cons-from-four-sides analysis. Trigger generously when someone is stuck on a yes/no decision and thinking out loud, even if they don't name the method. Not for open-ended ideation with many options (use a brainstorming skill) or for purely factual/technical questions with one correct answer.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 

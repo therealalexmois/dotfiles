@@ -2,6 +2,7 @@
 name: uml
 description: Create UML diagrams using PlantUML syntax. Best for software modeling — Class, Sequence, Activity, State Machine, Component, Use Case, and Deployment diagrams with concise text-based notation and auto-layout.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 
@@ -21,20 +22,20 @@ metadata:
 ## UML Diagram Types
 | Type | Purpose | Key Syntax | Example |
 |------|---------|------------|---------|
-| Class | Class structure and relationships | `class`, `interface`, `<\|--` | [class-diagram.md](examples/class-diagram.md) |
-| Sequence | Message interactions over time | `participant`, `->`, `-->` | [sequence-diagram.md](examples/sequence-diagram.md) |
-| Activity | Workflow and process flow | `start`, `:action;`, `if/else` | [activity-diagram.md](examples/activity-diagram.md) |
-| Swimlane Activity | Multi-role activity with swimlanes | `\|Lane\|`, `:action;` | [swimlane-activity-diagram.md](examples/swimlane-activity-diagram.md) |
-| State Machine | Object lifecycle states | `state`, `[*] -->` | [state-machine-diagram.md](examples/state-machine-diagram.md) |
-| Component | System component organization | `component`, `[name]`, `interface` | [component-diagram.md](examples/component-diagram.md) |
-| Use Case | User-system interactions | `actor`, `usecase`, `(name)` | [use-case-diagram.md](examples/use-case-diagram.md) |
-| Deployment | Physical deployment architecture | `node`, `artifact`, `database` | [deployment-diagram.md](examples/deployment-diagram.md) |
-| Object | Runtime object snapshot | `object "name" as id` | [object-diagram.md](examples/object-diagram.md) |
-| Package | Module organization | `package "name"` | [package-diagram.md](examples/package-diagram.md) |
-| Communication | Object collaboration | Numbered messages with sequence syntax | [communication-diagram.md](examples/communication-diagram.md) |
-| Composite Structure | Internal class structure | `component` with nested `port` | [composite-structure-diagram.md](examples/composite-structure-diagram.md) |
-| Interaction Overview | Activity + sequence combination | `group`, `ref over` | [interaction-overview-diagram.md](examples/interaction-overview-diagram.md) |
-| Profile | UML extension mechanisms | `<<stereotype>>` labels | [profile-diagram.md](examples/profile-diagram.md) |
+| Class | Class structure and relationships | `class`, `interface`, `<\|--` | `class-diagram.md` |
+| Sequence | Message interactions over time | `participant`, `->`, `-->` | `sequence-diagram.md` |
+| Activity | Workflow and process flow | `start`, `:action;`, `if/else` | `activity-diagram.md` |
+| Swimlane Activity | Multi-role activity with swimlanes | `\|Lane\|`, `:action;` | `swimlane-activity-diagram.md` |
+| State Machine | Object lifecycle states | `state`, `[*] -->` | `state-machine-diagram.md` |
+| Component | System component organization | `component`, `[name]`, `interface` | `component-diagram.md` |
+| Use Case | User-system interactions | `actor`, `usecase`, `(name)` | `use-case-diagram.md` |
+| Deployment | Physical deployment architecture | `node`, `artifact`, `database` | `deployment-diagram.md` |
+| Object | Runtime object snapshot | `object "name" as id` | `object-diagram.md` |
+| Package | Module organization | `package "name"` | `package-diagram.md` |
+| Communication | Object collaboration | Numbered messages with sequence syntax | `communication-diagram.md` |
+| Composite Structure | Internal class structure | `component` with nested `port` | `composite-structure-diagram.md` |
+| Interaction Overview | Activity + sequence combination | `group`, `ref over` | `interaction-overview-diagram.md` |
+| Profile | UML extension mechanisms | `<<stereotype>>` labels | `profile-diagram.md` |
 
 ## Mxgraph Stencil Icons
 

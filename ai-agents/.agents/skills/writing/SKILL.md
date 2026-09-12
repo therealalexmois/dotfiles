@@ -2,6 +2,7 @@
 name: writing
 description: Пишет, редактирует, сокращает и проверяет русский текст и техническую документацию, включая системную проверку чистоты, читаемости, авторства и смысловых потерь. Обязательно используй для рабочих сообщений, заметок, заголовков, фактических историй, убедительных и продуктовых текстов, а также README, how-to, tutorial, reference, API-документации, объяснений, troubleshooting и release notes, когда пользователь просит написать, сформулировать, переписать, сократить, убрать воду, канцелярит или AI-стиль, улучшить структуру, чистоту либо читаемость или провести review. Не используй вместо профильных skills для проектирования RFC, ADR, PRD, agent instructions, quarterly review, promotion-артефактов или кода.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 
@@ -102,9 +103,9 @@ rules Codex или Claude.
 Всегда прочитай `references/clarity-and-readability.md`, затем ровно один
 основной режим:
 
-- `references/modes/author.md`;
-- `references/modes/edit.md`;
-- `references/modes/review.md`.
+- `references/mode-author.md`;
+- `references/mode-edit.md`;
+- `references/mode-review.md`.
 
 Дополнительно прочитай только нужные материалы:
 
@@ -116,7 +117,7 @@ rules Codex или Claude.
   технические термины, англицизмы или идентификаторы.
 - `references/technical-documentation.md` - всегда для профиля `technical-docs`.
 - `references/review-orchestration.md` - только для сложного или строгого review
-  по условиям из `references/modes/review.md`.
+  по условиям из `references/mode-review.md`.
 
 Не загружай все references заранее. Для задачи, которая сочетает историю и
 убеждение, можно прочитать оба соответствующих файла.

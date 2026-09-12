@@ -8,6 +8,7 @@ description: >
   документации, разовых пользовательских prompt, code review, архитектурного
   проектирования или domain workflow, который инструкция должна только описывать.
 metadata:
+  version: "1.0"
   origin: first-party
   layer: workflow
 ---

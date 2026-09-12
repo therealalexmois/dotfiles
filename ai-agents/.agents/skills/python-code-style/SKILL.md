@@ -2,6 +2,7 @@
 name: python-code-style
 description: Generic Python conventions - naming, imports, type annotations, formatting, vertical spacing, Google-style docstrings, and pytest test-writing rules. Use whenever writing, editing, or reviewing Python code, adding or improving docstrings, or writing, modifying, or reviewing Python tests, even if the user does not mention conventions explicitly. Project AGENTS.md/CLAUDE.md and pyproject.toml override these defaults.
 metadata:
+  version: "1.0"
   origin: first-party
 ---
 
