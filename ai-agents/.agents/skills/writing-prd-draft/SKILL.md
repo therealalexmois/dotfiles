@@ -1,6 +1,12 @@
 ---
 name: writing-prd-draft
-description: Turn current conversation context into a PRD draft and offer to save it to a file. Use only when the user invokes /writing-prd-draft or explicitly asks «создай PRD», «сделай PRD из контекста», or to draft a PRD from this conversation without an interview.
+description: >-
+  Turn what the conversation and the codebase already established into a PRD draft: state the problem
+  and solution from the user's point of view, sketch the modules the work touches and confirm them,
+  enumerate user stories, record implementation and testing decisions, mark what is out of scope, then
+  offer to save the document. Runs on existing context and never interviews the user. Use only when the
+  user invokes /writing-prd-draft or explicitly asks «создай PRD», «сделай PRD из контекста», «оформи
+  это как PRD», or to draft a PRD from this conversation without an interview.
 disable-model-invocation: true
 metadata:
   version: "1.0"
@@ -13,13 +19,13 @@ This skill takes the current conversation context and codebase understanding and
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the PRD, and respect any ADRs in the area you're touching.
 
-2. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+2. Sketch the modules the implementation builds or modifies, as a list of `module name - one-line responsibility - the interface it exposes`. Prefer deep modules: a lot of functionality behind a small interface that rarely changes and can be tested in isolation.
 
-A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
+Check with the user that these modules match their expectations, and which of them they want tests written for.
 
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
+3. Write the PRD using the template below.
 
-3. Write the PRD using the template below. After presenting the draft, ask the user whether to save it to a file (suggest `<repo>/.prompts/prd-<feature>.md` as the default path).
+4. Check the draft before presenting it: every Implementation Decision traces to at least one user story, every module from step 2 appears in Implementation Decisions, Out of Scope is not empty, and no section is a placeholder. Fix what fails, then present the draft and ask whether to save it (suggest `<repo>/.prompts/prd-<feature>.md` as the default path).
 
 <prd-template>
 
