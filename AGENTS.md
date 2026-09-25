@@ -302,6 +302,7 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | tech debt audit | `tech-debt-tracker` | manual |
 | review before completing a task | `review-before-completion` | yes |
 | generate a runbook | `runbook-generator` | manual |
+| audit and trim repository docs, AGENTS.md, rules, skills, prompts | `audit-repository-documentation` | manual |
 | write, edit, or review technical documentation (tutorial, how-to, reference, API/CLI, troubleshooting, README, runbook) | `writing-technical-documentation` | yes |
 | plan, write, edit, or review technical marketing content (blog post, case study, white paper, landing page, announcement) | `writing-technical-marketing-content` | yes |
 | build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | yes |
