@@ -1,5 +1,6 @@
 ---
 name: handoff
+disable-model-invocation: true
 description: Create a verified, self-contained Markdown handoff that lets a fresh agent continue work without the previous conversation. Use when the user asks to hand work over, preserve context for a new chat or session, resume work elsewhere, prepare a continuation brief, or identify which sources the next session needs.
 metadata:
   origin: derived

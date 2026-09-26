@@ -1,5 +1,6 @@
 ---
 name: productivity-coach
+disable-model-invocation: true
 description: 'Accountability-focused productivity coaching that challenges assumptions and drives action toward personal and professional goals. Use this skill whenever the user asks for productivity coaching, accountability support, goal-setting help, overcoming procrastination, prioritizing work, breaking through resistance, or staying focused — even if they don''t use the word "coaching". Typical triggers: "help me stay on track", "I keep postponing this", "I need to prioritize", "coach me on my goals", "hold me accountable".'
 metadata:
   version: "1.0"

@@ -1,5 +1,6 @@
 ---
 name: review-openspec-change
+disable-model-invocation: true
 description: >-
   Проводит evidence-based ревью явно указанного scope OpenSpec: отдельного
   proposal, delta spec, design, tasks или diff; выбранного набора артефактов;
