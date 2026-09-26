@@ -1,7 +1,6 @@
 ---
 name: prompt-design
-disable-model-invocation: true
-description: Design a new prompt from a brief. Use when the user wants a prompt built for a specific task (extraction, review/gate, transformation, structured generation, document Q&A, data analysis, brainstorming, conversational, etc.), and wants a self-contained final prompt plus a testing checklist — built strictly to the brief, without trend-chasing or over-engineering.
+description: Design a reusable prompt, system prompt or production-model prompt from a brief, with an input/output contract and testing checklist. Use for repeatable extraction, review/gate, transformation, structured generation, document Q&A, data analysis or conversational tasks. For a one-off task instruction to a capable model or coding agent, use create-prompt. For evidence-based review of an existing prompt, use prompt-review.
 metadata:
   origin: first-party
   version: 1.0.0
@@ -17,19 +16,20 @@ Work strictly from the brief. Don't add requirements the user didn't state. Don'
 
 ## When to use
 
-- The user wants a new prompt for a defined task and target.
+- The user wants a new reusable prompt, system prompt or production-model prompt for a defined task and target.
 - The user has input/output examples and wants rules + a prompt reverse-engineered from them.
 - The user wants a prompt restructured for a specific class (extraction, gate, summarization, analysis, brainstorming, …).
 
 ## When NOT to use
 
-- The user wants an *existing* prompt critiqued/improved → use `prompt-review`.
+- The user wants an *existing* prompt critiqued/improved with findings → use `prompt-review`.
+- The user wants a compact, one-off task prompt for a capable model or agent → use `create-prompt`.
 - The task needs an agent loop / tool use / multi-step execution — that is out of scope; say so and point to an agent framework.
 
 ## Minimal workflow
 
 1. **Get the minimum input — GOAL** (one or two sentences). If absent, ask; don't guess. Then ask 1–3 targeted questions only for what the chosen prompt class actually needs (audience, target model, input shape, output format, hard constraints, examples, failure modes, success criteria). Don't request every field — friction kills the brief.
-2. **Pick a mode**: `DIRECT` (narrow, one shot), `ITERATIVE` (default, 1–2 refinements), `TWO_PHASE` (high uncertainty → write a PRD for the prompt, confirm, then the prompt), or `REVERSE_ENGINEERING` (examples given → extract and confirm invariants before writing). If the user asks to refine an **already-created** prompt, use the follow-up refinement protocol instead of rewriting from scratch (`references/module-catalog.md`).
+2. **Pick a mode**: `DIRECT` (narrow, one shot), `ITERATIVE` (default, 1–2 refinements), `TWO_PHASE` (high uncertainty → write a PRD for the prompt, confirm, then the prompt), or `REVERSE_ENGINEERING` (examples given → extract and confirm invariants before writing). If the user asks to refine a prompt **created in the current design process**, use the follow-up refinement protocol instead of rewriting from scratch (`references/module-catalog.md`). For review of a supplied prompt, use `prompt-review`.
 3. **Classify** the target prompt by class and complexity (`SIMPLE`/`STANDARD`/`STRICT`) and decide system vs user prompt. Don't upgrade to `STRICT` without a reason — over-engineering is the main failure mode. Classes and complexity rules: `references/module-catalog.md`.
 4. **Pre-flight normalize**: number the goals (`GOAL-1…`) and hard constraints (`CONSTRAINT-1…`), state input/output formats explicitly, and fix source/metrics/idea-count details when relevant. For non-trivial tasks, publish these and confirm; for `DIRECT`, proceed.
 5. **Select modules** from the catalog — each only if its inclusion condition is met (`references/module-catalog.md`). A module that merely "looks nice" is excluded. This is the guard against over-engineering.

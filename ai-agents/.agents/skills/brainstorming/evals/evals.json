@@ -1,0 +1,56 @@
+{
+  "skill_name": "brainstorming",
+  "evals": [
+    {
+      "id": 1,
+      "name": "complex-architecture-design",
+      "prompt": "Спроектируй разделение монолита на сервисы заказов и платежей. Нужно сохранить совместимость API и мигрировать данные без простоя.",
+      "expected_output": "The agent uses the full design workflow, examines relevant contracts, compares viable migration approaches, and records a proportionate design when a persistent artifact is useful.",
+      "files": [],
+      "expectations": [
+        "Agent examines current API and data contracts before proposing a design",
+        "Agent compares meaningful approaches and their migration risks",
+        "Agent asks only for unresolved choices that materially affect the design",
+        "Agent does not commit a design document unless a commit was requested"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "small-change-routes-to-lite",
+      "prompt": "В существующем CLI добавь флаг --quiet, который выключает progress output. Контракт ясен, реализуй и проверь.",
+      "expected_output": "The full design workflow is not applied to a small scoped implementation; brainstorm-lite is sufficient if comparison is useful, otherwise the agent proceeds.",
+      "files": [],
+      "expectations": [
+        "Agent does not demand a formal design document for the small change",
+        "Agent does not require design approval before implementing the clear request",
+        "Agent does not create a commit unless requested"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "authorized-complex-work-continues",
+      "prompt": "Изучи текущую архитектуру очередей, спроектируй и реализуй переход на outbox pattern с тестами. Выбери минимальный безопасный вариант сам; коммит не нужен.",
+      "expected_output": "The agent designs the complex change, resolves routine choices from repository evidence, then continues authorized implementation without repeated approval gates or a commit.",
+      "files": [],
+      "expectations": [
+        "Agent inspects the current queue and transaction contracts",
+        "Agent records major design decisions and verification before implementation",
+        "Agent does not pause after each design section for approval",
+        "Agent does not commit files"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "visual-option-does-not-block-design",
+      "prompt": "Спроектируй новый экран управления подпиской и покажи варианты размещения тарифов. Можешь использовать доступные средства визуализации, но доведи дизайн до результата без дополнительных согласований.",
+      "expected_output": "The agent uses an authorized visual aid if it materially helps, or presents a static comparison, without pausing the design for optional companion consent.",
+      "files": [],
+      "expectations": [
+        "Agent does not send a standalone companion-consent question",
+        "Agent does not stop work to await optional visual-tool approval",
+        "Agent presents a concrete layout comparison and design result",
+        "Agent requests a decision only if a material product choice cannot be resolved from the request"
+      ]
+    }
+  ]
+}

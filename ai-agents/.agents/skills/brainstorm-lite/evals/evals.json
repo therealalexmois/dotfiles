@@ -1,0 +1,42 @@
+{
+  "skill_name": "brainstorm-lite",
+  "evals": [
+    {
+      "id": 1,
+      "name": "small-choice",
+      "prompt": "Для новой опции CLI лучше отдельный флаг --format или расширить существующий --output? Выбери и добавь поддержку JSON.",
+      "expected_output": "The agent compares the real options briefly, recommends one, and proceeds with the authorized change when the repository contract resolves the choice.",
+      "files": [],
+      "expectations": [
+        "Agent inspects the existing CLI option contract",
+        "Agent compares the two approaches with concise trade-offs",
+        "Agent does not require separate approval if the choice is safely resolvable",
+        "Agent does not write a formal design document"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "clear-small-task",
+      "prompt": "Исправь кнопку Save: при пустом имени покажи ошибку и не отправляй форму. Добавь проверку.",
+      "expected_output": "The agent avoids a ceremonial brainstorm and implements the clear small change with a relevant check.",
+      "files": [],
+      "expectations": [
+        "Agent does not invent a second approach",
+        "Agent does not ask for approval of the stated behavior",
+        "Agent verifies the error path"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-change-escalates",
+      "prompt": "Нужно разбить монолит на три сервиса и мигрировать общую базу без простоя. Начни с вариантов архитектуры.",
+      "expected_output": "The agent uses the full brainstorming workflow for a multi-service architecture and migration task.",
+      "files": [],
+      "expectations": [
+        "Agent identifies the multi-service migration as outside brainstorm-lite",
+        "Agent moves to the full design workflow without discarding context",
+        "Agent does not present a two-option lightweight template as the full design"
+      ]
+    }
+  ]
+}

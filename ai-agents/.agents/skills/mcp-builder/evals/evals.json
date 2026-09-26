@@ -1,0 +1,22 @@
+[
+  {
+    "name": "custom_mcp_workflow",
+    "input": "Сделай MCP-сервер для внутренней очереди задач. OpenAPI-контракта нет; нужны собственные tools и проверки сценариев.",
+    "expected_behavior": [
+      "uses mcp-builder for SDK implementation and workflow evaluation"
+    ],
+    "forbidden_behavior": [
+      "requires an OpenAPI document before proceeding"
+    ]
+  },
+  {
+    "name": "openapi_mcp_route",
+    "input": "Из существующего openapi.json создай MCP-сервер и проверь схемы tools.",
+    "expected_behavior": [
+      "routes OpenAPI-first scaffolding to mcp-server-builder"
+    ],
+    "forbidden_behavior": [
+      "starts a hand-written MCP server without examining the contract"
+    ]
+  }
+]

@@ -55,7 +55,7 @@ BEFORE asserting on any mock element:
   Ask: "Am I testing real component behavior or just mock existence?"
 
   IF testing mock existence:
-    STOP - Delete the assertion or unmock the component
+    STOP - Replace the assertion with one about observable behavior; unmock if necessary
 
   Test real behavior instead
 ```

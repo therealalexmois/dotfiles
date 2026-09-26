@@ -1,7 +1,7 @@
 ---
 name: "skill-tester"
 disable-model-invocation: true
-description: "Validate, test, and score the quality of skills within the claude-skills ecosystem. Comprehensive meta-skill: structure validation, Python script testing (syntax + imports + runtime + output format), multi-dimensional quality scoring with letter grades and tier classification (BASIC/STANDARD/POWERFUL). Use when authoring a new skill, auditing existing skills for tier promotion, setting up pre-commit hooks for skill quality, or integrating skill QA into CI."
+description: "Run the bundled deterministic package validator, Python script tester, and BASIC/STANDARD/POWERFUL tier scorer for a skill package. Use explicitly for package structure, script execution, or this ecosystem's tier classification. For behavioral skill creation use anthropic-skill-creator; for instruction quality use skill-quality-reviewer; for hardcoded values use skill-param-auditor; for security use skill-security-auditor."
 metadata:
   origin: unresolved
 ---
@@ -22,14 +22,18 @@ metadata:
 
 ## Description
 
-The Skill Tester is a comprehensive meta-skill designed to validate, test, and score the quality of skills within the claude-skills ecosystem. This powerful quality assurance tool ensures that all skills meet the rigorous standards required for BASIC, STANDARD, and POWERFUL tier classifications through automated validation, testing, and scoring mechanisms.
+The Skill Tester validates and scores packages that opt into the claude-skills BASIC, STANDARD, or POWERFUL tier rubric. Its bundled scripts check package structure and Python scripts, then produce a tier-specific score. Do not apply this rubric as a required gate to ordinary Agent Skills packages.
+
+Its scope is the package's deterministic structure, bundled Python scripts, and the ecosystem-specific tier rubric. It does not replace behavioral evals in `anthropic-skill-creator`, instruction review in `skill-quality-reviewer`, parameterization review in `skill-param-auditor`, or the threat review in `skill-security-auditor`.
 
 As the gatekeeping system for skill quality, this meta-skill provides three core capabilities:
 1. **Structure Validation** - Ensures skills conform to required directory structures, file formats, and documentation standards
 2. **Script Testing** - Validates Python scripts for syntax, imports, functionality, and output format compliance  
 3. **Quality Scoring** - Provides comprehensive quality assessment across multiple dimensions with letter grades and improvement recommendations
 
-This skill is essential for maintaining ecosystem consistency, enabling automated CI/CD integration, and supporting both manual and automated quality assurance workflows. It serves as the foundation for pre-commit hooks, pull request validation, and continuous integration processes that maintain the high-quality standards of the claude-skills repository.
+Use these checks when a package declares or seeks one of those tiers. For this dotfiles repository, use `scripts/check-skills.sh` for installation and frontmatter invariants; use this skill's Python script tester only when a bundled Python script needs package-level testing.
+
+The script tester executes target scripts with no arguments, `--help`, and sample files. Read the target scripts and their dependencies first. Do not run it on an untrusted package or where those executions could write to external systems or user data; use `skill-security-auditor` and an isolated environment before runtime testing.
 
 ## Core Features
 
@@ -155,6 +159,8 @@ Scoring dimensions include:
 ## Usage Scenarios
 
 ### Development Workflow Integration
+Only use the tier-scoring commands below for packages that opt into the claude-skills rubric. Run the repository's own skill validator for its installation contract.
+
 ```bash
 # Pre-commit hook validation
 skill_validator.py path/to/skill --tier POWERFUL --json

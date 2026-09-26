@@ -1,6 +1,6 @@
 ---
 name: draft-in-alex-style
-description: Draft and edit Russian text in Alex's confirmed writing style. Use for technical messages, RFC and design documents, reviews, Jira tasks, status updates, prompts, and concise professional correspondence when the user asks to write, rewrite, polish, shorten, or adapt text in their style. Do not use for code or exact quotations unless explicitly requested.
+description: Apply Alex's confirmed Russian writing style when the user explicitly asks for text in their style. Use alongside the task-specific skill for technical documentation, marketing content, RFC or ADR, Jira tasks, prompts, reviews, and status updates; this skill controls voice, not document structure or domain workflow. Do not use for code or exact quotations unless explicitly requested.
 metadata:
   version: "1.0"
   origin: first-party
@@ -9,6 +9,10 @@ metadata:
 # Draft in Alex's Style
 
 Write in Russian by default. Produce the requested draft directly without explaining the writing process.
+
+Use the task-specific skill for the artifact's content and structure. Apply the
+style rules here only when the user asks for Alex's style; do not replace the
+workflow for documentation, marketing content, RFC, ADR, or prompts.
 
 ## Choose the Mode
 

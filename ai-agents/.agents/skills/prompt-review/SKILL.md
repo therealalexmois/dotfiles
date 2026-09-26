@@ -1,7 +1,6 @@
 ---
 name: prompt-review
-disable-model-invocation: true
-description: Critique and improve an existing prompt without breaking its purpose. Use when the user hands over a prompt they already have and wants an evidence-based review plus a strengthened version — every finding tied to a verbatim quote and a concrete failure mechanism, with a verdict (PASS/PARTIAL/FAIL/BLOCKED). Not for designing a prompt from scratch.
+description: Critique an existing prompt with an evidence-based review, concrete failure mechanisms and a verdict (PASS/PARTIAL/FAIL/BLOCKED), then improve it without breaking its purpose. Use when the user wants findings on a supplied prompt. For a quick rewrite of a one-off task prompt without review, use create-prompt; for a new reusable prompt, use prompt-design.
 metadata:
   origin: first-party
   version: 1.0.0
@@ -20,7 +19,8 @@ Work strictly from the input. Don't invent requirements absent from the prompt o
 
 ## When NOT to use
 
-- The user wants a *new* prompt built from a brief → use `prompt-design`.
+- The user wants a *new reusable* prompt built from a brief → use `prompt-design`.
+- The user wants only a quick rewrite of a one-off task prompt, without findings or a verdict → use `create-prompt`.
 - The task needs an agent loop / tool use / multi-step execution — out of scope; say so.
 
 ## Minimal workflow

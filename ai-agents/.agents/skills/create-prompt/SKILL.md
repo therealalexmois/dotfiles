@@ -1,6 +1,6 @@
 ---
 name: create-prompt
-description: Create or refine a compact, self-contained task prompt for a capable model — a web chat (ChatGPT, Claude, Gemini) or a coding agent (Codex, Claude Code). Default structure is four parts — context, a task in a few sentences, verifiable success criteria, and an instruction to analyze and ask questions before executing. Use whenever the user asks to write, formulate, improve, shorten, or adapt a prompt, or to turn an idea or a conversation into a task for another model or agent — including requests like «напиши промпт», «сформулируй задачу для агента», «сделай промпт для Codex», «перепиши этот промпт». Not for system prompts, prompts for weaker or production models, or reusable prompt templates; for continuing already started work in a new session, use handoff instead.
+description: Create or refine a compact, self-contained one-off task prompt for a capable model or coding agent. Use when the user asks to formulate a specific task for ChatGPT, Claude, Gemini, Codex or Claude Code, including «сделай промпт для Codex» or a quick rewrite of that task prompt. For a reusable prompt, system prompt, production-model prompt or template with a testing checklist, use prompt-design. For an evidence-based review of an existing prompt, use prompt-review. For continuing work in a new session, use handoff.
 metadata:
   version: "1.0"
   origin: first-party
@@ -10,7 +10,7 @@ metadata:
 
 Target models are strong. They already know how to plan, inspect a repository, follow conventions, test, and report. A prompt only has to give them what they cannot know on their own: the context, the goal, and how to tell the job is done. Everything else is overhead: it dilutes the signal and pushes the model to optimize for things the user never asked for.
 
-This skill covers one-off task prompts for such models. System prompts, prompts for weaker or production models, and reusable templates need roles, explicit rules, and guardrails that this skill deliberately strips, so do not apply it to them.
+This skill covers one-off task prompts for such models. System prompts, prompts for weaker or production models, and reusable templates need roles, explicit rules, and guardrails that this skill deliberately strips. Use `prompt-design` for those. If the user wants a diagnosis of an existing prompt with findings and a verdict, use `prompt-review`; a quick rewrite of a one-off task prompt stays here.
 
 ## Default structure
 
@@ -67,7 +67,7 @@ Start as soon as the goal is clear, and infer the rest from the request and conv
 
 Rebuild a task prompt into the four parts. Keep every real requirement and the user's terminology; drop roles, generic rules, routine procedures, and boilerplate. Return the full updated prompt unless the user asked for a diff, followed by one line listing what was removed.
 
-If the prompt is a system prompt or a reusable template, do not restructure it. Say in one line that this skill is built for one-off task prompts and would strip parts such prompts depend on, and ask how to proceed.
+If the prompt is a system prompt or a reusable template, do not restructure it into the four parts. Route the request to `prompt-design`. For an evidence-based review of a supplied prompt, route to `prompt-review`.
 
 ## Response
 

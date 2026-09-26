@@ -1,7 +1,7 @@
 ---
 name: "database-designer"
 disable-model-invocation: true
-description: "Use when the user asks to design database schemas, plan data migrations, optimize queries, choose between SQL and NoSQL, or model data relationships."
+description: "Use explicitly for cross-database architecture decisions, SQL-versus-NoSQL selection, or physical design and index analysis across several database engines. For a new relational schema or ERD use database-schema-designer; for SQL queries use sql-database-assistant; for PostgreSQL-specific work use postgres-engineer; for a high-risk migration use migration-architect."
 metadata:
   origin: derived
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/database-designer
@@ -12,7 +12,7 @@ metadata:
 
 ## Overview
 
-A comprehensive database design skill that provides expert-level analysis, optimization, and migration capabilities for modern database systems. This skill combines theoretical principles with practical tools to help architects and developers create scalable, performant, and maintainable database schemas.
+A cross-database architecture and physical-design reference. Its selection guidance and bundled schema, index, and migration analyzers serve multi-engine work. Use the focused skills below when the task has a narrower primary deliverable.
 
 ## Core Competencies
 
@@ -282,8 +282,7 @@ Fixes:
 - **sql-database-assistant** — query writing, optimization, and debugging for day-to-day SQL work
 - **database-schema-designer** — ERD modeling, normalization analysis, and schema generation
 - **migration-architect** — large-scale migration planning across database engines or major schema overhauls
-- **senior-backend** — application-layer patterns (connection pooling, ORM best practices)
-- **senior-devops** — infrastructure provisioning for database clusters and replicas
+- **postgres-engineer** — PostgreSQL-specific schema, index, query, and operational work
 
 ---
 

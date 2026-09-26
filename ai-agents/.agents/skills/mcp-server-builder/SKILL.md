@@ -1,7 +1,7 @@
 ---
 name: "mcp-server-builder"
 disable-model-invocation: true
-description: "Design and ship production-ready MCP (Model Context Protocol) servers from OpenAPI contracts instead of hand-written tool wrappers. Python and TypeScript support, schema validation, safe evolution. Use when exposing an existing API as an MCP server, building tool integrations for Claude or Codex or Cursor, or scaffolding an MCP project from scratch."
+description: "Generate and validate an MCP (Model Context Protocol) server from an existing OpenAPI contract, with Python or TypeScript scaffolding and safe tool-contract evolution. Use when OpenAPI is the source of truth. Without OpenAPI use mcp-builder; for one tool's schema or description use tool-design."
 metadata:
   origin: derived
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/mcp-server-builder
@@ -36,6 +36,8 @@ The workflow supports both Python and TypeScript MCP implementations and treats 
 - You want one MCP server shared across teams and assistants
 - You need repeatable quality checks before publishing MCP tools
 - You want to bootstrap an MCP server from existing OpenAPI specs
+
+If there is no usable OpenAPI contract, use `mcp-builder` for the server workflow. Use `tool-design` when the deliverable is the interface of one tool or a small tool set rather than a server.
 
 ## Key Workflows
 

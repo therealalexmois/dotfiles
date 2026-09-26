@@ -24,4 +24,4 @@ A staff-level prompt-review skill that critiques an existing prompt and returns 
 ## Notes
 
 - Packaged from the flat `prompt-improver.md` (added frontmatter; lifted the method into the reference).
-- Pairs with `prompt-design` (build a new prompt from a brief).
+- Pairs with `prompt-design` (build a new reusable prompt from a brief). Use `create-prompt` for a quick rewrite of a one-off task prompt without review.

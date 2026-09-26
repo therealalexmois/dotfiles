@@ -1,0 +1,23 @@
+[
+  {
+    "name": "idiom_reference",
+    "input": "Сравни generator expression и list comprehension для чтения большого файла на Python. Покажи, когда каждый вариант уместен.",
+    "expected_behavior": [
+      "uses python-patterns as an explicitly requested idiom reference",
+      "compares the two idioms without inventing project conventions"
+    ],
+    "forbidden_behavior": [
+      "treats this reference as the default Python style policy"
+    ]
+  },
+  {
+    "name": "routine_python_code",
+    "input": "Добавь аннотации типов и исправь docstring в существующей Python-функции.",
+    "expected_behavior": [
+      "routes routine style and docstring work to python-code-style"
+    ],
+    "forbidden_behavior": [
+      "automatically invokes python-patterns for generic Python work"
+    ]
+  }
+]

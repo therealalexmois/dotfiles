@@ -1,8 +1,9 @@
 ---
 name: python-patterns
-description: Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications.
+description: Reference collection of Python idioms and worked examples. Use explicitly when exploring an idiom or comparing Python implementation patterns. For everyday Python code style, docstrings, and tests, use python-code-style; for a focused topic, use its specialized Python skill.
+disable-model-invocation: true
 metadata:
-  origin: vendored
+  origin: derived
   upstream: https://github.com/affaan-m/everything-claude
   upstream_note: "upstream frontmatter carried origin: ECC (Everything Claude Code); matched content-identically, exact publisher unconfirmed"
   imported_at: 2026-06-25
@@ -10,14 +11,14 @@ metadata:
 
 # Python Development Patterns
 
-Idiomatic Python patterns and best practices for building robust, efficient, and maintainable applications.
+Examples of Python idioms and implementation patterns. This is an on-demand reference, not the default style contract.
 
 ## When to Activate
 
-- Writing new Python code
-- Reviewing Python code
-- Refactoring existing Python code
-- Designing Python packages/modules
+- The user explicitly asks to compare Python idioms or implementation patterns.
+- A focused Python skill does not cover an example needed for the current task.
+
+Use `python-code-style` for routine Python code, docstrings, and tests. Use the focused `python-type-safety`, `python-error-handling`, `python-resource-management`, `python-project-structure`, or `python-performance-optimization` skill for those topics. Project instructions take precedence over examples here.
 
 ## Core Principles
 

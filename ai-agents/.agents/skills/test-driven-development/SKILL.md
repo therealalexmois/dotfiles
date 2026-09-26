@@ -17,7 +17,7 @@ Write the test first. Watch it fail. Write minimal code to pass. Refactor.
 
 **Second principle:** tests verify behavior through public interfaces, not implementation details. The code can change entirely; the tests should not.
 
-Violating the letter of the rules is violating the spirit of the rules.
+Apply the cycle honestly to behavior being implemented now. Do not claim RED for a test that already passes against existing code.
 
 ## When to Use
 
@@ -27,51 +27,39 @@ Violating the letter of the rules is violating the spirit of the rules.
 - Bug fixes
 - Refactoring that changes observable behavior
 
-**Ask the user first:**
+**Outside this workflow unless explicitly requested:**
 
 - Throwaway prototypes
 - Generated code
-- Configuration files
+- Configuration files without testable behavior changes
 
 **Not this skill's job:** covering already-shipped code with characterization tests when no behavior changes. Write those tests through the public interface as a safety net, then apply TDD again the moment the refactor introduces new behavior.
 
-"Already shipped" means committed and running before this task started. Code that you or the user wrote minutes ago *instead of* a test is not existing code - it is untested new code, and the Iron Law below applies to it. When in doubt, ask: was this code already in production before the current request? If not, it is new.
-
-Thinking "skip TDD just this once"? Stop. That is rationalization.
+Existing code includes work present when the current task began, whether committed or not. Preserve it and the user's working tree. When adding tests to such code, establish a behavioral baseline first; apply the red-green-refactor loop to subsequent behavior changes.
 
 ## The Iron Law
 
 ```
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+NO NEW BEHAVIOR IN THIS TASK WITHOUT A FAILING TEST FIRST
 ```
 
-Wrote code before the test? Delete it. Start over.
-
-**No exceptions:**
-
-- Do not keep it as "reference"
-- Do not "adapt" it while writing tests
-- Do not look at it
-- Delete means delete
-
-Implement fresh from the tests.
+If you wrote production code during this task before its test, stop adding behavior. Preserve the work, write a test that exposes the missing behavior or regression, and verify that it fails for the right reason before continuing. If the code already satisfies the behavior, add a characterization test and explain that this slice was not test-first. Do not delete or overwrite user code to recreate a failing test.
 
 ## 1. Plan Before the First Test
 
 Before writing any test or code:
 
-- [ ] Confirm with the user what interface changes are needed
-- [ ] Confirm with the user which behaviors to test, in priority order
+- [ ] Determine the needed interface and priority behaviors from the request and repository contracts
 - [ ] Identify opportunities for [deep modules](references/deep-modules.md) - small interface, deep implementation
 - [ ] Design interfaces for [testability](references/interface-design.md)
 - [ ] List behaviors to test, not implementation steps
-- [ ] Get the user's approval on that list
+- [ ] Ask the user only if a material interface or behavior choice remains unresolved
 
-Ask: "What should the public interface look like? Which behaviors matter most?"
+If the interface or priority is clear, start the first test. Otherwise ask a focused question that resolves the blocking choice.
 
 Use the project's domain glossary so test names and interface vocabulary match the project's language, and respect the ADRs covering the area you touch.
 
-**You cannot test everything.** Confirm with the user which behaviors matter. Spend testing effort on critical paths and complex logic, not on every conceivable edge case.
+**You cannot test everything.** Prioritize critical paths and complex logic. Confirm priorities only when the request and local contracts do not resolve them.
 
 ## 2. Anti-Pattern: Horizontal Slices
 
@@ -174,7 +162,7 @@ Confirm:
 - The failure message is the one you expected
 - It fails because the feature is missing, not because of a typo
 
-**Test passes?** You are testing existing behavior. Fix the test.
+**Test passes?** The behavior may already exist. Check the contract; keep the passing test as characterization when useful, then identify the next missing behavior. Do not change a correct test merely to force RED.
 
 **Test errors?** Fix the error and re-run until it fails correctly.
 
@@ -272,17 +260,17 @@ The three most common, and the answer to each:
 
 | Excuse | Reality |
 |--------|---------|
-| "I'll test after" | Tests written after the code pass immediately, which proves nothing. You never saw them catch anything. |
-| "Deleting X hours of work is wasteful" | Sunk cost. The real waste is keeping code you cannot trust. |
-| "Keep it as reference, write the tests first" | You will adapt it. That is testing after. Delete means delete. |
+| "I'll test after" | A passing test can characterize existing behavior, but it does not show that the test caught the missing behavior before implementation. |
+| "I wrote the code first, so I'll pretend the next test is RED" | A test passing against existing code is characterization, not a red-green cycle. Report that distinction and use RED for the next behavior. |
+| "I need to delete the user's code to enforce TDD" | Preserve existing work. TDD does not authorize destructive cleanup. |
 
-Hearing a different excuse - yours or the user's - or unsure whether a situation is a genuine exception? Read [references/rationalizations.md](references/rationalizations.md) for the full table and the red-flag list that means "start over".
+If the cycle was missed or the situation is unclear, read [references/rationalizations.md](references/rationalizations.md), preserve existing work, and use a failing test for the next missing behavior.
 
 ## When Stuck
 
 | Problem | Solution |
 |---------|----------|
-| Do not know how to test it | Write the wished-for API. Write the assertion first. Ask the user. |
+| Do not know how to test it | Inspect the public contract, sketch the wished-for API, and write the assertion first. Ask only if a material choice remains unresolved. |
 | Test too complicated | The design is too complicated. Simplify the interface. |
 | Must mock everything | The code is too coupled. Use dependency injection. |
 | Test setup is huge | Extract helpers. Still complex? Simplify the design. |
@@ -315,7 +303,7 @@ function submitForm(data: FormData) {
 
 Before marking the work complete:
 
-- [ ] Every new function or method has a test
+- [ ] Each new observable behavior has a relevant test
 - [ ] You watched each test fail before implementing it
 - [ ] Each test failed for the expected reason - missing feature, not a typo
 - [ ] You wrote minimal code to pass each test
@@ -324,4 +312,4 @@ Before marking the work complete:
 - [ ] Tests use real code; mocks only where unavoidable
 - [ ] Edge cases and error paths are covered
 
-Cannot check every box? You skipped TDD. Start over.
+If a test was not observed failing first, report that limitation accurately and use the cycle for the remaining behavior. Do not destroy existing work to manufacture a RED result.

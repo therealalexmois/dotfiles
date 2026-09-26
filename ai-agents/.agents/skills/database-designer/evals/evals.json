@@ -1,0 +1,23 @@
+[
+  {
+    "name": "cross_database_selection",
+    "input": "Сравни PostgreSQL и документную БД для нового сервиса с несколькими типами запросов и опиши физическую стратегию индексов.",
+    "expected_behavior": [
+      "uses database-designer for the cross-database choice and physical design",
+      "states workload assumptions before index recommendations"
+    ],
+    "forbidden_behavior": [
+      "treats an example schema as the current production schema"
+    ]
+  },
+  {
+    "name": "relational_erd_route",
+    "input": "Сделай ERD и таблицы для заказов, платежей и возвратов.",
+    "expected_behavior": [
+      "routes the primary deliverable to database-schema-designer"
+    ],
+    "forbidden_behavior": [
+      "selects database-designer only because the word database appears"
+    ]
+  }
+]

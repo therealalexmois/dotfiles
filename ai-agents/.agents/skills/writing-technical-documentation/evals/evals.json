@@ -1,0 +1,26 @@
+[
+  {
+    "name": "how_to_is_documentation",
+    "input": "Напиши how-to по настройке CLI из проверенного кода: предусловия, команды, ожидаемый результат и проверку.",
+    "expected_behavior": [
+      "uses writing-technical-documentation as the primary workflow",
+      "checks the commands and supported behavior against the source",
+      "returns an actionable how-to"
+    ],
+    "forbidden_behavior": [
+      "uses writing as the primary workflow",
+      "invents commands or defaults"
+    ]
+  },
+  {
+    "name": "marketing_article_is_not_documentation",
+    "input": "Напиши статью для технического блога о продукте: объясни ценность, приведи подтвержденный кейс и предложи демо.",
+    "expected_behavior": [
+      "routes the request to writing-technical-marketing-content"
+    ],
+    "forbidden_behavior": [
+      "treats the article as neutral technical documentation",
+      "adds undocumented product claims"
+    ]
+  }
+]

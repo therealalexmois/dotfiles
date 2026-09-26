@@ -12,7 +12,8 @@
 #     scripts/skills-provenance-unresolved.txt.
 #
 # Installed invariants (checked when the agent CLIs are installed on this host):
-#   - no dangling skill symlinks under ~/.agents, ~/.claude, ~/.codex;
+#   - no dangling repository-managed skill symlinks under ~/.agents, ~/.claude, ~/.codex;
+#   - each tracked skill resolves through the symlink target installed by this repo;
 #   - no skill name collides with a Codex system skill;
 #   - the three link layers cover exactly the tracked skills (warning only,
 #     since a freshly added skill is linked by the next install run).
@@ -241,9 +242,30 @@ for dir in "${installed_dirs[@]}"; do
     [[ -e "$entry" || -L "$entry" ]] || continue
     name="$(basename "$entry")"
     [[ "$name" == ".system" ]] && continue
+    # Claude Code owns this container of account-synced skills. It is not a
+    # root skill and has no SKILL.md of its own.
+    if [[ "$dir" == "$HOME/.claude/skills" && "$name" == "synced" && -d "$entry" && ! -L "$entry" ]]; then
+      continue
+    fi
     if [[ -L "$entry" && ! -e "$entry" ]]; then
       fail "$entry is a dangling symlink -> $(readlink "$entry")"
       continue
+    fi
+    if [[ -d "$skills_dir/$name" ]]; then
+      if [[ "$dir" == "$HOME/.agents/skills" ]]; then
+        expected_target="../../.dotfiles/ai-agents/.agents/skills/$name"
+      else
+        expected_target="../../.agents/skills/$name"
+      fi
+      if [[ ! -L "$entry" ]]; then
+        fail "$entry is not a repository-managed symlink (expected -> $expected_target)"
+        continue
+      fi
+      actual_target="$(readlink "$entry")"
+      if [[ "$actual_target" != "$expected_target" ]]; then
+        fail "$entry points to $actual_target (expected -> $expected_target)"
+        continue
+      fi
     fi
     if [[ ! -f "$entry/SKILL.md" ]]; then
       fail "$entry resolves to a directory without SKILL.md"

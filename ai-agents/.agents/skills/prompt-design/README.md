@@ -6,7 +6,7 @@ A staff-level prompt-engineering skill that builds a new prompt from a brief: it
 
 ## When to use
 
-- You need a prompt for a specific task and target model.
+- You need a reusable prompt, system prompt, or production-model prompt for a specific task and target.
 - You have input/output examples and want rules + a prompt extracted from them.
 - You want a prompt structured for a class like extraction, gate/review, analysis, or brainstorming.
 
@@ -24,4 +24,4 @@ A staff-level prompt-engineering skill that builds a new prompt from a brief: it
 ## Notes
 
 - Packaged from the flat `prompt-creator.md` (added frontmatter; lifted platform notes into the catalog reference).
-- Pairs with `prompt-review` (critique/improve an existing prompt).
+- Pairs with `prompt-review` (evidence-based review of an existing prompt). Use `create-prompt` for one-off task instructions to capable models or coding agents.

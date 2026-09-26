@@ -6,14 +6,13 @@
       "id": 1,
       "name": "plan-before-first-test",
       "prompt": "Давай сделаем по TDD: нужна функция расчета скидки для корзины. Правила скидок обсудим по ходу.",
-      "expected_output": "The agent plans before writing anything: proposes the public interface, asks which behaviors matter and in what order, and gets approval before the first test.",
+      "expected_output": "The agent asks only for missing behavior and interface choices that materially affect the first test. Once resolved, it starts the first red-green cycle without a separate approval gate.",
       "files": [],
       "expectations": [
-        "Agent asks what the public interface should look like before writing any test",
-        "Agent asks which behaviors to test and in what priority order",
+        "Agent asks only about the missing interface or priority details needed for the first test",
         "Agent frames what it needs as behaviors to test, not as implementation steps",
-        "Agent waits for user approval before writing the first test",
-        "No production code is written before the plan is confirmed"
+        "Agent does not ask for a blanket approval of a test list",
+        "No production code is written before the first failing test"
       ]
     },
     {
@@ -48,17 +47,16 @@
       "id": 4,
       "name": "iron-law-code-written-first",
       "prompt": "Я уже написал клиент с ретраями, вот он. Добавь к нему тесты, чтобы закрыть поведение ретраев.",
-      "expected_output": "The agent surfaces the Iron Law: this code has no failing test behind it. It offers to delete and reimplement test-first, and does not silently write tests-after; it asks the user before making an exception.",
+      "expected_output": "The agent preserves the supplied code, identifies tests for it as characterization rather than TDD, and uses a failing test before making any new behavior change.",
       "files": [
         "evals/fixtures/retry_client.py"
       ],
       "expectations": [
-        "Agent states that production code written before its test violates TDD",
-        "Agent offers to delete the implementation and rebuild it test-first",
-        "Agent does not propose keeping the code as a reference while writing tests around it",
-        "Agent asks for the user's explicit decision instead of granting the exception itself",
-        "Agent does not simply write passing tests against the existing implementation without raising the issue",
-        "Agent does not classify freshly written untested code as existing code exempt from the Iron Law"
+        "Agent preserves the supplied implementation and does not propose deletion",
+        "Agent names tests that pass against the supplied code as characterization tests",
+        "Agent checks whether the user requested only tests or a behavior change",
+        "Agent does not claim a red-green cycle for behavior implemented before this task",
+        "Agent writes a failing test first if the task includes new behavior"
       ]
     },
     {
@@ -133,15 +131,41 @@
     },
     {
       "id": 10,
-      "name": "prototype-exception-needs-user-approval",
+      "name": "prototype-outside-tdd",
       "prompt": "Накидай одноразовый скрипт, чтобы просто посмотреть, как выглядит ответ нового API. Выкину сразу после.",
-      "expected_output": "The agent treats this as an exception category, says so, and asks the user rather than either enforcing TDD silently or dropping it silently.",
+      "expected_output": "The agent treats the explicitly requested throwaway exploration as outside this TDD workflow and proceeds within the user's authorization.",
       "files": [],
       "expectations": [
-        "Agent recognizes a throwaway prototype as a listed exception category",
-        "Agent asks the user to confirm skipping TDD instead of deciding alone",
-        "Agent states that anything kept from the exploration must be reimplemented test-first",
+        "Agent recognizes a throwaway prototype as outside this workflow",
+        "Agent does not ask for separate approval to skip TDD",
+        "Agent does not claim that exploratory code had a red-green cycle",
         "Agent does not write a full test suite for the throwaway script without being asked"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "known-contract-starts-without-approval",
+      "prompt": "Добавь тест и исправь баг: calculate_total({items: []}) возвращает None вместо 0. Сигнатуру не меняй. Сделай по TDD.",
+      "expected_output": "The agent uses the specified contract to write and run one failing regression test, fixes the bug, and reruns it without asking for approval of a test list.",
+      "files": [],
+      "expectations": [
+        "Agent writes a regression test for an empty item list returning 0",
+        "Agent runs the test and checks the expected failure before implementation",
+        "Agent does not ask for approval of an already-specified behavior or interface",
+        "Agent preserves unrelated code and existing user changes"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "exploration-preserves-worktree",
+      "prompt": "Я разрешил сначала разведать интеграцию. Ты уже написал рабочий черновик адаптера в текущем worktree, тестов пока нет. Продолжай по TDD, не теряя полученный код и мои параллельные правки.",
+      "expected_output": "The agent preserves the exploratory code and user changes, labels tests for implemented behavior as characterization, and applies RED to the next missing behavior.",
+      "files": [],
+      "expectations": [
+        "Agent does not delete or overwrite the exploratory adapter",
+        "Agent does not discard unrelated worktree changes",
+        "Agent does not claim a red-green cycle for behavior already present",
+        "Agent identifies the next missing behavior and runs its failing test before implementing it"
       ]
     }
   ]

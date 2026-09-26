@@ -84,12 +84,12 @@
       "id": 7,
       "name": "system-prompt-out-of-scope",
       "prompt": "Перепиши системный промпт нашего агента, он длинный:\n\nТы — Data Agent платформы данных. Помогаешь аналитикам через доступные инструменты. Не выдумывай факты, ID, имена таблиц и результаты вызовов. Действуй только через доступные инструменты. Если данных не хватает, скажи об этом и спроси.",
-      "expected_output": "Recognizes a system prompt, does not restructure it into four parts, says so in one line and asks how to proceed.",
+      "expected_output": "Recognizes a system prompt and routes the rewrite to prompt-design without applying the four-part task-prompt format.",
       "files": [],
       "expectations": [
         "Output contains no four-part prompt",
-        "Output explains in one line that the skill targets one-off task prompts",
-        "Output asks how to proceed"
+        "The primary workflow is prompt-design",
+        "Output preserves the system prompt's guardrails and purpose"
       ]
     },
     {
@@ -102,6 +102,31 @@
         "Criteria are exactly the two the user gave",
         "No criteria marking line",
         "No context section that restates the task"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "reusable-template-routes-to-prompt-design",
+      "prompt": "Нужен повторно используемый промпт для извлечения полей из входящих счетов. Укажи переменные для входного документа и JSON-результата, а также тест-кейсы для пропущенных полей и неоднозначной валюты.",
+      "expected_output": "Routes to prompt-design and builds a reusable template with an input/output contract and a testing checklist, not the four-part one-off task instruction.",
+      "files": [],
+      "expectations": [
+        "The primary workflow is prompt-design",
+        "Output includes reusable input and output contracts",
+        "Output includes test cases for missing fields and ambiguous currency",
+        "Output does not use the four-part one-off task format"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "evidence-review-routes-to-prompt-review",
+      "prompt": "Проведи ревью этого промпта с цитатами, рисками и вердиктом; пока не переписывай его: «Верни JSON со всеми полями счета. Если поле не видно, догадайся по контексту». Цель - извлекать проверяемые данные для бухгалтерии.",
+      "expected_output": "Routes to prompt-review, which requests any blocking review context and does not silently rewrite the prompt as a one-off task.",
+      "files": [],
+      "expectations": [
+        "The primary workflow is prompt-review",
+        "Output does not apply the four-part one-off task format",
+        "Output does not replace evidence review with a quick rewrite"
       ]
     }
   ]
