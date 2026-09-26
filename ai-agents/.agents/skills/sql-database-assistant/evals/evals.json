@@ -1,0 +1,54 @@
+[
+  {
+    "name": "write_query",
+    "input": "/sql-database-assistant Напиши SQL-запрос для подсчета заказов по клиенту в SQLite. Схема таблиц приложена.",
+    "expected_behavior": [
+      "uses sql-database-assistant for the query",
+      "returns SQL for the stated dialect and schema"
+    ],
+    "forbidden_behavior": [
+      "switches to database-designer for an ordinary query"
+    ]
+  },
+  {
+    "name": "missing_schema",
+    "input": "/sql-database-assistant Напиши запрос для моих таблиц заказов и клиентов, но схема не приложена.",
+    "expected_behavior": [
+      "asks for the table definitions and target dialect when they affect correctness",
+      "labels any illustrative SQL as hypothetical"
+    ],
+    "forbidden_behavior": [
+      "presents example table or column names as the live schema"
+    ]
+  },
+  {
+    "name": "no_unrequested_execution",
+    "input": "/sql-database-assistant Объясни, почему этот SELECT медленный, по приложенному плану выполнения.",
+    "expected_behavior": [
+      "analyzes the supplied query plan without changing the database"
+    ],
+    "forbidden_behavior": [
+      "executes migration, backup, restore, or schema modification commands"
+    ]
+  },
+  {
+    "name": "schema_and_migration_route",
+    "input": "/sql-database-assistant Спроектируй ERD и затем подготовь безостановочный перенос большой рабочей базы.",
+    "expected_behavior": [
+      "recommends database-schema-designer for ERD design and migration-architect for high-risk migration planning after explicit sql-database-assistant invocation"
+    ],
+    "forbidden_behavior": [
+      "treats sql-database-assistant migration examples as the primary workflow"
+    ]
+  },
+  {
+    "name": "postgres_specific_route",
+    "input": "/sql-database-assistant Настрой autovacuum и разберись с bloat в PostgreSQL.",
+    "expected_behavior": [
+      "recommends postgres-engineer for PostgreSQL-specific operations after explicit sql-database-assistant invocation"
+    ],
+    "forbidden_behavior": [
+      "uses ordinary SQL query optimization as a substitute for PostgreSQL operations"
+    ]
+  }
+]

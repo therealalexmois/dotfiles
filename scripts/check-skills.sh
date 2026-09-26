@@ -17,6 +17,8 @@
 #   - no skill name collides with a Codex system skill;
 #   - the three link layers cover exactly the tracked skills (warning only,
 #     since a freshly added skill is linked by the next install run).
+#   - account-synced Claude skills with the same name are reported separately;
+#     only SKILL.md content is compared, and runtime precedence is not inferred.
 #
 # Usage:
 #   scripts/check-skills.sh              # repository + installed checks
@@ -291,6 +293,30 @@ for dir in "${installed_dirs[@]}"; do
   fi
   printf 'checked %s (%d links)\n' "$dir" "${#linked[@]}"
 done
+
+printf '\n== Claude synced skill name collisions (SKILL.md only; diagnostic) ==\n'
+synced_dir="$HOME/.claude/skills/synced"
+collision_count=0
+if [[ -d "$synced_dir" ]]; then
+  for synced_skill_md in "$synced_dir"/*/*/SKILL.md; do
+    [[ -f "$synced_skill_md" ]] || continue
+    skill="$(basename "$(dirname "$synced_skill_md")")"
+    installed_skill="$HOME/.claude/skills/$skill"
+    [[ -d "$skills_dir/$skill" && -L "$installed_skill" ]] || continue
+    [[ "$(readlink "$installed_skill")" == "../../.agents/skills/$skill" ]] || continue
+    [[ -f "$installed_skill/SKILL.md" ]] || continue
+    comparison_status=0
+    cmp -s "$installed_skill/SKILL.md" "$synced_skill_md" || comparison_status=$?
+    case "$comparison_status" in
+      0) comparison="SKILL.md identical" ;;
+      1) comparison="SKILL.md different" ;;
+      *) comparison="SKILL.md comparison unavailable" ;;
+    esac
+    printf '  %s: %s\n' "$skill" "$comparison"
+    collision_count=$((collision_count + 1))
+  done
+fi
+printf 'found %d same-name skill pair(s); only SKILL.md compared\n' "$collision_count"
 
 printf '\n== Codex system skill collisions ==\n'
 system_dir="$HOME/.codex/skills/.system"

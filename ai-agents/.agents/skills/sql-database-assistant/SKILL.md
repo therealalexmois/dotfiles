@@ -1,9 +1,9 @@
 ---
 name: "sql-database-assistant"
 disable-model-invocation: true
-description: "Use when the user asks to write SQL queries, optimize database performance, generate migrations, explore database schemas, or work with ORMs like Prisma, Drizzle, TypeORM, or SQLAlchemy."
+description: "Use explicitly to write or debug SQL queries, perform ordinary query optimization, or inspect schema and ORM usage needed for those queries across database dialects. For a new relational schema or ERD use database-schema-designer; for cross-engine architecture use database-designer; for PostgreSQL-specific operations use postgres-engineer; for a high-risk or multi-step migration use migration-architect."
 metadata:
-  origin: vendored
+  origin: derived
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/sql-database-assistant
   imported_at: 2026-06-07
 ---
@@ -12,14 +12,16 @@ metadata:
 
 ## Overview
 
-The operational companion to database design. While **database-designer** focuses on schema architecture and **database-schema-designer** handles ERD modeling, this skill covers the day-to-day: writing queries, optimizing performance, generating migrations, and bridging the gap between application code and database engines.
+Use this skill for the query layer: write or debug a SQL statement, interpret a query plan, or inspect a schema or ORM mapping needed for that query. Ask for the target dialect and actual table definitions when they materially affect correctness. Do not infer a live schema from the examples below.
+
+Route a new relational schema or ERD to `database-schema-designer`, a cross-engine architecture or physical-design choice to `database-designer`, PostgreSQL-specific operational work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. Migration and backup examples in this file are reference material, not a primary trigger or deployment workflow.
 
 ### Core Capabilities
 
 - **Natural Language to SQL** — translate requirements into correct, performant queries
 - **Schema Exploration** — introspect live databases across PostgreSQL, MySQL, SQLite, SQL Server
 - **Query Optimization** — EXPLAIN analysis, index recommendations, N+1 detection, rewrite patterns
-- **Migration Generation** — up/down scripts, zero-downtime strategies, rollback plans
+- **Migration Context** — examples to interpret how a schema change affects a query; route migration planning to `migration-architect`
 - **ORM Integration** — Prisma, Drizzle, TypeORM, SQLAlchemy patterns and escape hatches
 - **Multi-Database Support** — dialect-aware SQL with compatibility guidance
 
@@ -28,7 +30,7 @@ The operational companion to database design. While **database-designer** focuse
 | Script | Purpose |
 |--------|---------|
 | `scripts/query_optimizer.py` | Static analysis of SQL queries for performance issues |
-| `scripts/migration_generator.py` | Generate migration file templates from change descriptions |
+| `scripts/migration_generator.py` | Reference-only migration template generator; not part of the query workflow |
 | `scripts/schema_explorer.py` | Generate schema documentation from introspection queries |
 
 ---
@@ -88,7 +90,7 @@ ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = VALUES(updated_at);
 
 ---
 
-## Schema Exploration
+## Schema Exploration for Query Context
 
 ### Introspection Queries
 
@@ -200,7 +202,9 @@ python scripts/query_optimizer.py --query queries.sql --dialect mysql --json
 
 ---
 
-## Migration Generation
+## Migration Examples (Reference Only)
+
+Do not generate or execute a migration from these examples during an ordinary query task. For a requested migration, establish its risk and route high-risk or multi-step work to `migration-architect`.
 
 ### Zero-Downtime Migration Patterns
 
@@ -250,13 +254,15 @@ CREATE INDEX CONCURRENTLY idx_orders_status ON orders (status);
 
 ### Rollback Strategies
 
-Every migration must have a reversible down script. For irreversible changes:
+The examples assume a reversible down script. For irreversible changes, a migration plan needs explicit recovery decisions:
 
 1. **Backup before execution** — `pg_dump` the affected tables
 2. **Feature flags** — application can switch between old/new schema reads
 3. **Shadow tables** — keep a copy of the original table during migration window
 
-### Migration Generator Tool
+### Migration Generator Example
+
+The following commands illustrate the bundled script. They are not part of the query workflow and must not be run without a separate migration request and target verification.
 
 ```bash
 python scripts/migration_generator.py --change "add email_verified boolean to users" --dialect postgres --format sql
@@ -371,7 +377,7 @@ class User(Base):
 
 ---
 
-## Data Integrity
+## Data Integrity Context (Reference Only)
 
 ### Constraint Strategy
 
@@ -399,7 +405,9 @@ class User(Base):
 
 ---
 
-## Backup & Restore
+## Backup & Restore Examples (Reference Only)
+
+Do not perform backup or restore operations during a query task. Use these examples only to identify recovery questions for a separately requested operational change.
 
 ### PostgreSQL
 ```bash
@@ -455,8 +463,8 @@ sqlite3 dbname ".backup backup.db"
 
 | Skill | Relationship |
 |-------|-------------|
-| **database-designer** | Schema architecture, normalization analysis, ERD generation |
+| **database-designer** | Cross-engine architecture and physical-design trade-offs |
 | **database-schema-designer** | Visual ERD modeling, relationship mapping |
-| **migration-architect** | Complex multi-step migration orchestration |
+| **postgres-engineer** | PostgreSQL-specific query, index, schema, and operational work |
+| **migration-architect** | High-risk or multi-step migration planning and recovery |
 | **api-design-reviewer** | Ensuring API endpoints align with query patterns |
-| **observability-platform** | Query performance monitoring, slow query alerts |

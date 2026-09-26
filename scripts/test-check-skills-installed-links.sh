@@ -29,15 +29,51 @@ installed_section="$(sed -n '/^== installed link layers ==/,/^== Codex system sk
 if [[ "$installed_status" -ne "$baseline_status" ]] ||
   printf '%s\n' "$installed_section" | grep -Fq 'FAIL:' ||
   printf '%s\n' "$installed_section" | grep -Fq 'WARN:' ||
-  ! printf '%s\n' "$installed_section" | grep -Fq "checked $test_home/.claude/skills (${#skills[@]} links)"; then
+  ! printf '%s\n' "$installed_section" | grep -Fq "checked $test_home/.claude/skills (${#skills[@]} links)" ||
+  ! grep -Fqx '== Claude synced skill name collisions (SKILL.md only; diagnostic) ==' "$output" ||
+  ! grep -Fqx 'found 0 same-name skill pair(s); only SKILL.md compared' "$output"; then
   printf 'FAIL: Claude synced container caused an installed-link check failure\n' >&2
   tail -n 12 "$output" >&2
   exit 1
 fi
 
-# A valid but incorrectly targeted symlink must not count as the tracked skill.
 skill="${skills[0]}"
 other_skill="${skills[1]}"
+rmdir "$test_home/.claude/skills/synced"
+absent_status=0
+HOME="$test_home" bash "$repo_dir/scripts/check-skills.sh" >"$output" 2>&1 || absent_status=$?
+if [[ "$absent_status" -ne "$baseline_status" ]] ||
+  ! grep -Fqx 'found 0 same-name skill pair(s); only SKILL.md compared' "$output"; then
+  printf 'FAIL: absent Claude synced container changed the check result\n' >&2
+  tail -n 12 "$output" >&2
+  exit 1
+fi
+
+synced_skill_dir="$test_home/.claude/skills/synced/account/$skill"
+mkdir -p "$synced_skill_dir"
+cp "$repo_dir/ai-agents/.agents/skills/$skill/SKILL.md" "$synced_skill_dir/SKILL.md"
+identical_status=0
+HOME="$test_home" bash "$repo_dir/scripts/check-skills.sh" >"$output" 2>&1 || identical_status=$?
+if [[ "$identical_status" -ne "$baseline_status" ]] ||
+  ! grep -Fqx "  $skill: SKILL.md identical" "$output" ||
+  ! grep -Fqx 'found 1 same-name skill pair(s); only SKILL.md compared' "$output"; then
+  printf 'FAIL: identical Claude synced skill was not reported\n' >&2
+  tail -n 12 "$output" >&2
+  exit 1
+fi
+
+cp "$repo_dir/ai-agents/.agents/skills/$other_skill/SKILL.md" "$synced_skill_dir/SKILL.md"
+different_status=0
+HOME="$test_home" bash "$repo_dir/scripts/check-skills.sh" >"$output" 2>&1 || different_status=$?
+if [[ "$different_status" -ne "$baseline_status" ]] ||
+  ! grep -Fqx "  $skill: SKILL.md different" "$output" ||
+  ! grep -Fqx 'found 1 same-name skill pair(s); only SKILL.md compared' "$output"; then
+  printf 'FAIL: different Claude synced skill was not reported\n' >&2
+  tail -n 12 "$output" >&2
+  exit 1
+fi
+
+# A valid but incorrectly targeted symlink must not count as the tracked skill.
 rm "$test_home/.claude/skills/$skill"
 ln -s "../../.agents/skills/$other_skill" "$test_home/.claude/skills/$skill"
 if HOME="$test_home" bash "$repo_dir/scripts/check-skills.sh" >"$output" 2>&1; then
@@ -49,5 +85,10 @@ if ! grep -Fq "$test_home/.claude/skills/$skill points to ../../.agents/skills/$
   tail -n 12 "$output" >&2
   exit 1
 fi
+if ! grep -Fqx 'found 0 same-name skill pair(s); only SKILL.md compared' "$output"; then
+  printf 'FAIL: wrong managed target was reported as a repository-managed collision\n' >&2
+  tail -n 12 "$output" >&2
+  exit 1
+fi
 
-printf 'ok: Claude synced container is ignored and wrong managed skill links fail\n'
+printf 'ok: Claude synced collisions are diagnostic and wrong managed skill links fail\n'

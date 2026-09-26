@@ -272,27 +272,37 @@ Anthropic skill creator eval scratch dirs (`*-workspace/`) are git-ignored and n
 
 ### Skill Routing
 
-Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" = explicitly invoked via `/skill-name`.
+Active dotfiles skills. "yes" means intended selection by description; "manual" means intended explicit invocation by name. This table must agree with each skill's `disable-model-invocation` frontmatter; neither value guarantees runtime selection.
 
 | Trigger | Skill | Auto |
 | --- | --- | --- |
-| write, edit, shorten, or review Russian text | `writing` | yes |
+| write or edit general Russian text, or make language-only edits to a document fragment | `writing` | yes |
+| write in Alex's style when explicitly requested, alongside the task-specific skill | `draft-in-alex-style` | yes |
 | distill raw thoughts or a voice-to-text transcript into clear text | `distill-thoughts` | yes |
 | write a plan or design document | `writing-plans` | yes |
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
+| compare Python idioms or consult worked examples, explicitly | `python-patterns` | manual |
 | inspect, create, reuse, sync, or clean up Git worktrees | `git-worktree` | yes |
-| create, edit, or eval a skill | `anthropic-skill-creator` | yes |
+| create, edit, or behaviorally evaluate a skill | `anthropic-skill-creator` | yes |
 | audit skill for security | `skill-security-auditor` | manual |
 | audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |
 | review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |
+| run bundled skill package/script validators or tier scoring | `skill-tester` | manual |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
 | design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
-| database schema design | `database-schema-designer` | manual |
+| relational schema design, ERD, table relationships | `database-schema-designer` | manual |
+| SQL queries, schema exploration, ORM integration | `sql-database-assistant` | manual |
+| PostgreSQL-specific design, diagnosis, or optimization | `postgres-engineer` | manual |
+| high-risk database, system, or infrastructure migration and rollback | `migration-architect` | manual |
+| cross-database architecture, SQL versus NoSQL, or multi-engine physical design | `database-designer` | manual |
+| build an MCP server without an OpenAPI contract | `mcp-builder` | yes |
+| generate an MCP server from an existing OpenAPI contract | `mcp-server-builder` | manual |
+| design one agent tool's schema, description, or error contract | `tool-design` | manual |
 | observability, SLO, metrics | `observability-designer` | manual |
 | chaos experiments, fault injection, game days, blast radius | `chaos-engineering` | manual |
 | improve code architecture | `improve-codebase-architecture` | manual |
@@ -300,11 +310,14 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | build a CLI tool: arg parsing, shell completions, terminal UX | `cli-developer` | manual |
 | security review | `security-guidance` | yes |
 | tech debt audit | `tech-debt-tracker` | manual |
-| review before completing a task | `review-before-completion` | yes |
 | generate a runbook | `runbook-generator` | manual |
-| audit and trim repository docs, AGENTS.md, rules, skills, prompts | `audit-repository-documentation` | manual |
+| audit and trim repository docs, AGENTS.md, rules, skills, prompts | `audit-repository-documentation` | yes |
 | write, edit, or review technical documentation (tutorial, how-to, reference, API/CLI, troubleshooting, README, runbook) | `writing-technical-documentation` | yes |
 | plan, write, edit, or review technical marketing content (blog post, case study, white paper, landing page, announcement) | `writing-technical-marketing-content` | yes |
+| create or substantially restructure an RFC or ADR from source material | `rfc-authoring` | yes |
+| create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
+| design a reusable, system, or production-model prompt | `prompt-design` | yes |
+| review an existing prompt with findings and a verdict | `prompt-review` | yes |
 | build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | yes |
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
@@ -312,13 +325,14 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
 | set up or audit analytics tracking (GA4, GTM, events) | `analytics-tracking` | manual |
 | TDD, test-first development, red-green-refactor | `test-driven-development` | yes |
-| quick brainstorm | `brainstorm-lite` | yes |
+| brainstorm a small or medium engineering decision | `brainstorm-lite` | yes |
+| design a complex or materially uncertain change before implementation | `brainstorming` | yes |
 | structured brainstorm | `six-thinking-hats` | yes |
-| challenge and stress-test ideas | `grill-me` | yes |
+| challenge and stress-test ideas | `grill-me` | manual |
 | productivity coaching | `productivity-coach` | yes |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
-| onboard to a codebase | `codebase-onboarding` | manual |
+| onboard to a codebase | `codebase-onboarding` | yes |
 
 The `skill-reviewer` subagent (`ai-agents/.claude/agents/skill-reviewer.md`, Claude-only)
 runs `skill-quality-reviewer` in a clean isolated context: it reads the skill's

@@ -1,7 +1,7 @@
 [
   {
     "name": "tier_package_check",
-    "input": "Проверь, соответствует ли этот skill уровню STANDARD в системе BASIC/STANDARD/POWERFUL, и проверь его Python-скрипты.",
+    "input": "/skill-tester Проверь, соответствует ли этот skill уровню STANDARD в системе BASIC/STANDARD/POWERFUL, и проверь его Python-скрипты.",
     "expected_behavior": [
       "uses the bundled package validator, script tester, and tier scorer after inspecting the scripts"
     ],
@@ -11,9 +11,9 @@
   },
   {
     "name": "instruction_review_route",
-    "input": "Проверь SKILL.md на конфликтующие триггеры и неясные шаги.",
+    "input": "/skill-tester Проверь SKILL.md на конфликтующие триггеры и неясные шаги.",
     "expected_behavior": [
-      "routes instruction predictability review to skill-quality-reviewer"
+      "recommends explicitly invoking /skill-quality-reviewer for instruction predictability review"
     ],
     "forbidden_behavior": [
       "uses a package tier score as proof of behavioral quality"

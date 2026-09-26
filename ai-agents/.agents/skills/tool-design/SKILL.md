@@ -1,9 +1,9 @@
 ---
 name: tool-design
 disable-model-invocation: true
-description: "This skill should be used for the tool-interface layer of an agent system specifically: writing tool descriptions agents can route on, designing tool schemas and response formats, naming conventions, actionable error recovery messages, MCP server design, tool-set consolidation, and deciding when to add or remove an individual tool. Use this when the unit of work is a single tool or a set of tools. Route project-shape, pipeline architecture, and task-model-fit decisions to project-development; route deciding whether to introduce sub-agents to multi-agent-patterns."
+description: "Use for the interface contract of one agent-facing tool or a tool catalog: descriptions, schemas, responses, naming, error recovery, and overlap. For a whole MCP server without an OpenAPI contract use mcp-builder; for OpenAPI-first MCP server generation use mcp-server-builder. Route project architecture to project-development and sub-agent topology to multi-agent-patterns."
 metadata:
-  origin: vendored
+  origin: derived
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/tool-design
   imported_at: 2026-06-09
 ---
@@ -12,7 +12,7 @@ metadata:
 
 Design every tool as a contract between a deterministic system and a non-deterministic agent. Unlike human-facing APIs, agent-facing tools must make the contract unambiguous through the description alone: agents infer intent from descriptions and generate calls that must match expected formats. Every ambiguity becomes a potential failure mode that no amount of prompt engineering can fix.
 
-The unit of work for this skill is a single tool or a tool catalog. Project-shape, pipeline architecture, task-model-fit, and cost-at-the-project-level decisions belong to `project-development`. Deciding whether to introduce sub-agents belongs to `multi-agent-patterns`. This skill owns the interface layer that connects deterministic code to the agent.
+The unit of work for this skill is an individual agent-facing tool contract or a tool catalog, including tools exposed by an MCP server. Whole-server implementation without an OpenAPI contract belongs to `mcp-builder`; OpenAPI-first MCP server generation belongs to `mcp-server-builder`. Project-shape, pipeline architecture, task-model-fit, and cost-at-the-project-level decisions belong to `project-development`. Deciding whether to introduce sub-agents belongs to `multi-agent-patterns`.
 
 ## When to Activate
 
@@ -27,6 +27,8 @@ Activate this skill when the unit of work is a tool:
 
 Do not activate this skill for adjacent work owned by other skills:
 
+- Building a whole MCP server without an OpenAPI contract: `mcp-builder`.
+- Generating an MCP server from an existing OpenAPI contract: `mcp-server-builder`.
 - Deciding whether the project should use LLMs at all, or what the pipeline stages should be: `project-development`.
 - Deciding whether to split work across sub-agents or run a single agent with more tools: `multi-agent-patterns`.
 - Reducing the token weight of tool outputs at the trajectory level (observation masking, format-option choice at scale): `context-optimization`.
@@ -269,6 +271,8 @@ def search(query):
 
 This skill owns the tool-interface layer. Adjacent decisions are owned elsewhere:
 
+- `mcp-builder`: whole-server implementation for a service or custom workflow without an OpenAPI contract. Use `tool-design` only for a separately requested tool contract or catalog boundary within that server.
+- `mcp-server-builder`: generation and validation of a server from an existing OpenAPI contract. Use `tool-design` only for a separately requested tool contract or catalog boundary.
 - `project-development`: shape of the project, choice of pipeline stages, task-model-fit, cost estimation at the project level. If the question is "what is the right pipeline architecture" rather than "what is the right tool API," route there.
 - `multi-agent-patterns`: deciding whether one agent with more tools is better than two agents with smaller tool catalogs. If the question is "should this split into sub-agents," route there.
 - `context-optimization`: trajectory-level token efficiency, observation masking, choosing response-format options across many tool calls. If the question is "how do we reduce token weight of accumulated tool outputs," route there.

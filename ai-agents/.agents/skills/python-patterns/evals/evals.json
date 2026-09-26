@@ -1,7 +1,7 @@
 [
   {
     "name": "idiom_reference",
-    "input": "Сравни generator expression и list comprehension для чтения большого файла на Python. Покажи, когда каждый вариант уместен.",
+    "input": "/python-patterns Сравни generator expression и list comprehension для чтения большого файла на Python. Покажи, когда каждый вариант уместен.",
     "expected_behavior": [
       "uses python-patterns as an explicitly requested idiom reference",
       "compares the two idioms without inventing project conventions"

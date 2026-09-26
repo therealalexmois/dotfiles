@@ -12,9 +12,11 @@ metadata:
 
 ## Overview
 
-A cross-database architecture and physical-design reference. Its selection guidance and bundled schema, index, and migration analyzers serve multi-engine work. Use the focused skills below when the task has a narrower primary deliverable.
+Use this skill for a cross-engine database choice or physical-design decision that needs trade-offs across engines. State the workload, constraints, and candidate engines before recommending a design. Do not use the examples below as a production schema, executable migration plan, or reason to take over a narrower task.
 
-## Core Competencies
+Route a relational schema or ERD to `database-schema-designer`, ordinary SQL writing and query optimization to `sql-database-assistant`, PostgreSQL-specific work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. The sections on queries, schemas, and migrations below are reference material only when they inform the cross-engine decision.
+
+## Bundled Reference Coverage
 
 ### Schema Design & Analysis
 - **Normalization Analysis**: Automated detection of normalization levels (1NF through BCNF)
@@ -31,17 +33,17 @@ A cross-database architecture and physical-design reference. Its selection guida
 - **Performance Impact Modeling**: Selectivity estimation and query cost analysis
 - **Index Type Selection**: B-tree, hash, partial, covering, and specialized indexes
 
-### Migration Management
-- **Zero-Downtime Migrations**: Expand-contract pattern implementation
-- **Schema Evolution**: Safe column additions, deletions, and type changes
-- **Data Migration Scripts**: Automated data transformation and validation
-- **Rollback Strategy**: Complete reversal capabilities with validation
-- **Execution Planning**: Ordered migration steps with dependency resolution
+### Migration Context (Not a Primary Workflow)
+- **Zero-Downtime Migrations**: Expand-contract pattern as a comparison input
+- **Schema Evolution**: Compatibility implications of column and type changes
+- **Data Migration Scripts**: Transformation and validation concerns to flag
+- **Rollback Strategy**: Recovery constraints to include in a decision
+- **Execution Planning**: Dependency concerns to hand to `migration-architect`
 
 ## Database Design Principles
 → See references/database-design-reference.md for details
 
-## Best Practices
+## Reference Considerations
 
 ### Schema Design
 1. **Use meaningful names**: Clear, consistent naming conventions
@@ -64,7 +66,9 @@ A cross-database architecture and physical-design reference. Its selection guida
 4. **Validate inputs**: Prevent SQL injection attacks
 5. **Regular security updates**: Keep database software current
 
-## Query Generation Patterns
+## Query Examples (Reference Only)
+
+Use these examples only to compare engine capabilities or physical-design implications. For a requested query, route to `sql-database-assistant`.
 
 ### SELECT with JOINs
 
@@ -134,11 +138,13 @@ GROUP BY GROUPING SETS ((region, product), (region), ());
 
 ---
 
-## Migration Patterns
+## Migration Examples (Reference Only)
+
+Do not turn these examples into a deployment or rollback plan. Route a requested high-risk or multi-step migration to `migration-architect`.
 
 ### Up/Down Migration Scripts
 
-Every migration must have a reversible counterpart. Name files with a timestamp prefix for ordering:
+An illustrative reversible migration layout uses timestamp prefixes for ordering:
 
 ```
 migrations/
@@ -150,7 +156,7 @@ migrations/
 
 ### Zero-Downtime Migrations (Expand/Contract)
 
-Use the expand-contract pattern to avoid locking or breaking running code:
+The expand-contract pattern is one option for minimizing disruption in a migration plan:
 
 1. **Expand** — add the new column/table (nullable, with default)
 2. **Migrate data** — backfill in batches; dual-write from application
@@ -168,7 +174,7 @@ WHERE id IN (SELECT id FROM users WHERE email_normalized IS NULL LIMIT 5000);
 
 ### Rollback Procedures
 
-- Always test the `down.sql` in staging before deploying `up.sql` to production
+- Test the proposed rollback in a representative environment before deployment
 - Keep rollback window short — if the contract step has run, rollback requires a new forward migration
 - For irreversible changes (dropping columns with data), take a logical backup first
 
@@ -286,8 +292,6 @@ Fixes:
 
 ---
 
-## Conclusion
+## Output and Check
 
-Effective database design requires balancing multiple competing concerns: performance, scalability, maintainability, and business requirements. This skill provides the tools and knowledge to make informed decisions throughout the database lifecycle, from initial schema design through production optimization and evolution.
-
-The included tools automate common analysis and optimization tasks, while the comprehensive guides provide the theoretical foundation for making sound architectural decisions. Whether building a new system or optimizing an existing one, these resources provide expert-level guidance for creating robust, scalable database solutions.
+Return the candidate engines or physical designs, workload assumptions, material trade-offs, and evidence needed to validate the recommendation. Stop at a design recommendation. Do not execute queries, deploy schema changes, or infer current production state from examples. If the request resolves to a narrower deliverable, use the corresponding skill above instead.

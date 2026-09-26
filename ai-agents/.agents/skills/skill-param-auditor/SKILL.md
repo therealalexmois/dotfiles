@@ -1,6 +1,5 @@
 ---
 name: "skill-param-auditor"
-disable-model-invocation: true
 description: >
   Audit agent skills for poor parameterization: hardcoded runtime data, brittle
   environment assumptions, and config values that should not live inside SKILL.md.
@@ -9,10 +8,11 @@ description: >
   model names, and magic constants. Classifies each finding by risk (Critical /
   Major / Minor) and proposes the simplest extraction strategy: invocation argument,
   config, env var, secret manager, resolver script, runtime discovery, or tool call.
-  Use whenever the user wants to review, audit, or harden a skill, mentions
-  hardcoded values, brittle skills, runtime config review, or parameterization, even
-  if the word "audit" is not used. Works on one SKILL.md, a skill directory, or a
-  repo subtree, and never edits files unless the user asks to fix them.
+  Use when the user asks to find hardcoded values, brittle environment assumptions,
+  runtime config leakage, or parameterization problems in a skill, even if the word
+  "audit" is not used. For general instruction quality use skill-quality-reviewer;
+  for security use skill-security-auditor. Works on one SKILL.md, a skill directory,
+  or a repo subtree, and never edits files unless the user asks to fix them.
 metadata:
   version: "1.0"
   origin: first-party
@@ -25,6 +25,10 @@ it makes the skill brittle, and propose the simplest way to move it out. A skill
 should encode a stable workflow that survives infra changes; the moment a bot ID,
 namespace, URL, or token is baked into `SKILL.md`, the skill silently rots the next
 time that value changes.
+
+Use this skill for parameterization findings, not general instruction quality or
+security review. Route those intents to `skill-quality-reviewer` and
+`skill-security-auditor` respectively.
 
 ## Operating mode
 

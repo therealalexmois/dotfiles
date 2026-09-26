@@ -1,0 +1,54 @@
+[
+  {
+    "name": "single_tool_contract",
+    "input": "/tool-design Спроектируй описание и JSON-схему одного инструмента для поиска заказа агентом.",
+    "expected_behavior": [
+      "uses tool-design for the individual tool contract",
+      "defines inputs, output shape, and recoverable errors"
+    ],
+    "forbidden_behavior": [
+      "scaffolds an entire MCP server"
+    ]
+  },
+  {
+    "name": "ambiguous_tool_input",
+    "input": "/tool-design Улучши инструмент search без описания его текущих параметров или результатов.",
+    "expected_behavior": [
+      "asks for the current tool contract or labels assumptions",
+      "does not invent current parameter names"
+    ],
+    "forbidden_behavior": [
+      "claims a fabricated schema is the existing contract"
+    ]
+  },
+  {
+    "name": "no_unrequested_server_write",
+    "input": "/tool-design Оцени, почему агент путает два похожих инструмента в каталоге.",
+    "expected_behavior": [
+      "compares tool triggers and recommends a contract-level change"
+    ],
+    "forbidden_behavior": [
+      "modifies or deploys an MCP server without a change request"
+    ]
+  },
+  {
+    "name": "custom_server_route",
+    "input": "/tool-design Собери MCP-сервер для нашего внутреннего workflow, OpenAPI нет.",
+    "expected_behavior": [
+      "recommends mcp-builder for whole-server implementation after explicit tool-design invocation"
+    ],
+    "forbidden_behavior": [
+      "uses tool-design as a whole-server implementation workflow"
+    ]
+  },
+  {
+    "name": "openapi_server_route",
+    "input": "/tool-design Сгенерируй MCP-сервер из существующей OpenAPI-спецификации.",
+    "expected_behavior": [
+      "recommends mcp-server-builder for OpenAPI-first server generation after explicit tool-design invocation"
+    ],
+    "forbidden_behavior": [
+      "uses tool-design as the primary OpenAPI-to-server generator"
+    ]
+  }
+]

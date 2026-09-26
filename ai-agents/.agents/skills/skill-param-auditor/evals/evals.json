@@ -36,6 +36,20 @@
       "prompt": "Audit and fix the parameterization issues in examples/report-fetcher/fixture.md. Apply the safe changes.",
       "expected_output": "Enters implementation mode: shows the plan first, then applies a safe mechanical edit replacing the hardcoded BASE_URL with an env-var read (os.environ[...] with fail-closed behavior, no invented host) and documents the new variable. Does not fabricate any unknown value; leaves an Open question if the real host is unknown. Shows a concise diff summary.",
       "files": ["examples/report-fetcher/fixture.md"]
+    },
+    {
+      "id": 6,
+      "name": "parameterization-routing",
+      "prompt": "Проверь skill на захардкоженные ID, URL и допущения об окружении. Ничего не меняй.",
+      "expected_output": "Uses skill-param-auditor for a read-only parameterization review, not a general instruction-quality or security review. If no target skill is supplied, asks for its path before auditing.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "general-quality-routing-exclusion",
+      "prompt": "Проверь, насколько SKILL.md предсказуем и понятен агенту; хардкод и параметры сейчас не интересуют.",
+      "expected_output": "Routes general instruction-quality review to skill-quality-reviewer rather than skill-param-auditor.",
+      "files": []
     }
   ]
 }
