@@ -101,7 +101,7 @@ sanitize() {
     | sed -E 's#[^a-z0-9._/-]+#-#g; s#-{2,}#-#g; s#\.{2,}#.#g; s#^[-._/]+##; s#[-._/]+$##'
 }
 
-known_type='feature|feat|bugfix|fix|hotfix|release|chore|ai|copilot|cursor|claude|codex'
+known_type='feature|feat|bugfix|fix|hotfix|release|chore|docs|refactor|perf|test|style|build|ci|ai|copilot|cursor|claude|codex'
 default_type='feat'
 clean=$(sanitize "$worktree_name")
 
