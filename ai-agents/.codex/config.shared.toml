@@ -10,6 +10,7 @@ network_access = false
 
 [tui]
 vim_mode_default = true
+fullscreen_transcript = false
 status_line = [
   "model-with-reasoning",
   "current-dir",
