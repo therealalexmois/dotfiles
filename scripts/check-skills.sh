@@ -5,6 +5,7 @@
 # Repository invariants (always checked):
 #   - every skill directory carries a SKILL.md;
 #   - the directory name equals the `name:` field in that SKILL.md;
+#   - Codex policy.products in agents/openai.yaml contains only supported products;
 #   - no nested SKILL.md that Codex's recursive discovery would pick up as an
 #     extra skill (test fixtures must not look like skills);
 #   - every skill declares metadata.origin, vendored/derived ones name their
@@ -13,10 +14,9 @@
 #
 # Installed invariants (checked when the agent CLIs are installed on this host):
 #   - no dangling repository-managed skill symlinks under ~/.agents, ~/.claude, ~/.codex;
-#   - each tracked skill resolves through the symlink target installed by this repo;
+#   - Claude links every tracked skill; Codex receives only the curated global set;
 #   - no skill name collides with a Codex system skill;
-#   - the three link layers cover exactly the tracked skills (warning only,
-#     since a freshly added skill is linked by the next install run).
+#   - missing links for each layer are warnings until the next install run.
 #   - account-synced Claude skills with the same name are reported separately;
 #     only SKILL.md content is compared, and runtime precedence is not inferred.
 #
@@ -102,6 +102,29 @@ for skill_path in "$skills_dir"/*/; do
   tracked_skills+=("$skill")
 done
 
+codex_global_skills=()
+printf '== Codex global skill selection ==\n'
+while IFS= read -r skill || [[ -n "$skill" ]]; do
+  [[ -z "$skill" || "$skill" == \#* ]] && continue
+  if [[ ! "$skill" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+    fail "scripts/codex-global-skills.txt: invalid skill name: $skill"
+    continue
+  fi
+  if printf '%s\n' "${codex_global_skills[@]:-}" | grep -qx "$skill"; then
+    fail "scripts/codex-global-skills.txt: duplicate skill: $skill"
+    continue
+  fi
+  if [[ ! -f "$skills_dir/$skill/SKILL.md" ]]; then
+    fail "scripts/codex-global-skills.txt: missing skill source: $skill"
+    continue
+  fi
+  codex_global_skills+=("$skill")
+done < "$repo_root/scripts/codex-global-skills.txt"
+if (( ${#codex_global_skills[@]} == 0 )); then
+  fail "scripts/codex-global-skills.txt: no global skills selected"
+fi
+printf 'selected %d global Codex skills\n\n' "${#codex_global_skills[@]}"
+
 printf '== skill sources: SKILL.md and name ==\n'
 for skill in "${tracked_skills[@]}"; do
   skill_md="$skills_dir/$skill/SKILL.md"
@@ -136,6 +159,50 @@ for skill in "${tracked_skills[@]}"; do
   fi
 done
 (( yaml_bad )) || printf 'ok\n'
+
+printf '\n== Codex skill product metadata ==\n'
+if python3 - "$skills_dir" <<'PY'; then
+from pathlib import Path
+import sys
+
+allowed = {"chatgpt", "codex", "atlas"}
+failed = False
+for path in sorted(Path(sys.argv[1]).glob("*/agents/openai.yaml")):
+    in_policy = False
+    in_products = False
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        value = line.strip()
+        if line.startswith("policy:"):
+            in_policy = True
+            in_products = False
+            continue
+        if in_policy and value and not line[0].isspace():
+            in_policy = False
+            in_products = False
+        if not in_policy:
+            continue
+        if value.startswith("products:"):
+            in_products = True
+            if value != "products:":
+                print(f"FAIL: {path}:{lineno}: policy.products must be a block list", file=sys.stderr)
+                failed = True
+            continue
+        if in_products and value.startswith("- "):
+            product = value[2:].split("#", 1)[0].strip().strip("\"'")
+            if product.lower() not in allowed:
+                print(f"FAIL: {path}:{lineno}: unsupported policy.products value {product!r}", file=sys.stderr)
+                failed = True
+        elif in_products and value and not value.startswith("#"):
+            in_products = False
+
+if failed:
+    raise SystemExit(1)
+print("ok")
+PY
+  :
+else
+  status=1
+fi
 
 printf '\n== skill sources: no stray nested SKILL.md ==\n'
 nested_found=0
@@ -240,6 +307,13 @@ for dir in "${installed_dirs[@]}"; do
     continue
   fi
   linked=()
+  if [[ "$dir" == "$HOME/.claude/skills" ]]; then
+    expected_skills=("${tracked_skills[@]}")
+  elif [[ "$dir" == "$HOME/.agents/skills" ]]; then
+    expected_skills=("${codex_global_skills[@]}")
+  else
+    expected_skills=()
+  fi
   for entry in "$dir"/*; do
     [[ -e "$entry" || -L "$entry" ]] || continue
     name="$(basename "$entry")"
@@ -254,10 +328,18 @@ for dir in "${installed_dirs[@]}"; do
       continue
     fi
     if [[ -d "$skills_dir/$name" ]]; then
+      if [[ "$dir" == "$HOME/.codex/skills" ]]; then
+        fail "$entry is a repository-managed global link; Codex reads curated skills from ~/.agents/skills"
+        continue
+      fi
       if [[ "$dir" == "$HOME/.agents/skills" ]]; then
+        if ! printf '%s\n' "${codex_global_skills[@]}" | grep -qx "$name"; then
+          fail "$entry is outside the Codex global skill selection"
+          continue
+        fi
         expected_target="../../.dotfiles/ai-agents/.agents/skills/$name"
       else
-        expected_target="../../.agents/skills/$name"
+        expected_target="../../.dotfiles/ai-agents/.agents/skills/$name"
       fi
       if [[ ! -L "$entry" ]]; then
         fail "$entry is not a repository-managed symlink (expected -> $expected_target)"
@@ -276,7 +358,8 @@ for dir in "${installed_dirs[@]}"; do
     linked+=("$name")
   done
   missing=()
-  for skill in "${tracked_skills[@]}"; do
+  for skill in "${expected_skills[@]:-}"; do
+    [[ -n "$skill" ]] || continue
     [[ -f "$skills_dir/$skill/SKILL.md" ]] || continue
     printf '%s\n' "${linked[@]:-}" | grep -qx "$skill" || missing+=("$skill")
   done
@@ -303,7 +386,7 @@ if [[ -d "$synced_dir" ]]; then
     skill="$(basename "$(dirname "$synced_skill_md")")"
     installed_skill="$HOME/.claude/skills/$skill"
     [[ -d "$skills_dir/$skill" && -L "$installed_skill" ]] || continue
-    [[ "$(readlink "$installed_skill")" == "../../.agents/skills/$skill" ]] || continue
+    [[ "$(readlink "$installed_skill")" == "../../.dotfiles/ai-agents/.agents/skills/$skill" ]] || continue
     [[ -f "$installed_skill/SKILL.md" ]] || continue
     comparison_status=0
     cmp -s "$installed_skill/SKILL.md" "$synced_skill_md" || comparison_status=$?

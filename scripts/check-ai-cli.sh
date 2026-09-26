@@ -41,6 +41,13 @@ else
   fail "render-codex-config.py failed to compile"
 fi
 
+note "python compile: skill-usage-report.py"
+if python3 -m py_compile "${repo_dir}/scripts/skill-usage-report.py"; then
+  echo "ok"
+else
+  fail "skill-usage-report.py failed to compile"
+fi
+
 note "codex config render check (no write)"
 if "${repo_dir}/scripts/render-codex-config.py" --check; then
   :

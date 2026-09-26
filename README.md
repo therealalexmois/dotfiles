@@ -173,7 +173,7 @@ because those three can't rely on `$XDG_CONFIG_HOME`:
 |---|---|---|
 | `bootstrap` | `~/.zshenv` | has to exist at the fixed shell-startup location before `XDG_CONFIG_HOME` is even set |
 | `alacritty` | `~/.config/alacritty` | Alacritty is a GUI app launched by macOS, so it never inherits the shell's `XDG_CONFIG_HOME` and always looks in the default `~/.config/alacritty` |
-| `ai-agents` | `~/.claude/…`, `~/.codex/…`, `~/.agents/skills/…` | Claude Code and Codex expect real files/dirs at fixed paths, and `ai-agents/.claude/agents` uses a Stow "fold" (the parent `~/.claude` stays a real directory since Claude/Codex also write runtime state into it) |
+| `ai-agents` | `~/.claude/…`, `~/.codex/…` | Claude Code and Codex expect files at fixed paths. The installer manages skill links separately, and `ai-agents/.claude/agents` uses a Stow "fold" |
 
 Everything else in this repo (zsh's own rc files, tmux, Neovim, Starship, git, atuin,
 mise, lazydocker) is picked up because `zsh/.zshenv` exports
@@ -347,10 +347,14 @@ under `~/.dotfiles-backups/`):
    `~/.codex/config.local.toml` via `scripts/render-codex-config.py`.
 2. Stows `ai-agents` (`~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`,
    `~/.claude/settings.json`, `~/.claude/agents/`).
-3. Symlinks every skill under `ai-agents/.agents/skills/` into `~/.agents/skills/`, with
-   child links from `~/.claude/skills/` and `~/.codex/skills/`, and prunes stale links for
-   renamed/removed skills.
+3. Links every source skill directly under `~/.claude/skills/`. Only the skills in
+   `scripts/codex-global-skills.txt` are linked under `~/.agents/skills/` for Codex.
+   Existing repository-managed links under `~/.codex/skills/` are pruned; Codex's
+   `.system` skills and unrelated live links are preserved.
 4. Symlinks Codex reasoning/mode profile TOML files into `~/.codex/`.
+
+Run `scripts/install-ai-cli-dotfiles.sh --skills-only` to apply a changed Codex
+global selection without rendering config or syncing Claude MCP servers.
 
 See [Personalizing your setup](#personalizing-your-setup) for the local-only
 `config.local.toml` you need to create before this is useful.
@@ -564,12 +568,9 @@ You can also download your own fonts and place them in ~/Library/Fonts, or get t
 
 Two levels of check, for two different things:
 
-- **Symlink/script correctness** – run `scripts/dry-run-install.sh`. It stows and links
-  everything into a throwaway fake `$HOME` (a symlink to this repo, plus stow/script
-  runs against it) without touching your real home directory or installing any Homebrew
-  package, and reports any symlink that doesn't point where the [Overview](#overview)
-  table says it should. Safe to run repeatedly; cheap enough to run after every change to
-  `bootstrap/`, `zsh/bootstrap.zsh`, or `scripts/install-ai-cli-dotfiles.sh`.
+- **Symlink/script correctness** – run `scripts/dry-run-install.sh` for Stow and shell
+  links, then `scripts/test-codex-skill-scope.sh` for the Codex/Claude skill-link
+  migration. Both use a throwaway fake `$HOME` and leave the real installation alone.
 - **Full reproducibility** – the dry run never installs a Homebrew package or exercises
   `brew bundle`, so it can't catch a missing Brewfile entry or a step that only works
   because something was already installed on this machine. Periodically validate the

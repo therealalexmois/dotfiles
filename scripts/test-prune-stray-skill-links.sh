@@ -27,8 +27,6 @@ ln -s "${external_dir}/live" "$skills_dir/external-live"
 ln -s "${external_dir}/gone" "$skills_dir/external-dangling"
 mkdir -p "$skills_dir/real-directory"
 
-skills=(kept)
-
 fail=0
 check_gone() {
   if [[ -e "$1" || -L "$1" ]]; then
@@ -43,7 +41,7 @@ check_kept() {
   fi
 }
 
-prune_stray_skill_links "$skills_dir" "$managed_prefix" >/dev/null
+prune_stray_skill_links "$skills_dir" "$managed_prefix" kept >/dev/null
 
 check_kept "$skills_dir/kept"
 check_kept "$skills_dir/external-live"

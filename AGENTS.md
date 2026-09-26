@@ -65,13 +65,17 @@ Everything else:
   `render-codex-config.py` (merge shared + local Codex TOML into `~/.codex/config.toml`),
   `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `check-skills.sh` (validates
   the skill invariants: SKILL.md presence, directory name equal to the frontmatter
-  `name`, no stray nested SKILL.md, no dangling links in the three installed layers),
+  `name`, supported Codex skill products, no stray nested SKILL.md, no dangling links
+  in the three installed layers),
   `test-prune-stray-skill-links.sh` (unit test for the installer's link pruning),
   `skills-provenance-unresolved.txt` (allowlist of skills whose upstream is not
   established yet),
   `audit-skills.sh` (security
   audit of all skills via skill-security-auditor; compares with the committed
-  `skills-audit-baseline.json`), and `dry-run-install.sh` (validates Stow-package and zsh
+  `skills-audit-baseline.json`), `skill-usage-report.py` (counts real skill activations
+  in Claude Code transcripts and Codex sessions by path: slash, named, auto, nested,
+  subagent; flags candidates for `disable-model-invocation` and Claude/Codex policy
+  mismatches), and `dry-run-install.sh` (validates Stow-package and zsh
   startup symlinks against a throwaway fake `$HOME`; see README.md "Verifying the
   install").
 - `.gitignore` - Ignore rules for machine state, plugin caches, and local-only tools.
@@ -100,9 +104,10 @@ zsh zsh/bootstrap.zsh
 bootstrap/install-alacritty.sh
 
 # Install AI CLI agent dotfiles: backup, Stow `bootstrap`+`ai-agents` (folds
-# ~/.claude/agents), render Codex config, and create per-skill / per-profile symlinks for
-# Codex and Claude. Idempotent; moves real-file conflicts to a timestamped backup and never
-# touches ~/.codex/skills/.system.
+# ~/.claude/agents), render Codex config, and link all skills to Claude plus the curated
+# global set to Codex. --skills-only changes skill links without syncing MCP or config.
+# Idempotent; moves real-file conflicts to a timestamped backup and never touches
+# ~/.codex/skills/.system.
 scripts/install-ai-cli-dotfiles.sh
 
 # Neovim bootstraps lazy.nvim on first start.
@@ -202,8 +207,9 @@ Neovim: init.lua → lazy_setup.lua → AstroNvim + community.lua + plugins/
                                ├→ CodeCompanion  (NVIM_AI_PROFILE: home | work | claude)
                                └→ claudecode.nvim (claude CLI over IDE protocol, no nvim wiring)
 
-AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
-                                               └→ ~/.codex/skills/
+AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all skills)
+                                  └→ ~/.agents/skills/ (Codex global selection)
+        ~/.codex/skills/.system remains untouched
         ai-agents/.claude/agents/ (Stow fold)  → ~/.claude/agents/
         ai-agents/.codex/*.config.toml          → ~/.codex/ (child links)
 ```
@@ -216,18 +222,35 @@ AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
 
 ## Agent Skills: Naming and Layout
 
-Two link layers above the repo; both break silently if a rename is done halfway.
+Claude gets every source skill. Codex gets only the curated global selection;
+repository-local skills remain available from each project's `.agents/skills/`.
 
 ```
 ai-agents/.agents/skills/<name>/SKILL.md  ← source of truth
 
 scripts/install-ai-cli-dotfiles.sh creates:
-~/.agents/skills/<name>         → .dotfiles/ai-agents/.agents/skills/<name>  (Stow)
-    ├── ~/.claude/skills/<name> → ~/.agents/skills/<name>                    (child)
-    └── ~/.codex/skills/<name>  → ~/.agents/skills/<name>                    (child)
+~/.claude/skills/<name> → .dotfiles/ai-agents/.agents/skills/<name>  (all)
+~/.agents/skills/<name> → .dotfiles/ai-agents/.agents/skills/<name>  (Codex global)
 ```
 
-Skills load only at CLI startup. Restart Claude Code and Codex after adding or renaming.
+The Codex selection is in `scripts/codex-global-skills.txt`. The installer removes
+old repository-managed links under `~/.codex/skills/`, preserving `.system` and
+unrelated live links. Restart Claude Code and Codex after changing skill links.
+
+Keep domain-specific source skills in the relevant project's `.agents/skills/`
+when Codex needs them. The current placement decisions are:
+
+| Project | Skills from this repository to make project-local when needed |
+| --- | --- |
+| `.dotfiles` | `agent-instruction`, `audit-repository-documentation`, `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester` |
+| `life-os` | `close-my-day`, `morning-briefing`, `whats-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` |
+| `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` |
+| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica` |
+| `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python`; add database or spreadsheet skills only where the workflow uses them |
+
+This table selects scope; it does not install links in those other repositories.
+Other specialized skills remain in the source catalog and can be linked into a
+project when a concrete workflow calls for them.
 
 Layout follows the [Agent Skills specification](https://agentskills.io/specification):
 
@@ -246,6 +269,12 @@ and optionally `license`, `compatibility` (max 500), `metadata` (string values o
 and `allowed-tools` (space-separated). Everything else belongs under `metadata`. The
 exception is the client-specific keys Claude Code actually reads, which stay at the
 top level: `disable-model-invocation`, `argument-hint`, `user-invocable`.
+
+Codex ignores `disable-model-invocation`; its equivalent is
+`policy.allow_implicit_invocation: false` in the skill's `agents/openai.yaml`, which
+also removes the skill from Codex's skill list. Keep the two in sync: every skill with
+`disable-model-invocation: true` carries that policy and vice versa.
+`scripts/skill-usage-report.py` reports a mismatch as `mismatch`.
 
 Link bundled files with paths relative to the skill root (`references/tests.md`), one
 level deep. A file sitting next to `SKILL.md` instead of in `references/` is invisible
@@ -272,7 +301,9 @@ Anthropic skill creator eval scratch dirs (`*-workspace/`) are git-ignored and n
 
 ### Skill Routing
 
-Active dotfiles skills. "yes" means intended selection by description; "manual" means intended explicit invocation by name. This table must agree with each skill's `disable-model-invocation` frontmatter; neither value guarantees runtime selection.
+Active source skills where installed. "yes" means intended selection by description;
+"manual" means intended explicit invocation by name. This table must agree with each
+skill's `disable-model-invocation` frontmatter; neither value guarantees runtime selection.
 
 | Trigger | Skill | Auto |
 | --- | --- | --- |
@@ -318,7 +349,7 @@ Active dotfiles skills. "yes" means intended selection by description; "manual" 
 | create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
 | design a reusable, system, or production-model prompt | `prompt-design` | yes |
 | review an existing prompt with findings and a verdict | `prompt-review` | yes |
-| build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | yes |
+| build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | manual |
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |
@@ -327,9 +358,9 @@ Active dotfiles skills. "yes" means intended selection by description; "manual" 
 | TDD, test-first development, red-green-refactor | `test-driven-development` | yes |
 | brainstorm a small or medium engineering decision | `brainstorm-lite` | yes |
 | design a complex or materially uncertain change before implementation | `brainstorming` | yes |
-| structured brainstorm | `six-thinking-hats` | yes |
+| structured brainstorm | `six-thinking-hats` | manual |
 | challenge and stress-test ideas | `grill-me` | manual |
-| productivity coaching | `productivity-coach` | yes |
+| productivity coaching | `productivity-coach` | manual |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
 | onboard to a codebase | `codebase-onboarding` | yes |
@@ -375,12 +406,12 @@ Rename checklist (every step is required, the link layers break silently):
 
 1. Rename the directory under `ai-agents/.agents/skills/`.
 2. Update `name:` in the skill's `SKILL.md` frontmatter.
-3. Recreate all three symlinks (`~/.agents/skills`, `~/.claude/skills`,
-   `~/.codex/skills`) or rerun `scripts/install-ai-cli-dotfiles.sh`.
-4. Update cross-references to the old name in other `SKILL.md` files.
-5. Run `scripts/check-skills.sh` to confirm the directory name, the frontmatter
-   `name`, and all three link layers agree.
-6. Restart Claude Code and Codex so the renamed skill is picked up.
+3. Update `scripts/codex-global-skills.txt` if the skill is in Codex's global set.
+4. Rerun `scripts/install-ai-cli-dotfiles.sh --skills-only` to update Claude and
+   Codex links.
+5. Update cross-references to the old name in other `SKILL.md` files.
+6. Run `scripts/check-skills.sh` to confirm source names and installed link scopes.
+7. Restart Claude Code and Codex so the renamed skill is picked up.
 
 ## Testing Strategy
 
@@ -511,6 +542,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | --- | --- | --- |
 | Reusable AI prompt | `llm/prompts/<name>.md` | Project overrides in `<repo>/.prompts` |
 | Agent skill | `ai-agents/.agents/skills/<name>/SKILL.md` | See "Agent Skills" section |
+| Codex global skill selection | `scripts/codex-global-skills.txt` | Claude receives all source skills |
 | Claude subagent | `ai-agents/.claude/agents/<name>.md` | Stow-folded to `~/.claude/agents/` |
 | Codex reasoning profile | `ai-agents/.codex/<name>.config.toml` | Symlinked to `~/.codex/` |
 | Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |
@@ -523,7 +555,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | Shell entrypoint | `bootstrap/.zshenv` / `zsh/bootstrap.zsh` | |
 | Starship module | `starship.toml` | |
 | Terminal config | `alacritty/` | |
-| Skill invariants | `scripts/check-skills.sh` | Names, SKILL.md presence, installed link layers |
+| Skill invariants | `scripts/check-skills.sh` | Names, SKILL.md presence, Codex products, installed link layers |
 | Install validation | `scripts/dry-run-install.sh` | Fake-`$HOME` symlink check; full VM run documented in README.md "Verifying the install" |
 
 Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile variables in CodeCompanion config.
