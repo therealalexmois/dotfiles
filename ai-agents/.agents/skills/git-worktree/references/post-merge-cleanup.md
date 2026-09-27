@@ -30,7 +30,9 @@ Dirty task-worktree или известные local-only commits блокиру�
 1. Прочитать `git worktree list --porcelain` и выбрать только task-worktree и worktree base branch.
 2. Проверить branch и `git status --porcelain=v1 -uall` task-worktree.
 3. Сохранить task branch HEAD.
-4. Проверить upstream divergence, если upstream существует.
+4. Если upstream-ref task branch еще есть локально, сохранить число local-only commits:
+   `git rev-list --count <upstream>..<branch>`. Сделать это до `fetch --prune`: хостинг обычно удаляет
+   source branch при merge, и prune уберет ее ref вместе с доказательством.
 5. Проверить, можно ли fast-forward base branch без reset или rebase.
 
 Не читать status других worktrees. Не обращаться к GitLab/GitHub только для повторной проверки явного сообщения пользователя о merge.
@@ -45,12 +47,21 @@ Dirty task-worktree или известные local-only commits блокиру�
    - если она нигде не checked out и local ref является ancestor upstream, обновить local ref до upstream;
    - если worktree dirty или branch diverged, пропустить sync без изменения ее состояния.
 3. Удалить exact task-worktree через `git worktree remove <exact-path>` без `--force`.
-4. Удалить exact local task branch через `git branch -d <branch>`.
-5. Если `-d` отклоняет squash-merged branch из-за ancestry, использовать `git branch -D <branch>` только когда:
+4. Удалить exact local task branch через `git branch -d <branch>`. После squash- или rebase-merge `-d`
+   отказывает всегда: коммиты ветки не становятся предками base. Это ожидаемо и не означает, что merge
+   не состоялся.
+5. Если `-d` отклоняет ветку из-за ancestry, использовать `git branch -D <branch>` только когда:
    - пользователь явно подтвердил merge;
    - удалена именно выбранная clean task-worktree;
    - branch HEAD совпадает с сохраненным recovery SHA;
-   - в доступном session/Git evidence нет local-only commits.
+   - local-only commits отсутствуют по одному из доказательств:
+     - в Round 1 upstream-ref был доступен и `git rev-list --count <upstream>..<branch>` дал `0`;
+     - upstream-ref уже удален, а branch HEAD совпадает с head SHA влитого PR/MR по данным хостинга:
+       `gh pr view <branch> --json state,headRefOid` (state `MERGED`) или
+       `glab mr view <branch> -F json` (state `merged`, поле `sha`).
+
+   Если ни одно доказательство недоступно, оставить ветку, назвать причину и recovery SHA. Запрос к
+   хостингу здесь нужен ради head SHA, а не для повторной проверки слов пользователя о merge.
 6. Выполнить `git worktree prune` только если target directory уже отсутствовал или Git оставил stale registration.
 7. В том же вызове проверить:
    - target path и registration отсутствуют;

@@ -19,8 +19,9 @@
 # Note: cwd is the removed worktree directory and may already be gone, so do not
 # rely on filesystem access to it. Removal is deliberately non-destructive: no
 # --force, so a worktree with uncommitted work is kept, and the task branch is
-# force-deleted only when its patches are already in the base branch (the squash
-# and rebase merge case). Every deleted branch is logged with its SHA, so
+# force-deleted only when the merge is proven: a merged GitHub PR with the same
+# head SHA, or patches already in the base branch (the squash and rebase merge
+# case). Every deleted branch is logged with its SHA, so
 # `git branch <name> <sha>` restores it.
 
 set -uo pipefail
@@ -94,37 +95,57 @@ if git -C "$repo_root" branch -d "$branch" >/dev/null 2>&1; then
 fi
 
 # `git branch -d` refuses after a squash or rebase merge: the branch tip is not
-# an ancestor of the base branch even though its content landed there. Compare
-# patches instead, and keep the branch whenever that cannot be proven.
-base=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
-if [[ -z "$base" ]]; then
-  for candidate in origin/main origin/master main master; do
-    if git -C "$repo_root" rev-parse --verify --quiet "$candidate" >/dev/null 2>&1; then
-      base=$candidate
-      break
-    fi
-  done
-fi
-
-if [[ -z "$base" ]]; then
-  branch_status="kept:$branch@$branch_sha (no base branch found)"
-  exit 0
-fi
-
+# an ancestor of the base branch even though its content landed there. Prove the
+# merge another way, and keep the branch whenever that cannot be proven.
 merged=false
-if ! git -C "$repo_root" cherry "$base" "$branch" 2>/dev/null | grep -q '^+'; then
-  merged=true
-elif git -C "$repo_root" diff --quiet "$base" "$branch" 2>/dev/null; then
-  merged=true
+proof=''
+
+# Strongest proof on GitHub: a merged PR records the head SHA it was merged at.
+# An equal local tip means the merge carried every local commit. `git cherry`
+# below misses a squash of several commits, and the tree comparison fails as
+# soon as the base branch moves on, so they are only fallbacks.
+if command -v gh >/dev/null 2>&1; then
+  pr_head=$(cd "$repo_root" && gh pr list --head "$branch" --state merged --json headRefOid \
+    --jq '.[0].headRefOid // empty' 2>/dev/null || true)
+
+  if [[ -n "$pr_head" && "$pr_head" == "$branch_sha" ]]; then
+    merged=true
+    proof='merged PR head matches the branch tip'
+  fi
 fi
 
 if [[ "$merged" != true ]]; then
-  branch_status="kept:$branch@$branch_sha (not merged into $base)"
-  exit 0
+  base=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
+  if [[ -z "$base" ]]; then
+    for candidate in origin/main origin/master main master; do
+      if git -C "$repo_root" rev-parse --verify --quiet "$candidate" >/dev/null 2>&1; then
+        base=$candidate
+        break
+      fi
+    done
+  fi
+
+  if [[ -z "$base" ]]; then
+    branch_status="kept:$branch@$branch_sha (no merged PR and no base branch found)"
+    exit 0
+  fi
+
+  if ! git -C "$repo_root" cherry "$base" "$branch" 2>/dev/null | grep -q '^+'; then
+    merged=true
+  elif git -C "$repo_root" diff --quiet "$base" "$branch" 2>/dev/null; then
+    merged=true
+  fi
+
+  if [[ "$merged" != true ]]; then
+    branch_status="kept:$branch@$branch_sha (not merged into $base)"
+    exit 0
+  fi
+
+  proof="patches already in $base"
 fi
 
 if git -C "$repo_root" branch -D "$branch" >/dev/null 2>&1; then
-  branch_status="force-deleted:$branch@$branch_sha (patches already in $base)"
+  branch_status="force-deleted:$branch@$branch_sha ($proof)"
 else
   branch_status="kept:$branch@$branch_sha (delete failed)"
 fi
