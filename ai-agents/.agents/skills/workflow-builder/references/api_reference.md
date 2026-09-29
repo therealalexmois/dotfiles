@@ -38,16 +38,17 @@ agent(prompt, {
   label: 'string',           // display name (~60 char default)
   phase: 'phase-name',       // progress-group assignment
   schema: { type: 'object' },// JSON Schema — validates + structures the return
-  model: 'haiku',            // 'haiku' | 'sonnet' | 'opus' | 'inherit' | full-model-id
+  model: 'sonnet',           // 'sonnet' | 'opus' | 'haiku' | 'fable' | full-model-id — default: omit
+  effort: 'high',            // 'low' | 'medium' | 'high' | 'xhigh' | 'max' — reasoning effort, default: omit
   isolation: 'worktree',     // run in a fresh git worktree (~200-500 ms + disk)
   agentType: 'agent-type',   // custom sub-agent type
   stallMs: 180000            // per-agent stall timeout override (ms)
 })
 ```
 
-**Model resolution:** `haiku`/`sonnet`/`opus` resolve to the current default of that family; `inherit` (the default) uses the session main-loop model; a full model ID passes through unchanged. Pick lighter models (Haiku) for classification/extraction and heavier ones (Opus) for synthesis or hard reasoning.
+**Model resolution:** omitting `model` (the default) inherits the session's main-loop model — almost always correct. Set it only when you're highly confident a specific tier fits the stage; `haiku`/`sonnet`/`opus`/`fable` resolve to that family's current default, and a full model ID passes through unchanged. The same default-to-omit rule applies to `effort`: it inherits the session's reasoning effort unless a stage is cheap/mechanical (use `low`) or is a hard verify/judge pass that warrants more (`high`/`xhigh`/`max`).
 
-**Resume cache key** includes `schema`, `model`, `isolation`, and `agentType` — changing any of these re-runs the agent on resume. `label` and `phase` do **not** invalidate the cache.
+**Resume cache key** is the full `(prompt, opts)` pair — an identical call returns its cached result instantly on resume; changing anything in `opts` (including `schema`, `model`, `effort`, `isolation`, or `agentType`) counts as a new call and re-runs it live.
 
 ## 4. `pipeline()` vs `parallel()`
 
@@ -93,13 +94,9 @@ Throws `WorkflowBudgetExceededError` once `spent()` reaches `total`. Use `budget
 
 ## 9. Enabling the feature
 
-The Workflow tool is gated behind an environment variable and off by default:
+The Workflow tool needs no environment variable or setup step — it ships built in. What gates it is explicit user opt-in: the word `ultracode` in the request, a session with ultracode already on, a direct ask to run a workflow or use multi-agent orchestration, or a skill/slash command whose instructions call it. Without one of these, the right move is to describe what a workflow could do and ask, not to call it.
 
-```bash
-export CLAUDE_CODE_WORKFLOWS=1
-```
-
-Save workflow files under `.claude/workflows/` in the project, then browse, launch, and monitor them with the `/workflows` slash command. **P** pauses/resumes a run; **X** skips a sub-agent.
+Save workflow files under `.claude/workflows/` in the project, then browse, launch, and monitor them with the `/workflows` slash command. In that view: `↑↓` selects an agent, `p` pauses/resumes the run, `x` stops the whole workflow, `esc` goes back, `s` saves the script as a named workflow.
 
 ---
 
