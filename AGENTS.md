@@ -293,6 +293,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | `git-` | Git repository and worktree workflows |
 | `gitlab-` | GitLab workflows |
 | `spirit-deploy` | deploy (single-skill domain) |
+| `team-lead` | leading a task series through Codex and Claude executors (single-skill domain) |
 
 Third-party imported skills keep their upstream names and are exempt unless a provider
 prefix is needed to avoid a system-skill collision. The `obsidian-*` skills moved out of
@@ -323,6 +324,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
+| lead a series of issues as Team Lead: delegate to Codex or Claude executors, review, merge | `team-lead` | yes |
 | design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |

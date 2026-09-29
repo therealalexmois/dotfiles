@@ -4,7 +4,8 @@
 # Contract: accept --name and --cwd, honor an explicit absolute --path, and
 # require a confirmed ignore mode before configuring the default `.worktrees/`
 # location. Print only the absolute worktree path on stdout by default, and
-# return non-zero before creation when preflight or remote refresh fails.
+# return non-zero before creation when preflight or remote refresh fails. A
+# repository without an `origin` remote skips the refresh and uses local HEAD.
 # Optional JSON output is machine-readable. Provisioning remains best-effort.
 
 set -uo pipefail
@@ -176,9 +177,15 @@ fi
 
 # Refresh the canonical remote before resolving origin/HEAD. A failed fetch is
 # an explicit blocker so the command cannot silently branch from stale state.
-if ! git -C "$repo_root" fetch origin >&2; then
-  err "git fetch origin failed"
-  exit 1
+# A local-only repository without `origin` has no remote state to refresh, so
+# it branches from the local HEAD and says so on stderr.
+if git -C "$repo_root" remote get-url origin >/dev/null 2>&1; then
+  if ! git -C "$repo_root" fetch origin >&2; then
+    err "git fetch origin failed"
+    exit 1
+  fi
+else
+  err "no origin remote: skipping fetch, branching from local HEAD"
 fi
 
 base_ref=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
