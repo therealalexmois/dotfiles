@@ -18,9 +18,9 @@ allowlist и набор правил, а не требование исполь�
 ### AI и ML
 
 `AI`, `LLM`, `RAG`, `embedding`, `evaluation`, `benchmark`, `grounding`,
-`tool call`, `agent`, `skill`, `MCP`, `latency`, `trace`, `span`, `prompt`,
-`context window`, `fine-tuning`, `inference`, `evals`, `LLM-as-a-judge`,
-`HITL`, `ReAct`, `BYOK`, `harness`, `grader`.
+`tool`, `tool call`, `agent`, `skill`, `MCP`, `latency`, `trace`, `span`,
+`prompt`, `context window`, `fine-tuning`, `inference`, `evals`,
+`LLM-as-a-judge`, `HITL`, `ReAct`, `BYOK`, `harness`, `grader`.
 
 ### Software и инфраструктура
 
@@ -29,7 +29,7 @@ allowlist и набор правил, а не требование исполь�
 `frontend`, `rollback`, `deploy`, `commit`, `merge`, `MR`, `PR`, `RFC`, `ADR`,
 `API`, `CI/CD`, `observability`, `SLO`, `SLI`, `SLA`, `SRE`, `pipeline`,
 `SSE`, `fallback`, `scaffold`, `diff`, `worktree`, `release`, `REST`, `SDK`,
-`notebook`, `quality gate`.
+`notebook`, `quality gate`, `run`.
 
 ### Процессы и планирование
 
@@ -152,7 +152,10 @@ runtime`, если компонент развивается отдельно; `
   по известным метрикам или периоду наблюдения;
 - `закрыл боль` - решил названную проблему;
 - `почистил код` - укажи, что удалено или переработано;
-- `снес слой` - удалил слой.
+- `снес слой` - удалил слой;
+- `прогон` - `run`: `run тестов`, `run pipeline`;
+- `инструменты с подтверждением` - `tools с HITL`, если подтверждение
+  человека является контрактом, а не разовой оговоркой.
 
 Это контекстные подсказки, а не таблица автоматических замен. Не переводи
 официальное название `Evidence Registry`, имя раздела, поле или закрепленный
@@ -185,7 +188,7 @@ owner -> владелец, если это не формальная роль
 `scripts/lint_banned_terms.py`, который вырезает код, frontmatter и URL и ищет
 запрещенные основы только в прозе.
 
-Прогон по редактируемым файлам:
+Запуск линтера по редактируемым файлам:
 
 ```sh
 uv run scripts/lint_banned_terms.py FILE.md

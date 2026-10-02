@@ -1,0 +1,14 @@
+interface:
+  display_name: Инженерная самопрезентация
+  short_description: Доказательная самооценка и самопрезентация инженера
+  default_prompt: Используй $build-engineering-self-presentation, чтобы подготовить
+    мою самопрезентацию за выбранный период с конкретными результатами и личным вкладом.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
