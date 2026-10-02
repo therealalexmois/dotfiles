@@ -5,7 +5,7 @@ description: "Use for the interface contract of one agent-facing tool or a tool 
 metadata:
   origin: derived
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/tool-design
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Tool Design for Agents

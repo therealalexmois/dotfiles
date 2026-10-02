@@ -5,7 +5,7 @@ description: "This skill should be used for project-level decisions about LLM-po
 metadata:
   origin: vendored
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/project-development
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Project Development Methodology

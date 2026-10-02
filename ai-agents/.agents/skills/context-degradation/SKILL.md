@@ -5,7 +5,7 @@ description: "This skill should be used for diagnosing and mitigating context de
 metadata:
   origin: vendored
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-degradation
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Context Degradation Patterns

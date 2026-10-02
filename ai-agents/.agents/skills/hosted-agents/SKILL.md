@@ -5,7 +5,7 @@ description: "This skill should be used when designing hosted or background agen
 metadata:
   origin: vendored
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/hosted-agents
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Hosted Agent Infrastructure

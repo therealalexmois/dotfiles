@@ -5,7 +5,7 @@ description: Create production-ready GitHub Actions workflows for automated test
 metadata:
   origin: vendored
   upstream: https://github.com/wshobson/agents/tree/main/plugins/cicd-automation/skills/github-actions-templates
-  imported_at: 2026-06-07
+  imported_at: 2026-10-02
 ---
 
 # GitHub Actions Templates
@@ -69,8 +69,6 @@ jobs:
           files: ./coverage/lcov.info
 ```
 
-**Reference:** See `assets/test-workflow.yml`
-
 ### Pattern 2: Build and Push Docker Image
 
 ```yaml
@@ -123,8 +121,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 ```
-
-**Reference:** See `assets/deploy-workflow.yml`
 
 ### Pattern 3: Deploy to Kubernetes
 
@@ -197,8 +193,6 @@ jobs:
       - name: Run tests
         run: pytest
 ```
-
-**Reference:** See `assets/matrix-build.yml`
 
 ## Workflow Best Practices
 

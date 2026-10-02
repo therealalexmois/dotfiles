@@ -5,7 +5,7 @@ description: Implement comprehensive testing strategies with pytest, fixtures, m
 metadata:
   origin: vendored
   upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-testing-patterns
-  imported_at: 2026-06-07
+  imported_at: 2026-10-02
 ---
 
 # Python Testing Patterns

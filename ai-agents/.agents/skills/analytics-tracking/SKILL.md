@@ -1,13 +1,14 @@
 ---
 name: analytics-tracking
-description: When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions "set up tracking," "GA4," "Google Analytics," "conversion tracking," "event tracking," "UTM parameters," "tag manager," "GTM," "analytics implementation," "tracking plan," "how do I measure this," "track conversions," "attribution," "Mixpanel," "Segment," "are my events firing," or "analytics isn't working." Use this whenever someone asks how to know if something is working or wants to measure marketing results. For A/B test measurement, see ab-testing.
+description: When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions "set up tracking," "GA4," "Google Analytics," "conversion tracking," "event tracking," "UTM parameters," "tag manager," "GTM," "analytics implementation," "tracking plan," "how do I measure this," "track conversions," "Mixpanel," "Segment," "are my events firing," or "analytics isn't working." Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing.
 disable-model-invocation: true
 metadata:
   origin: vendored
   upstream: https://github.com/coreyhaines31/marketingskills/tree/main/skills/analytics
-  imported_at: 2026-06-13
-  version: 2.0.0
+  imported_at: 2026-10-02
+  version: 2.0.1
 ---
+
 
 # Analytics Tracking
 
@@ -293,21 +294,22 @@ dataLayer.push({
 
 ## Tool Integrations
 
-Key analytics tools:
+For implementation, see the [tools registry](../../tools/REGISTRY.md). Key analytics tools:
 
 | Tool | Best For | MCP | Guide |
 |------|----------|:---:|-------|
-| **GA4** | Web analytics, Google ecosystem | ✓ | `ga4` |
-| **Mixpanel** | Product analytics, event tracking | - | `mixpanel` |
-| **Amplitude** | Product analytics, cohort analysis | - | `amplitude` |
-| **PostHog** | Open-source analytics, session replay | - | `posthog` |
-| **Segment** | Customer data platform, routing | - | `segment` |
+| **GA4** | Web analytics, Google ecosystem | ✓ | [ga4.md](../../tools/integrations/ga4.md) |
+| **Mixpanel** | Product analytics, event tracking | - | [mixpanel.md](../../tools/integrations/mixpanel.md) |
+| **Amplitude** | Product analytics, cohort analysis | - | [amplitude.md](../../tools/integrations/amplitude.md) |
+| **PostHog** | Open-source analytics, session replay | - | [posthog.md](../../tools/integrations/posthog.md) |
+| **Segment** | Customer data platform, routing | - | [segment.md](../../tools/integrations/segment.md) |
 
 ---
 
 ## Related Skills
 
 - **ab-testing**: For experiment tracking
+- **attribution**: For attribution models, multi-touch/MMM/incrementality, and reconciling conflicting numbers across tools (once tracking is live)
 - **seo-audit**: For organic traffic analysis
 - **cro**: For conversion optimization (uses this data)
 - **revops**: For pipeline metrics, CRM tracking, and revenue attribution

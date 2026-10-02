@@ -4,7 +4,7 @@ description: Python design patterns including KISS, Separation of Concerns, Sing
 metadata:
   origin: vendored
   upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-design-patterns
-  imported_at: 2026-06-07
+  imported_at: 2026-10-02
 ---
 
 # Python Design Patterns
@@ -86,4 +86,4 @@ This is a layering violation. The service layer must not import from handlers. I
 ## Related Skills
 
 - [python-testing-patterns](../python-testing-patterns/SKILL.md) — Test each layer in isolation using the dependency injection structure established here
-- `python-project-setup` skill — Set up project structure and tooling that enforces layer boundaries from the start
+- [python-project-structure](../python-project-structure/SKILL.md) — Organize modules and directory layout so layer boundaries are explicit from the start

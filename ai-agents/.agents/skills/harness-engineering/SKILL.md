@@ -5,7 +5,7 @@ description: "This skill should be used when designing autonomous agent harnesse
 metadata:
   origin: vendored
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/harness-engineering
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Harness Engineering

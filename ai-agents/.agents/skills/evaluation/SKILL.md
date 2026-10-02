@@ -5,7 +5,7 @@ description: "This skill should be used when building agent evaluation systems: 
 metadata:
   origin: vendored
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/evaluation
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Evaluation Methods for Agent Systems

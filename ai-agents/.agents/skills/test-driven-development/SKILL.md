@@ -2,9 +2,8 @@
 name: test-driven-development
 description: Test-first implementation with the red-green-refactor loop - plan testable interfaces, write one failing test, write minimal code to pass, then refactor. Use when the user asks for TDD, test-first development, red-green-refactor, or a tracer-bullet approach, or when a task states that tests are part of the implementation to deliver. Do not use for adding tests to code that already exists without a behavior change, for throwaway prototypes, or for generated code.
 metadata:
-  origin: derived
-  upstream: https://github.com/obra/superpowers/tree/main/skills/test-driven-development
-  imported_at: 2026-06-09
+  version: "1.0"
+  origin: first-party
 ---
 
 # Test-Driven Development (TDD)
@@ -146,7 +145,7 @@ Vague name, tests the mock rather than the code.
 - Clear name describing the behavior
 - Real code; no mocks unless unavoidable
 
-See [references/tests.md](references/tests.md) for more good and bad test examples, and [references/mocking.md](references/mocking.md) for where mocking is legitimate.
+See [references/tests.md](references/tests.md) for more good and bad test examples, including how to name the break a test catches and avoid change-detector assertions, and [references/mocking.md](references/mocking.md) for where mocking is legitimate.
 
 ### Verify RED - Watch It Fail
 
@@ -219,6 +218,8 @@ Confirm:
 **Test fails?** Fix the code, not the test.
 
 **Other tests fail?** Fix them now.
+
+**"Other tests" means the project's suite, not just your file.** A green run of the test you wrote is not a green suite. Before you call the change done, run the project's test command (bare `pytest`, `npm test`, `cargo test` - whatever the repo uses) even when your task named only one test file. A scope statement in your task bounds the deliverable, not your verification. Any failure that run shows - including one you did not cause - goes in your report by name; a red test you watched scroll past and did not mention is a report falsified by omission.
 
 ### REFACTOR - Clean Up
 
@@ -311,5 +312,6 @@ Before marking the work complete:
 - [ ] Output is pristine: no errors, no warnings
 - [ ] Tests use real code; mocks only where unavoidable
 - [ ] Edge cases and error paths are covered
+- [ ] Mutation check: mentally mutate the production code (wrong constant, wrong branch, missing side effect, empty/default return, missing validation) - at least one test fails for each realistic mutation
 
 If a test was not observed failing first, report that limitation accurately and use the cycle for the remaining behavior. Do not destroy existing work to manufacture a RED result.

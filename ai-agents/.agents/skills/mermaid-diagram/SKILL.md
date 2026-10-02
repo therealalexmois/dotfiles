@@ -5,9 +5,9 @@ argument-hint: [diagram description or requirements]
 allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
 disable-model-invocation: true
 metadata:
-  origin: vendored
+  origin: derived
   upstream: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/tree/main/skills/mermaid-diagram
-  upstream_note: "content-identical copy; the original publisher was not established"
+  upstream_note: "local adds a configurable $MERMAID_OUTPUT_DIR env var (falls back to figures/) that upstream does not have; otherwise tracks upstream closely. The original publisher was not established."
   imported_at: 2026-06-12
 ---
 

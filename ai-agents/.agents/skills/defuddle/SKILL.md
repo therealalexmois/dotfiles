@@ -6,7 +6,7 @@ metadata:
   origin: vendored
   upstream: https://github.com/MrZhang123/ai-workspace/tree/main/skills/defuddle
   upstream_note: "content-identical copy; the original publisher was not established"
-  imported_at: 2026-05-31
+  imported_at: 2026-10-02
 ---
 
 # Defuddle

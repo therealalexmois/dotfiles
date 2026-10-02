@@ -4,7 +4,7 @@ description: Profile and optimize Python code using cProfile, memory profilers, 
 metadata:
   origin: vendored
   upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-performance-optimization
-  imported_at: 2026-06-13
+  imported_at: 2026-10-02
 ---
 
 # Python Performance Optimization

@@ -5,7 +5,7 @@ description: "This skill should be used for advanced LLM evaluation: LLM-as-judg
 metadata:
   origin: vendored
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/advanced-evaluation
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Advanced Evaluation

@@ -1,11 +1,11 @@
 ---
 name: context-compression
 disable-model-invocation: true
-description: This skill should be used when long-running agent sessions need context compression, structured summarization, compaction, token-per-task optimization, or durable handoff summaries that preserve decisions, files, risks, and next actions.
+description: "This skill should be used when long-running agent sessions need context compression, structured summarization, compaction, token-per-task optimization, or durable handoff summaries that preserve decisions, files, risks, and next actions."
 metadata:
   origin: vendored
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-compression
-  imported_at: 2026-06-09
+  imported_at: 2026-10-02
 ---
 
 # Context Compression Strategies
@@ -27,6 +27,7 @@ Do not activate this skill for adjacent work owned by other skills:
 - Diagnosing why a long context is failing before choosing a mitigation: `context-degradation`.
 - Writing raw outputs, logs, or plans to files without summarizing them: `filesystem-context`.
 - Designing long-term semantic memory across sessions: `memory-systems`.
+- The model deciding when and where to rewrite its own context: `self-managed-context`. This skill still owns what the replacement text must preserve.
 
 ## Core Concepts
 
@@ -258,6 +259,7 @@ This skill connects to several others in the collection:
 - context-optimization - Compression is one optimization technique among many
 - evaluation - Probe-based evaluation applies to compression testing
 - memory-systems - Compression relates to scratchpad and summary memory patterns
+- self-managed-context - When the model triggers and places its own compaction edits, this skill supplies what the replacement note preserves
 
 ## References
 

@@ -4,7 +4,7 @@ description: Create distributable Python packages with proper project structure,
 metadata:
   origin: vendored
   upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-packaging
-  imported_at: 2026-06-13
+  imported_at: 2026-10-02
 ---
 
 # Python Packaging
