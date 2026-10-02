@@ -22,6 +22,7 @@ note "bash lint: AI CLI shell scripts"
 if command -v shellcheck >/dev/null 2>&1; then
   if shellcheck \
     "${repo_dir}/ai-agents/.agents/skills/git-worktree/scripts/create-worktree" \
+    "${repo_dir}/ai-agents/.claude/hooks/llm-wiki-session.sh" \
     "${repo_dir}/ai-agents/.claude/hooks/worktree-create.sh" \
     "${repo_dir}/ai-agents/.claude/hooks/worktree-remove.sh" \
     "${repo_dir}/ai-agents/.claude/statusline.sh" \

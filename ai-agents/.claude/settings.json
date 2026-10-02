@@ -28,6 +28,16 @@
             "statusMessage": "Linting edited file..."
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -50,6 +60,16 @@
             "statusMessage": "Preparing session recap..."
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Loading llm-wiki session context"
+          }
+        ]
       }
     ],
     "WorktreeCreate": [
@@ -69,6 +89,64 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/worktree-remove.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Checking llm-wiki session context"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Capturing llm-wiki pre-compact session context"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Capturing llm-wiki post-compact session context"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5
           }
         ]
       }
@@ -120,7 +198,16 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "wiki@llm-wiki": true
+  },
+  "extraKnownMarketplaces": {
+    "llm-wiki": {
+      "source": {
+        "source": "github",
+        "repo": "nvk/llm-wiki"
+      }
+    }
   },
   "language": "russian",
   "effortLevel": "xhigh",

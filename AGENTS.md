@@ -14,7 +14,8 @@ Stow-managed (see README.md "The role of GNU Stow"):
   `config.shared.toml` including `[mcp_servers.*]`, `config.local.toml.example`, and
   `*.config.toml` reasoning/mode profiles), `.claude/` (`CLAUDE.md`, `settings.json`,
   `statusline.sh`, `mcp-servers.json` (declares user-scope MCP servers synced by
-  `scripts/install-ai-cli-dotfiles.sh`), and `agents/` tracked Claude Code subagents), and
+  `scripts/install-ai-cli-dotfiles.sh`), `agents/` tracked Claude Code subagents, and
+  `hooks/` Claude Code hook scripts wired from `settings.json`), and
   `.agents/skills/` (shared agent skills, the source of truth for both CLIs). Runtime state,
   secrets, and the rendered `config.toml` are git-ignored. Also stows a legacy top-level
   `ai-agents/rules/` (empty) to `~/rules`.
@@ -487,6 +488,15 @@ Rename checklist (every step is required, the link layers break silently):
 - Treat `.pyenv/`, `tmux/plugins/*`, ignored Zsh plugin checkouts, shell history, htop
   config, and local-only CLI configs as machine state unless the user explicitly asks to
   version them.
+- The `wiki@llm-wiki` Claude plugin (marketplace `nvk/llm-wiki`, enabled in
+  `ai-agents/.claude/settings.json`) replaces the former vendored `llm-wiki` skill.
+  Its 0.25.0 Claude build ships no hooks, so `ai-agents/.claude/hooks/llm-wiki-session.sh`
+  runs the helper from the plugin cache on the same events as the plugin's Codex
+  `hooks.json`. The helper records redacted events from every Claude Code session,
+  in every project, into `<HUB>/.sessions/` (HUB from `~/.config/llm-wiki/config.json`)
+  and may inject digests from that store as context. Turn capture off with the
+  helper's `disable` command and per-prompt rehydration with
+  `rehydrate.user_prompt` in `<HUB>/.sessions/config.json`; neither lives in this repo.
 - `ai-agents/.claude/rules/local/` is gitignored and holds machine- or workspace-specific
   Claude rules, such as a symlink to a rule file that lives in another private repo.
   `~/.claude/rules` is a whole-directory Stow link to `ai-agents/.claude/rules/`, so
