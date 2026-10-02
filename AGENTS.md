@@ -276,7 +276,7 @@ manually, per machine) are:
 | Project | Skills from this repository to make project-local when needed |
 | --- | --- |
 | `.dotfiles` | `agent-instruction`, `audit-repository-documentation`, `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester`; enforced for Claude by `scripts/claude-project-only-skills.txt`, not available to Codex here |
-| `life-os` | `close-my-day`, `morning-briefing`, `whats-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` |
+| `life-os` | `close-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` |
 | `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` |
 | `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica` |
 | `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python`; add database or spreadsheet skills only where the workflow uses them |
@@ -356,7 +356,6 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |
 | run bundled skill package/script validators or tier scoring | `skill-tester` | manual |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
-| design a multi-agent workflow | `agent-workflow-designer` | manual |
 | build a Workflow script | `workflow-builder` | manual |
 | lead a series of issues as Team Lead: delegate to Codex or Claude executors, review, merge | `team-lead` | yes |
 | design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
@@ -396,7 +395,6 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | brainstorm a small or medium engineering decision | `brainstorm-lite` | yes |
 | design a complex or materially uncertain change before implementation | `brainstorming` | yes |
 | structured brainstorm | `six-thinking-hats` | manual |
-| challenge and stress-test ideas | `grill-me` | manual |
 | productivity coaching | `productivity-coach` | manual |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
