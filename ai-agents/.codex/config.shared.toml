@@ -2,6 +2,7 @@ model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 plan_mode_reasoning_effort = "high"
 approval_policy = "on-request"
+approvals_reviewer = "auto_review"
 sandbox_mode = "workspace-write"
 web_search = "cached"
 
@@ -10,6 +11,7 @@ network_access = false
 
 [tui]
 vim_mode_default = true
+fullscreen_transcript = false
 status_line = [
   "model-with-reasoning",
   "current-dir",
@@ -29,4 +31,10 @@ memories = true
 
 [mcp_servers.context7]
 command = "npx"
-args = ["-y", "@upstash/context7-mcp"]
+args = ["--yes", "--prefer-offline", "@upstash/context7-mcp"]
+startup_timeout_sec = 60
+
+# singularity MCP отключен: требовал регулярной OAuth-переавторизации.
+# Чтобы вернуть: раскомментировать и выполнить `codex mcp login singularity`.
+# [mcp_servers.singularity]
+# url = "https://mcp.singularity-app.com/mcp?toolsets=tasks,projects,meta"

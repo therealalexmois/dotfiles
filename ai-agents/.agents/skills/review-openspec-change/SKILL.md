@@ -1,5 +1,6 @@
 ---
 name: review-openspec-change
+disable-model-invocation: true
 description: >-
   Проводит evidence-based ревью явно указанного scope OpenSpec: отдельного
   proposal, delta spec, design, tasks или diff; выбранного набора артефактов;
@@ -11,6 +12,9 @@ description: >-
   fix-prompt или bounded self-review loop. Не расширяет запрос до полного change
   автоматически и не считает CLI validation доказательством семантической
   готовности.
+metadata:
+  version: "1.0"
+  origin: first-party
 ---
 
 # Review OpenSpec Change

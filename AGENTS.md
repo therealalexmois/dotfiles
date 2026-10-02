@@ -63,9 +63,19 @@ Everything else:
 - `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
 - `scripts/` - Repo tooling: `install-ai-cli-dotfiles.sh` (Stow + skill/profile symlinks),
   `render-codex-config.py` (merge shared + local Codex TOML into `~/.codex/config.toml`),
-  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `audit-skills.sh` (security
+  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `check-skills.sh` (validates
+  the skill invariants: SKILL.md presence, directory name equal to the frontmatter
+  `name`, supported Codex skill products, no stray nested SKILL.md, no dangling links
+  in the three installed layers),
+  `test-prune-stray-skill-links.sh` (unit test for the installer's link pruning),
+  `skills-provenance-unresolved.txt` (allowlist of skills whose upstream is not
+  established yet),
+  `audit-skills.sh` (security
   audit of all skills via skill-security-auditor; compares with the committed
-  `skills-audit-baseline.json`), and `dry-run-install.sh` (validates Stow-package and zsh
+  `skills-audit-baseline.json`), `skill-usage-report.py` (counts real skill activations
+  in Claude Code transcripts and Codex sessions by path: slash, named, auto, nested,
+  subagent; flags candidates for `disable-model-invocation` and Claude/Codex policy
+  mismatches), and `dry-run-install.sh` (validates Stow-package and zsh
   startup symlinks against a throwaway fake `$HOME`; see README.md "Verifying the
   install").
 - `.gitignore` - Ignore rules for machine state, plugin caches, and local-only tools.
@@ -94,9 +104,10 @@ zsh zsh/bootstrap.zsh
 bootstrap/install-alacritty.sh
 
 # Install AI CLI agent dotfiles: backup, Stow `bootstrap`+`ai-agents` (folds
-# ~/.claude/agents), render Codex config, and create per-skill / per-profile symlinks for
-# Codex and Claude. Idempotent; moves real-file conflicts to a timestamped backup and never
-# touches ~/.codex/skills/.system.
+# ~/.claude/agents), render Codex config, and link all skills to Claude plus the curated
+# global set to Codex. --skills-only changes skill links without syncing MCP or config.
+# Idempotent; moves real-file conflicts to a timestamped backup and never touches
+# ~/.codex/skills/.system.
 scripts/install-ai-cli-dotfiles.sh
 
 # Neovim bootstraps lazy.nvim on first start.
@@ -124,6 +135,10 @@ zsh -n bootstrap/.zshenv zsh/.zshenv zsh/.zprofile zsh/.zshrc zsh/bootstrap.zsh
 # Lint + smoke the AI CLI tooling (zsh -n, shellcheck, py_compile, render --check,
 # TOML parse of shared/profile configs). Performs no writes to ~/.codex or ~/.claude.
 scripts/check-ai-cli.sh
+
+# Validate the skill layer: sources (SKILL.md, names, provenance) plus the installed
+# ~/.agents, ~/.claude and ~/.codex link layers. --repo-only skips host-dependent checks.
+scripts/check-skills.sh
 
 # Security-audit all agent skills (skips *-workspace scratch dirs) and compare the
 # verdicts with scripts/skills-audit-baseline.json; --update-baseline rewrites it.
@@ -192,8 +207,9 @@ Neovim: init.lua → lazy_setup.lua → AstroNvim + community.lua + plugins/
                                ├→ CodeCompanion  (NVIM_AI_PROFILE: home | work | claude)
                                └→ claudecode.nvim (claude CLI over IDE protocol, no nvim wiring)
 
-AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
-                                               └→ ~/.codex/skills/
+AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all skills)
+                                  └→ ~/.agents/skills/ (Codex global selection)
+        ~/.codex/skills/.system remains untouched
         ai-agents/.claude/agents/ (Stow fold)  → ~/.claude/agents/
         ai-agents/.codex/*.config.toml          → ~/.codex/ (child links)
 ```
@@ -206,18 +222,63 @@ AI CLI: ai-agents/ (Stow) → ~/.agents/skills/  → ~/.claude/skills/
 
 ## Agent Skills: Naming and Layout
 
-Two link layers above the repo; both break silently if a rename is done halfway.
+Claude gets every source skill. Codex gets only the curated global selection;
+repository-local skills remain available from each project's `.agents/skills/`.
 
 ```
 ai-agents/.agents/skills/<name>/SKILL.md  ← source of truth
 
 scripts/install-ai-cli-dotfiles.sh creates:
-~/.agents/skills/<name>         → .dotfiles/ai-agents/.agents/skills/<name>  (Stow)
-    ├── ~/.claude/skills/<name> → ~/.agents/skills/<name>                    (child)
-    └── ~/.codex/skills/<name>  → ~/.agents/skills/<name>                    (child)
+~/.claude/skills/<name> → .dotfiles/ai-agents/.agents/skills/<name>  (all)
+~/.agents/skills/<name> → .dotfiles/ai-agents/.agents/skills/<name>  (Codex global)
 ```
 
-Skills load only at CLI startup. Restart Claude Code and Codex after adding or renaming.
+The Codex selection is in `scripts/codex-global-skills.txt`. The installer removes
+old repository-managed links under `~/.codex/skills/`, preserving `.system` and
+unrelated live links. Restart Claude Code and Codex after changing skill links.
+
+Keep domain-specific source skills in the relevant project's `.agents/skills/`
+when Codex needs them. The current placement decisions are:
+
+| Project | Skills from this repository to make project-local when needed |
+| --- | --- |
+| `.dotfiles` | `agent-instruction`, `audit-repository-documentation`, `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester` |
+| `life-os` | `close-my-day`, `morning-briefing`, `whats-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` |
+| `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` |
+| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica` |
+| `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python`; add database or spreadsheet skills only where the workflow uses them |
+
+This table selects scope; it does not install links in those other repositories.
+Other specialized skills remain in the source catalog and can be linked into a
+project when a concrete workflow calls for them.
+
+Layout follows the [Agent Skills specification](https://agentskills.io/specification):
+
+```
+<skill>/
+├── SKILL.md        # required; keep under 500 lines
+├── references/     # documentation the agent reads on demand
+├── scripts/        # executable code
+├── assets/         # templates and static resources
+└── README.md, LICENSE   # package-level files stay at the root
+```
+
+Frontmatter carries only the spec fields - `name` (must equal the directory name,
+lowercase letters, digits and single hyphens), `description` (max 1024 characters),
+and optionally `license`, `compatibility` (max 500), `metadata` (string values only)
+and `allowed-tools` (space-separated). Everything else belongs under `metadata`. The
+exception is the client-specific keys Claude Code actually reads, which stay at the
+top level: `disable-model-invocation`, `argument-hint`, `user-invocable`.
+
+Codex ignores `disable-model-invocation`; its equivalent is
+`policy.allow_implicit_invocation: false` in the skill's `agents/openai.yaml`, which
+also removes the skill from Codex's skill list. Keep the two in sync: every skill with
+`disable-model-invocation: true` carries that policy and vice versa.
+`scripts/skill-usage-report.py` reports a mismatch as `mismatch`.
+
+Link bundled files with paths relative to the skill root (`references/tests.md`), one
+level deep. A file sitting next to `SKILL.md` instead of in `references/` is invisible
+to `tessl review`, which reports every such link as missing.
 
 Naming convention for first-party skills: the directory name and the `name:` field in
 `SKILL.md` frontmatter must carry a domain prefix:
@@ -232,6 +293,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | `git-` | Git repository and worktree workflows |
 | `gitlab-` | GitLab workflows |
 | `spirit-deploy` | deploy (single-skill domain) |
+| `team-lead` | leading a task series through Codex and Claude executors (single-skill domain) |
 
 Third-party imported skills keep their upstream names and are exempt unless a provider
 prefix is needed to avoid a system-skill collision. The `obsidian-*` skills moved out of
@@ -240,27 +302,40 @@ Anthropic skill creator eval scratch dirs (`*-workspace/`) are git-ignored and n
 
 ### Skill Routing
 
-Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" = explicitly invoked via `/skill-name`.
+Active source skills where installed. "yes" means intended selection by description;
+"manual" means intended explicit invocation by name. This table must agree with each
+skill's `disable-model-invocation` frontmatter; neither value guarantees runtime selection.
 
 | Trigger | Skill | Auto |
 | --- | --- | --- |
-| write, edit, shorten, or review Russian text | `writing` | yes |
+| write or edit general Russian text, or make language-only edits to a document fragment | `writing` | yes |
+| write in Alex's style when explicitly requested, alongside the task-specific skill | `draft-in-alex-style` | yes |
 | distill raw thoughts or a voice-to-text transcript into clear text | `distill-thoughts` | yes |
 | write a plan or design document | `writing-plans` | yes |
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
+| compare Python idioms or consult worked examples, explicitly | `python-patterns` | manual |
 | inspect, create, reuse, sync, or clean up Git worktrees | `git-worktree` | yes |
-| create, edit, or eval a skill | `anthropic-skill-creator` | yes |
+| create, edit, or behaviorally evaluate a skill | `anthropic-skill-creator` | yes |
 | audit skill for security | `skill-security-auditor` | manual |
 | audit skill for hardcoded values, parameterization | `skill-param-auditor` | yes |
 | review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |
+| run bundled skill package/script validators or tier scoring | `skill-tester` | manual |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
+| lead a series of issues as Team Lead: delegate to Codex or Claude executors, review, merge | `team-lead` | yes |
 | design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
-| database schema design | `database-schema-designer` | manual |
+| relational schema design, ERD, table relationships | `database-schema-designer` | manual |
+| SQL queries, schema exploration, ORM integration | `sql-database-assistant` | manual |
+| PostgreSQL-specific design, diagnosis, or optimization | `postgres-engineer` | manual |
+| high-risk database, system, or infrastructure migration and rollback | `migration-architect` | manual |
+| cross-database architecture, SQL versus NoSQL, or multi-engine physical design | `database-designer` | manual |
+| build an MCP server without an OpenAPI contract | `mcp-builder` | yes |
+| generate an MCP server from an existing OpenAPI contract | `mcp-server-builder` | manual |
+| design one agent tool's schema, description, or error contract | `tool-design` | manual |
 | observability, SLO, metrics | `observability-designer` | manual |
 | chaos experiments, fault injection, game days, blast radius | `chaos-engineering` | manual |
 | improve code architecture | `improve-codebase-architecture` | manual |
@@ -268,25 +343,34 @@ Active dotfiles skills. "Auto" = auto-triggered by description match; "manual" =
 | build a CLI tool: arg parsing, shell completions, terminal UX | `cli-developer` | manual |
 | security review | `security-guidance` | yes |
 | tech debt audit | `tech-debt-tracker` | manual |
-| review before completing a task | `review-before-completion` | yes |
 | generate a runbook | `runbook-generator` | manual |
+| audit and trim repository docs, AGENTS.md, rules, skills, prompts | `audit-repository-documentation` | yes |
 | write, edit, or review technical documentation (tutorial, how-to, reference, API/CLI, troubleshooting, README, runbook) | `writing-technical-documentation` | yes |
 | plan, write, edit, or review technical marketing content (blog post, case study, white paper, landing page, announcement) | `writing-technical-marketing-content` | yes |
+| create or substantially restructure an RFC or ADR from source material | `rfc-authoring` | yes |
+| create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
+| design a reusable, system, or production-model prompt | `prompt-design` | yes |
+| review an existing prompt with findings and a verdict | `prompt-review` | yes |
+| build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | manual |
+| learn a concept through Socratic dialogue, graduated hints, or guided discovery | `teach-through-dialogue` | manual |
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |
-| TDD, test-first development | `tdd` / `test-driven-development` | manual |
-| quick brainstorm | `brainstorm-lite` | yes |
-| structured brainstorm | `six-thinking-hats` | yes |
-| challenge and stress-test ideas | `grill-me` | yes |
-| productivity coaching | `productivity-coach` | yes |
+| Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
+| set up or audit analytics tracking (GA4, GTM, events) | `analytics-tracking` | manual |
+| TDD, test-first development, red-green-refactor | `test-driven-development` | yes |
+| brainstorm a small or medium engineering decision | `brainstorm-lite` | yes |
+| design a complex or materially uncertain change before implementation | `brainstorming` | yes |
+| structured brainstorm | `six-thinking-hats` | manual |
+| challenge and stress-test ideas | `grill-me` | manual |
+| productivity coaching | `productivity-coach` | manual |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
-| onboard to a codebase | `codebase-onboarding` | manual |
+| onboard to a codebase | `codebase-onboarding` | yes |
 
 The `skill-reviewer` subagent (`ai-agents/.claude/agents/skill-reviewer.md`, Claude-only)
 runs `skill-quality-reviewer` in a clean isolated context: it reads the skill's
-`SKILL.md` + `GLOSSARY.md` and applies them, so the doctrine stays a single source of
+`SKILL.md` + `references/GLOSSARY.md` and applies them, so the doctrine stays a single source of
 truth in the skill. Use the skill directly (`/skill-quality-reviewer`, also from Codex)
 for an inline review; dispatch `@skill-reviewer` when you want fresh-eyes review off the
 current context.
@@ -297,18 +381,46 @@ Vault skills (`~/Workspace/vault/.claude/skills/`) are not listed here; they hav
 > `daas-k8s-debug`, `incident-triage`, `time-messenger`. (`to-prd` renamed to
 > `writing-prd-draft`.)
 
+### Skill Provenance
+
+Every `SKILL.md` declares where its text came from, in the frontmatter `metadata`
+block. `scripts/check-skills.sh` enforces it:
+
+```yaml
+metadata:
+  origin: vendored          # first-party | vendored | derived | unresolved
+  upstream: https://github.com/owner/repo/tree/main/skills/name  # required for vendored/derived
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-06-19   # date of the commit that added it here
+```
+
+- `first-party` - written in this repository. No upstream.
+- `vendored` - copied from upstream; the local text still matches it closely.
+- `derived` - based on upstream but reworked here.
+- `unresolved` - the upstream was searched for and not found. Accepted only for
+  the names in `scripts/skills-provenance-unresolved.txt`; every other skill
+  declaring it fails the check, and so does a stale line in that file.
+
+The provenance lives in the skill rather than in a separate registry so a skill
+directory stays self-describing. When re-importing an upstream version, re-apply
+these keys - they are local additions and upstream will not carry them.
+
 Rename checklist (every step is required, the link layers break silently):
 
 1. Rename the directory under `ai-agents/.agents/skills/`.
 2. Update `name:` in the skill's `SKILL.md` frontmatter.
-3. Recreate all three symlinks (`~/.agents/skills`, `~/.claude/skills`,
-   `~/.codex/skills`) or rerun `scripts/install-ai-cli-dotfiles.sh`.
-4. Update cross-references to the old name in other `SKILL.md` files.
-5. Restart Claude Code and Codex so the renamed skill is picked up.
+3. Update `scripts/codex-global-skills.txt` if the skill is in Codex's global set.
+4. Rerun `scripts/install-ai-cli-dotfiles.sh --skills-only` to update Claude and
+   Codex links.
+5. Update cross-references to the old name in other `SKILL.md` files.
+6. Run `scripts/check-skills.sh` to confirm source names and installed link scopes.
+7. Restart Claude Code and Codex so the renamed skill is picked up.
 
 ## Testing Strategy
 
-- Unit tests: no first-party unit test suite is documented.
+- Unit tests: `scripts/test-prune-stray-skill-links.sh` covers the installer's link
+  pruning (sourcing the installer does not run it; `main` is guarded). No other
+  first-party unit test suite is documented.
   > TODO: Add tests for `nvim/lua/config/ai/docstring/extractor.lua` if its behavior
   > becomes shared or regression-prone.
 - Integration checks: run `stylua --check nvim`, `(cd nvim && selene .)`, `zsh -n ...`, and
@@ -352,6 +464,8 @@ Rename checklist (every step is required, the link layers break silently):
   `git update-index --skip-worktree` because Codex and Claude write runtime state (model choices,
   project trust, TUI NUX) back into these files via their symlinks. To change tracked defaults:
   temporarily `--no-skip-worktree`, edit, commit, then re-apply `--skip-worktree`.
+- `ai-agents/.agents/skills/yandex-metrica/config/.env` holds a Yandex OAuth token. The
+  skill's own `.gitignore` keeps it and `cache/*.json` untracked; never commit either.
 - `nvim/lazy-lock.json` pins Neovim plugin revisions; update it only through plugin update
   workflows, not hand edits.
 - Vendored upstream plugin directories may carry their own licenses, but they are ignored
@@ -431,6 +545,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | --- | --- | --- |
 | Reusable AI prompt | `llm/prompts/<name>.md` | Project overrides in `<repo>/.prompts` |
 | Agent skill | `ai-agents/.agents/skills/<name>/SKILL.md` | See "Agent Skills" section |
+| Codex global skill selection | `scripts/codex-global-skills.txt` | Claude receives all source skills |
 | Claude subagent | `ai-agents/.claude/agents/<name>.md` | Stow-folded to `~/.claude/agents/` |
 | Codex reasoning profile | `ai-agents/.codex/<name>.config.toml` | Symlinked to `~/.codex/` |
 | Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |
@@ -443,6 +558,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | Shell entrypoint | `bootstrap/.zshenv` / `zsh/bootstrap.zsh` | |
 | Starship module | `starship.toml` | |
 | Terminal config | `alacritty/` | |
+| Skill invariants | `scripts/check-skills.sh` | Names, SKILL.md presence, Codex products, installed link layers |
 | Install validation | `scripts/dry-run-install.sh` | Fake-`$HOME` symlink check; full VM run documented in README.md "Verifying the install" |
 
 Environment variables are the main feature flags: XDG paths in `zsh/.zshenv`, AI profile variables in CodeCompanion config.

@@ -1,6 +1,10 @@
 ---
 name: python-resource-management
 description: Python resource management with context managers, cleanup patterns, and streaming. Use when managing connections, file handles, implementing cleanup logic, or building streaming responses with accumulated state.
+metadata:
+  origin: vendored
+  upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-resource-management
+  imported_at: 2026-06-25
 ---
 
 # Python Resource Management

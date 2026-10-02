@@ -1,0 +1,25 @@
+[
+  {
+    "name": "explicit_style_request",
+    "input": "Перепиши короткое сообщение команде в моем стиле: релиз перенесен на пятницу из-за интеграционных тестов.",
+    "expected_behavior": [
+      "applies Alex's Russian writing style to the message",
+      "preserves the date and reason"
+    ],
+    "forbidden_behavior": [
+      "changes the facts",
+      "adds document structure or a domain workflow"
+    ]
+  },
+  {
+    "name": "rfc_structure_uses_domain_skill",
+    "input": "Собери технический RFC по миграции данных в моем стиле: сравни варианты и опиши rollout.",
+    "expected_behavior": [
+      "uses rfc-authoring for content and structure",
+      "applies Alex's style only to wording"
+    ],
+    "forbidden_behavior": [
+      "replaces the RFC workflow with generic style rules"
+    ]
+  }
+]

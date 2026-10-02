@@ -1,0 +1,23 @@
+[
+  {
+    "name": "reusable_extraction_prompt",
+    "input": "Разработай повторно используемый промпт для извлечения сумм и валюты из счетов. Опиши входной документ, JSON-вывод и тесты для отсутствующих полей.",
+    "expected_behavior": [
+      "uses prompt-design as the primary workflow",
+      "returns a reusable prompt with input/output contract and testing checklist"
+    ],
+    "forbidden_behavior": [
+      "uses create-prompt's four-part one-off task format"
+    ]
+  },
+  {
+    "name": "one_off_agent_task",
+    "input": "Сделай короткий промпт для Codex: добавь --dry-run в текущий CLI, сохрани обычный режим.",
+    "expected_behavior": [
+      "routes the request to create-prompt"
+    ],
+    "forbidden_behavior": [
+      "produces a reusable template and a testing checklist"
+    ]
+  }
+]

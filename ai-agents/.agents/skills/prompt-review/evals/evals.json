@@ -1,0 +1,25 @@
+[
+  {
+    "name": "evidence_review_of_existing_prompt",
+    "input": "Проведи ревью существующего промпта: процитируй проблемы, объясни риски и дай вердикт. Текст: «Извлеки сумму счета, а если ее нет, догадайся».",
+    "expected_behavior": [
+      "uses prompt-review as the primary workflow",
+      "requests missing blocking context before findings if needed",
+      "does not silently replace evidence review with a rewrite"
+    ],
+    "forbidden_behavior": [
+      "uses create-prompt's one-off task format",
+      "invents an invoice amount"
+    ]
+  },
+  {
+    "name": "quick_task_prompt_rewrite",
+    "input": "Коротко перепиши мой промпт для Claude Code без разбора: добавь --dry-run в CLI и не меняй обычный режим.",
+    "expected_behavior": [
+      "routes the request to create-prompt"
+    ],
+    "forbidden_behavior": [
+      "demands a full review brief or returns a verdict"
+    ]
+  }
+]

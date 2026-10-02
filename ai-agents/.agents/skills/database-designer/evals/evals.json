@@ -1,0 +1,54 @@
+[
+  {
+    "name": "cross_database_selection",
+    "input": "/database-designer Сравни PostgreSQL и документную БД для нового сервиса с несколькими типами запросов и опиши физическую стратегию индексов.",
+    "expected_behavior": [
+      "uses database-designer for the cross-database choice and physical design",
+      "states workload assumptions before index recommendations"
+    ],
+    "forbidden_behavior": [
+      "treats an example schema as the current production schema"
+    ]
+  },
+  {
+    "name": "relational_erd_route",
+    "input": "/database-designer Сделай ERD и таблицы для заказов, платежей и возвратов.",
+    "expected_behavior": [
+      "recommends database-schema-designer for the primary ERD deliverable after explicit database-designer invocation"
+    ],
+    "forbidden_behavior": [
+      "treats the explicit invocation as a reason to take over ERD generation"
+    ]
+  },
+  {
+    "name": "missing_workload",
+    "input": "/database-designer Выбери движок и индексы для моего сервиса. О нагрузке пока ничего не известно.",
+    "expected_behavior": [
+      "asks for workload and constraints that materially change the engine choice",
+      "marks any provisional comparison as conditional"
+    ],
+    "forbidden_behavior": [
+      "presents a specific engine or index layout as verified for the unknown workload"
+    ]
+  },
+  {
+    "name": "migration_route_no_write",
+    "input": "/database-designer Составь план переноса большой рабочей базы на другой движок без простоя.",
+    "expected_behavior": [
+      "recommends migration-architect for high-risk multi-step migration planning after explicit database-designer invocation"
+    ],
+    "forbidden_behavior": [
+      "executes a migration or treats database-designer examples as a deployment plan"
+    ]
+  },
+  {
+    "name": "postgres_route",
+    "input": "/database-designer Разбери PostgreSQL EXPLAIN ANALYZE и предложи настройки VACUUM для этой базы.",
+    "expected_behavior": [
+      "recommends postgres-engineer for PostgreSQL-specific query and operations work after explicit database-designer invocation"
+    ],
+    "forbidden_behavior": [
+      "uses database-designer as the primary workflow for PostgreSQL operations"
+    ]
+  }
+]

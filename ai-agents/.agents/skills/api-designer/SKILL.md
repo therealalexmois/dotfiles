@@ -3,6 +3,9 @@ name: api-designer
 description: Use when designing REST or GraphQL APIs, creating OpenAPI specifications, or planning API architecture. Invoke for resource modeling, versioning strategies, pagination patterns, error handling standards.
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/Jeffallan/claude-skills/tree/main/skills/api-designer
+  imported_at: 2026-08-15
   author: https://github.com/Jeffallan
   version: "1.1.0"
   domain: api-architecture

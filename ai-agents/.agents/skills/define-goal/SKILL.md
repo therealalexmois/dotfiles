@@ -2,6 +2,10 @@
 name: define-goal
 disable-model-invocation: true
 description: Help the user define a concrete, measurable goal before starting work, especially when they ask to use the goal tool, create a goal, set an objective, clarify success criteria, or turn a fuzzy intention into a quantitative outcome. Use this skill for goal creation and goal refinement only; it does not manage durable snapshots, decision logs, or long-running execution artifacts.
+metadata:
+  origin: vendored
+  upstream: https://github.com/openai/skills/tree/main/skills/.curated/define-goal
+  imported_at: 2026-05-31
 ---
 
 # Define Goal

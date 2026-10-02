@@ -159,6 +159,7 @@
     "input": "Убери воду из одного абзаца готового RFC. Структуру не меняй.",
     "expected_behavior": [
       "does not run the full RFC authoring workflow",
+      "uses writing for the local language edit",
       "preserves the local edit scope"
     ],
     "forbidden_behavior": [

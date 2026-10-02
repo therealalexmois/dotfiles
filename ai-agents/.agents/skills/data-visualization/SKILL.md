@@ -3,6 +3,11 @@ name: data-visualization
 description: Create effective data visualizations with Python (matplotlib, seaborn, plotly). Use when building charts, choosing the right chart type for a dataset, creating publication-quality figures, or applying design principles like accessibility and color theory.
 user-invocable: true
 disable-model-invocation: true
+metadata:
+  origin: vendored
+  upstream: https://github.com/YongjianWan/--agentskill/tree/main/skill/data/skills/data-visualization
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-07-05
 ---
 
 # Data Visualization Skill

@@ -4,9 +4,13 @@ disable-model-invocation: true
 description: Design and write deterministic multi-agent workflow scripts (.js files in .claude/workflows/) for Claude Code's Workflow tool. Use when a user wants to build, create, author, scaffold, or run a custom Claude Code workflow, orchestrate sub-agents (fan-out, pipeline, loop, judge-panel), or automate a repeatable multi-step task across fresh-context agents.
 license: MIT
 metadata:
+  origin: derived
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/workflow-builder
+  upstream_note: "reworked 2026-09-29 to match the built-in workflow-authoring reference: dropped the CLAUDE_CODE_WORKFLOWS env-var gate (the tool now activates on explicit user opt-in, e.g. ultracode), corrected the /workflows key bindings, and added the effort option and default-omit model guidance"
+  imported_at: 2026-06-04
   inspired_by: "https://github.com/ray-amjad/claude-code-workflow-creator (Ray Amjad)"
-  targets: "Claude Code Workflow tool (CLAUDE_CODE_WORKFLOWS=1, /workflows)"
-  version: 1.0.0
+  targets: "Claude Code Workflow tool (/workflows)"
+  version: 1.1.0
 ---
 
 # Workflow Builder
@@ -58,7 +62,7 @@ Workflows earn their cost when work is parallel or multi-stage, must be reproduc
    ```bash
    python scripts/validate_workflow.py .claude/workflows/pr-triage.js
    ```
-4. **Run** it: enable the feature with `export CLAUDE_CODE_WORKFLOWS=1`, save the file under `.claude/workflows/`, then use `/workflows` to launch and watch it live. Press **P** to pause/resume, **X** to skip a sub-agent. Failed agents retry automatically.
+4. **Run** it: save the file under `.claude/workflows/`, then use `/workflows` to launch and watch it live. The Workflow tool itself only fires on explicit user opt-in (an `ultracode` request, a session with ultracode on, or a direct ask to run a workflow) — running the skill does not authorize the run on its own. In the `/workflows` view: `↑↓` selects an agent, `p` pauses/resumes, `x` stops the whole workflow, `esc` goes back, `s` saves the script as a named workflow. Failed agents retry automatically.
 
 ## Hard rules (validator enforces these)
 
@@ -68,6 +72,7 @@ Workflows earn their cost when work is parallel or multi-stage, must be reproduc
 - `parallel()` takes **thunks** (`() => agent(...)`), not bare promises. Default to `pipeline()` unless a stage needs the whole prior result set.
 - **Guard every open-ended loop** with a counter or `budget.remaining()` check — unguarded loops hit the 1000-agent cap.
 - Filter skipped/failed agents: `results.filter(Boolean)`.
+- **Omit `agent()`'s `model` option by default** — it inherits the session's main-loop model. Set it only when you're confident a specific tier fits that stage; the same applies to `effort` (reasoning effort per agent call).
 
 ## Tooling
 

@@ -1,7 +1,11 @@
 ---
 name: context-optimization
 disable-model-invocation: true
-description: This skill should be used for improving context efficiency: context budgeting, observation masking, prefix or KV-cache strategy, partitioning, token-cost reduction, retrieval scoping, and extending effective context capacity without lowering answer quality.
+description: "This skill should be used for improving context efficiency: context budgeting, observation masking, prefix or KV-cache strategy, partitioning, token-cost reduction, retrieval scoping, and extending effective context capacity without lowering answer quality."
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-optimization
+  imported_at: 2026-10-02
 ---
 
 # Context Optimization Techniques
@@ -23,6 +27,7 @@ Do not activate this skill for adjacent work owned by other skills:
 - Diagnosing active lost-in-middle, poisoning, distraction, confusion, or clash: `context-degradation`.
 - Designing a structured handoff summary for a long conversation: `context-compression`.
 - Storing large outputs, plans, or logs as files: `filesystem-context`.
+- Model-initiated rewrites of its own context and their re-prefill cost: `self-managed-context`.
 
 ## Core Concepts
 
@@ -73,7 +78,7 @@ Apply this ordering in every prompt:
 4. Conversation history (grows but shares prefix with prior turns)
 5. Current query and dynamic content (least stable — always last)
 
-Design prompts for cache stability: remove timestamps, session counters, and request IDs from the system prompt. Move dynamic metadata into a separate user message or tool result where it does not break the prefix. Even a single whitespace change in the prefix invalidates the entire cached block downstream of that change.
+Design prompts for cache stability: remove timestamps, session counters, and request IDs from the system prompt. Move dynamic metadata into a separate user message or tool result where it does not break the prefix. Even a single whitespace change in the prefix invalidates the entire cached block downstream of that change. The same rule prices any compaction or masking edit applied to earlier history: its cost is the text that follows it, so batch such edits and prefer them near the end of the context.
 
 Target 70%+ cache hit rate for stable workloads. At scale, this translates to 50%+ cost reduction and 40%+ latency reduction on cached tokens.
 
@@ -192,6 +197,7 @@ This skill owns token-efficiency tactics and budget policy. Adjacent skills own 
 - `filesystem-context`: file-backed offloading for full outputs and logs.
 - `multi-agent-patterns`: partitioning work across isolated agent contexts.
 - `latent-briefing`: selective KV retention across orchestrator-worker boundaries in compatible runtimes.
+- `self-managed-context`: the model, not the harness, decides when and what to edit in its live context.
 - `evaluation`: measuring whether the optimization improved quality, cost, or latency.
 - `memory-systems`: persistent retrieval layers that feed context just in time.
 

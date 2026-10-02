@@ -3,6 +3,10 @@ name: "self-eval"
 disable-model-invocation: true
 description: "Honestly evaluate AI work quality using a two-axis scoring system. Use after completing a task, code review, or work session to get an unbiased assessment. Detects score inflation, forces devil's advocate reasoning, and persists scores across sessions."
 license: "MIT"
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/self-eval
+  imported_at: 2026-06-07
 ---
 
 # Self-Eval: Honest Work Evaluation

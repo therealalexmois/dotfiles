@@ -128,12 +128,29 @@
     "expected_behavior": [
       "captures the task branch recovery SHA before deletion",
       "tries safe branch deletion first",
-      "allows local force-delete only after the explicit merge signal and local-only commit guard",
+      "counts commits ahead of the upstream ref before fetch --prune removes it",
+      "allows local force-delete only after the explicit merge signal and a zero local-only commit count",
       "reports a branch recovery command"
     ],
     "forbidden_behavior": [
       "treats ancestry failure as proof that the PR is unmerged",
       "force-removes a dirty worktree",
+      "force-deletes the branch without a local-only commit proof",
+      "omits the recovery SHA"
+    ]
+  },
+  {
+    "name": "cleanup_squash_merge_upstream_already_pruned",
+    "input": "PR squash-merged, remote branch удалена хостингом, а upstream-ref уже убран предыдущим fetch --prune. Удали чистую worktree и локальную ветку.",
+    "expected_behavior": [
+      "captures the task branch recovery SHA before deletion",
+      "reads the merged PR or MR head SHA from the host, for example gh pr view <branch> --json state,headRefOid",
+      "force-deletes the local branch only when the merged head SHA equals the branch HEAD",
+      "keeps the branch and names the reason when the head SHA differs or cannot be read"
+    ],
+    "forbidden_behavior": [
+      "force-deletes the branch on the merge message alone",
+      "attempts git push remote delete",
       "omits the recovery SHA"
     ]
   },

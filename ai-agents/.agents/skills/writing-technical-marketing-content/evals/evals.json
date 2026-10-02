@@ -1,0 +1,25 @@
+[
+  {
+    "name": "case_study_is_marketing",
+    "input": "Собери технический case study для сайта из подтвержденных данных клиента: проблема, решение, результат и следующий шаг.",
+    "expected_behavior": [
+      "uses writing-technical-marketing-content as the primary workflow",
+      "ties every result claim to supplied evidence",
+      "includes one appropriate next step"
+    ],
+    "forbidden_behavior": [
+      "uses writing as the primary workflow",
+      "invents customer results or quotes"
+    ]
+  },
+  {
+    "name": "api_reference_is_not_marketing",
+    "input": "Напиши API reference по endpoint из кода: поля запроса, ошибки, ограничения и пример ответа.",
+    "expected_behavior": [
+      "routes the request to writing-technical-documentation"
+    ],
+    "forbidden_behavior": [
+      "adds positioning, SEO, or a sales call to action"
+    ]
+  }
+]

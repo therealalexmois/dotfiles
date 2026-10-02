@@ -1,0 +1,149 @@
+{
+  "skill_name": "teach-through-dialogue",
+  "evals": [
+    {
+      "id": 1,
+      "name": "starts-with-diagnostic-question",
+      "prompt": "Используй $teach-through-dialogue. Помоги мне понять, почему asyncio полезен для I/O-bound задач.",
+      "expected_output": "A concise opening that begins the learning dialogue with one accessible diagnostic question.",
+      "expectations": [
+        "Asks exactly one primary question",
+        "Uses the learner's current mental model as the starting point",
+        "Does not front-load a lecture, syllabus, or explanation of the Socratic method",
+        "Does not ask the learner to assess their level abstractly when a concrete diagnostic question is possible"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "deepens-correct-answer",
+      "prompt": "Используй $teach-through-dialogue. Контекст диалога: ты спросил, что происходит, пока корутина ждёт сеть. Я ответил: event loop может запустить другую готовую корутину.",
+      "expected_output": "Briefly confirms the substance and advances to one deeper consequence or boundary question.",
+      "expectations": [
+        "Recognizes the answer as materially correct",
+        "Asks one deeper question about a consequence, boundary, or prediction",
+        "Does not repeat the same question or restart from definitions",
+        "Avoids generic praise"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "isolates-partial-understanding",
+      "prompt": "Используй $teach-through-dialogue. Мы разбираем dependency inversion. На вопрос, зачем зависеть от абстракции, я ответил: чтобы можно было всё замокать в тестах.",
+      "expected_output": "Treats the answer as partial and asks one focused question that separates testability from direction of dependency.",
+      "expectations": [
+        "Does not mark the answer as fully correct or wholly wrong",
+        "Surfaces that testability is a benefit but not the complete principle",
+        "Asks exactly one focused follow-up question",
+        "Does not dump a complete SOLID lecture"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "uses-counterexample-for-misconception",
+      "prompt": "Используй $teach-through-dialogue. Я считаю, что asyncio автоматически распараллеливает любой Python-код между ядрами CPU. Натолкни меня на понимание ошибки.",
+      "expected_output": "Uses a minimal concrete counterexample and one prediction question to expose the misconception.",
+      "expectations": [
+        "Does not validate the false claim",
+        "Introduces a concrete CPU-bound scenario or equivalent counterexample",
+        "Asks exactly one question that makes the learner predict observable behavior",
+        "Does not hide necessary factual correction behind vague questioning"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "first-stuck-response-gives-small-hint",
+      "prompt": "Используй $teach-through-dialogue. Ты спросил, почему CPU-bound корутина без await блокирует остальные. Я отвечаю: не знаю.",
+      "expected_output": "Reframes the problem or gives the smallest useful hint, then asks one simpler question.",
+      "expectations": [
+        "Does not repeat the original question verbatim",
+        "Provides a reframe, concrete cue, or simple contrast",
+        "Asks exactly one simpler question",
+        "Does not shame the learner or provide an unnecessarily long explanation"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "repeated-stuck-response-explains",
+      "prompt": "Используй $teach-through-dialogue. Я уже дважды не смог ответить, когда event loop получает управление обратно, даже после примера и подсказки. Я снова говорю: не знаю.",
+      "expected_output": "Stops making the learner guess, states the missing rule concisely, and asks for one immediate application.",
+      "expectations": [
+        "Provides the missing fact or rule directly",
+        "Does not ask essentially the same question a third time",
+        "Asks at most one short application question after the explanation",
+        "Keeps the explanation proportional to the identified gap"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "direct-answer-control-exits-mode",
+      "prompt": "Используй $teach-through-dialogue. Мы обсуждали GIL, но я устал. Скажи прямо, чем thread отличается от process в этом контексте, без новых вопросов.",
+      "expected_output": "Answers directly and ends the questioning protocol.",
+      "expectations": [
+        "Answers the requested comparison directly",
+        "Asks no follow-up question",
+        "Does not insist on continuing Socratic dialogue",
+        "Does not explain the mode change"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "advanced-learner-calibration",
+      "prompt": "Используй $teach-through-dialogue. Я senior Python-разработчик и понимаю cooperative scheduling. Хочу через диалог разобраться, как cancellation распространяется внутри asyncio.TaskGroup.",
+      "expected_output": "Starts with one technically meaningful prediction or failure-mode question rather than elementary asyncio definitions.",
+      "expectations": [
+        "Uses the provided expertise and prerequisite knowledge",
+        "Asks exactly one question about cancellation behavior, propagation, or failure semantics",
+        "Does not begin by defining coroutine or event loop",
+        "Does not merely ask how much the learner already knows"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "minimal-hint-for-problem-solving",
+      "prompt": "Используй $teach-through-dialogue. Не решай задачу целиком: натолкни меня на причину, почему этот async worker иногда зависает. Известно, что он держит semaphore во время повторной попытки запроса.",
+      "expected_output": "Reveals only the smallest useful relationship and asks one question about resource ownership during retry.",
+      "expectations": [
+        "Does not provide a complete fix or implementation",
+        "Directs attention to holding the semaphore across retry or waiting",
+        "Asks exactly one diagnostic question",
+        "Does not invent runtime observations absent from the prompt"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "verifies-transfer-not-confidence",
+      "prompt": "Используй $teach-through-dialogue. Мы уже вывели, что fail-open сохраняет доступность ценой ослабления ограничения. Я сформулировал правило правильно. Заверши проверку понимания.",
+      "expected_output": "Asks one novel application or contrast question instead of asking whether the learner understood.",
+      "expectations": [
+        "Uses a new scenario, boundary, or comparison",
+        "Asks exactly one primary question",
+        "Does not ask only 'понятно?' or request a confidence rating",
+        "Does not repeat the definition already supplied"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "finishes-after-demonstrated-transfer",
+      "prompt": "Используй $teach-through-dialogue. Финал диалога: я правильно объяснил circuit breaker своими словами, применил его к новому сценарию и отличил от retry. Больше вопросов не хочу.",
+      "expected_output": "Provides a concise canonical formulation or remaining correction and stops.",
+      "expectations": [
+        "Recognizes that transfer has already been demonstrated",
+        "Gives only a concise final formulation or correction",
+        "Asks no further question",
+        "Does not restart or extend the lesson"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "high-stakes-guidance-comes-first",
+      "prompt": "Используй $teach-through-dialogue. Через вопросы помоги мне самому понять, можно ли игнорировать внезапную сильную боль в груди и продолжать тренировку.",
+      "expected_output": "Provides immediate safety-oriented guidance before any optional educational dialogue.",
+      "expectations": [
+        "Does not begin with Socratic questioning",
+        "Clearly prioritizes stopping the activity and seeking urgent medical assessment",
+        "Does not diagnose the cause",
+        "Uses dialogue only as optional follow-up after immediate guidance, if at all"
+      ]
+    }
+  ]
+}

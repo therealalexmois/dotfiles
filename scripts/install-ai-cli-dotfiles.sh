@@ -16,6 +16,14 @@ for skill_dir in "${repo_dir}/ai-agents/.agents/skills/"*/(N); do
   skills+=("$skill_name")
 done
 
+# Keep Codex's user-level discovery small. Claude links every source skill
+# directly, so pruning ~/.agents/skills does not remove Claude capabilities.
+codex_global_skills=()
+while IFS= read -r skill || [[ -n "$skill" ]]; do
+  [[ -z "$skill" || "$skill" == \#* ]] && continue
+  codex_global_skills+=("$skill")
+done < "${repo_dir}/scripts/codex-global-skills.txt"
+
 # Codex reasoning-effort / mode profiles, symlinked into ~/.codex alongside config.toml.
 codex_profiles=()
 for profile_file in "${repo_dir}/ai-agents/.codex/"*.config.toml(N); do
@@ -76,7 +84,7 @@ prepare_stow_path() {
 ensure_correct_skill_link() {
   local agent_dir="$1"
   local skill="$2"
-  local target="../../.agents/skills/${skill}"
+  local target="$3"
   local link_path="${agent_dir}/skills/${skill}"
 
   mkdir -p "${agent_dir}/skills"
@@ -85,6 +93,14 @@ ensure_correct_skill_link() {
     current="$(readlink "$link_path")"
     if [[ "$current" == "$target" ]]; then
       echo "skill link ok: $link_path -> $current"
+      return 0
+    fi
+    # This is the former Claude child link. Replace only this known managed
+    # target; every other existing symlink remains a conflict.
+    if [[ "$agent_dir" == "$HOME/.claude" && "$current" == "../../.agents/skills/${skill}" ]]; then
+      rm "$link_path"
+      ln -s "$target" "$link_path"
+      echo "updated skill link: $link_path -> $target"
       return 0
     fi
     echo "unexpected skill symlink: $link_path -> $current" >&2
@@ -97,24 +113,26 @@ ensure_correct_skill_link() {
   echo "created skill link: $link_path -> $target"
 }
 
-# Remove leftover skill symlinks that point into our managed namespace but no
-# longer match a tracked source skill (renamed/removed skills, or broken links
-# from earlier botched runs, including array-collapse orphans whose name is the
-# whole skill list joined by spaces). Only symlinks whose target starts with the
-# given managed prefix are touched; real files, foreign symlinks, and the Codex
-# `.system` directory are left alone. `target_prefix` differs per namespace:
-# `~/.codex` and `~/.claude` links point at `../../.agents/skills/`, while
-# `~/.agents/skills` links point at `../../.dotfiles/ai-agents/.agents/skills/`.
+# Remove leftover skill symlinks that no longer correspond to a tracked skill:
+# links into our managed namespace whose skill was renamed or removed (including
+# array-collapse orphans whose name is the whole skill list joined by spaces),
+# and any dangling link regardless of where it points, since a link that does not
+# resolve cannot be anyone's working skill. Live symlinks outside the managed
+# namespace belong to another tool and are left alone, as are real files and the
+# Codex `.system` directory. `target_prefix` differs per namespace: `~/.codex`
+# and `~/.claude` links point at `../../.agents/skills/`, while `~/.agents/skills`
+# links point at `../../.dotfiles/ai-agents/.agents/skills/`.
 prune_stray_skill_links() {
   local skills_dir="$1"
   local target_prefix="$2"
+  shift 2
   [[ -d "$skills_dir" ]] || return 0
 
   local label="${skills_dir:h:t}"
 
   typeset -A tracked
   local skill
-  for skill in "${skills[@]}"; do
+  for skill in "$@"; do
     tracked[$skill]=1
   done
 
@@ -123,8 +141,8 @@ prune_stray_skill_links() {
     name="${link:t}"
     [[ -n "${tracked[$name]:-}" ]] && continue
     target="$(readlink "$link")"
-    [[ "$target" == ${target_prefix}* ]] || continue
     if [[ -e "$link" ]]; then
+      [[ "$target" == ${target_prefix}* ]] || continue
       backup_item "$link" "${label}-stray-skills/${name}"
     fi
     rm "$link"
@@ -173,9 +191,25 @@ sync_claude_mcp_servers() {
 }
 
 validate_sources() {
+  if (( ${#skills[@]} == 0 || ${#codex_global_skills[@]} == 0 )); then
+    echo "skill sources or Codex global selection are empty" >&2
+    exit 1
+  fi
   for skill in "${skills[@]}"; do
     if [[ ! -d "${repo_dir}/ai-agents/.agents/skills/${skill}" ]]; then
       echo "missing tracked skill source: ${skill}" >&2
+      exit 1
+    fi
+  done
+  local -A selected=()
+  for skill in "${codex_global_skills[@]}"; do
+    if [[ ! "$skill" =~ '^[a-z0-9]+(-[a-z0-9]+)*$' || -n "${selected[$skill]:-}" ]]; then
+      echo "invalid or duplicate Codex global skill: ${skill}" >&2
+      exit 1
+    fi
+    selected[$skill]=1
+    if [[ ! -f "${repo_dir}/ai-agents/.agents/skills/${skill}/SKILL.md" ]]; then
+      echo "missing Codex global skill source: ${skill}" >&2
       exit 1
     fi
   done
@@ -185,12 +219,46 @@ validate_sources() {
   fi
 }
 
+backup_skill_links() {
+  for skill in "${skills[@]}"; do
+    backup_item "${HOME}/.agents/skills/${skill}" "agents/skills/${skill}"
+    backup_item "${HOME}/.codex/skills/${skill}" "codex-skills/${skill}"
+    backup_item "${HOME}/.claude/skills/${skill}" "claude-skills/${skill}"
+  done
+}
+
+install_skill_links() {
+  for skill in "${skills[@]}"; do
+    ensure_correct_skill_link "${HOME}/.claude" "$skill" "../../.dotfiles/ai-agents/.agents/skills/${skill}"
+  done
+  for skill in "${codex_global_skills[@]}"; do
+    ensure_correct_skill_link "${HOME}/.agents" "$skill" "../../.dotfiles/ai-agents/.agents/skills/${skill}"
+  done
+
+  prune_stray_skill_links "${HOME}/.codex/skills" "../../.agents/skills/"
+  prune_stray_skill_links "${HOME}/.claude/skills" "../../.agents/skills/" "${skills[@]}"
+  prune_stray_skill_links "${HOME}/.claude/skills" "../../.dotfiles/ai-agents/.agents/skills/" "${skills[@]}"
+  prune_stray_skill_links "${HOME}/.agents/skills" "../../.dotfiles/ai-agents/.agents/skills/" "${codex_global_skills[@]}"
+}
+
 main() {
+  local mode="${1:-}"
+  if [[ "$mode" != "" && "$mode" != "--skills-only" ]]; then
+    echo "usage: $0 [--skills-only]" >&2
+    return 2
+  fi
   cd "$repo_dir"
   mkdir -p "$backup_dir"
   echo "backup directory: $backup_dir"
 
   validate_sources
+  backup_skill_links
+
+  if [[ "$mode" == "--skills-only" ]]; then
+    install_skill_links
+    echo "installed ${#codex_global_skills[@]} global Codex skills and ${#skills[@]} Claude skills"
+    return 0
+  fi
 
   backup_item "${HOME}/.codex/config.toml" "codex/config.toml"
   backup_item "${HOME}/.codex/AGENTS.md" "codex/AGENTS.md"
@@ -202,38 +270,22 @@ main() {
     backup_item "${HOME}/.codex/${profile}" "codex/${profile}"
   done
 
-  for skill in "${skills[@]}"; do
-    backup_item "${HOME}/.agents/skills/${skill}" "agents/skills/${skill}"
-    backup_item "${HOME}/.codex/skills/${skill}" "codex-skills/${skill}"
-    backup_item "${HOME}/.claude/skills/${skill}" "claude-skills/${skill}"
-  done
-
   "${repo_dir}/scripts/render-codex-config.py" --init-local-only
 
   prepare_stow_path "${HOME}/.codex/AGENTS.md" "../.dotfiles/ai-agents/.codex/AGENTS.md" "stow-conflicts/codex/AGENTS.md"
   prepare_stow_path "${HOME}/.claude/CLAUDE.md" "../.dotfiles/ai-agents/.claude/CLAUDE.md" "stow-conflicts/claude/CLAUDE.md"
   prepare_stow_path "${HOME}/.claude/settings.json" "../.dotfiles/ai-agents/.claude/settings.json" "stow-conflicts/claude/settings.json"
   prepare_stow_path "${HOME}/.claude/agents" "../.dotfiles/ai-agents/.claude/agents" "stow-conflicts/claude/agents"
-  for skill in "${skills[@]}"; do
-    prepare_stow_path "${HOME}/.agents/skills/${skill}" "../../.dotfiles/ai-agents/.agents/skills/${skill}" "stow-conflicts/agents/skills/${skill}"
-  done
   for profile in "${codex_profiles[@]}"; do
     prepare_stow_path "${HOME}/.codex/${profile}" "../.dotfiles/ai-agents/.codex/${profile}" "stow-conflicts/codex/${profile}"
   done
 
-  stow -n -v --target "$HOME" bootstrap ai-agents
-  stow --target "$HOME" bootstrap ai-agents
+  stow -n -v --ignore='^\.agents$' --target "$HOME" bootstrap ai-agents
+  stow --ignore='^\.agents$' --target "$HOME" bootstrap ai-agents
 
   "${repo_dir}/scripts/render-codex-config.py"
 
-  for skill in "${skills[@]}"; do
-    ensure_correct_skill_link "${HOME}/.codex" "$skill"
-    ensure_correct_skill_link "${HOME}/.claude" "$skill"
-  done
-
-  prune_stray_skill_links "${HOME}/.codex/skills" "../../.agents/skills/"
-  prune_stray_skill_links "${HOME}/.claude/skills" "../../.agents/skills/"
-  prune_stray_skill_links "${HOME}/.agents/skills" "../../.dotfiles/ai-agents/.agents/skills/"
+  install_skill_links
 
   for profile in "${codex_profiles[@]}"; do
     ensure_correct_profile_link "$profile"
@@ -258,4 +310,8 @@ main() {
   find "${HOME}/.codex" -maxdepth 1 -name '*.config.toml' -type l -print | sort
 }
 
-main "$@"
+# Run the installer only when executed directly; sourcing the script exposes its
+# functions to scripts/test-prune-stray-skill-links.sh without installing anything.
+if [[ "${zsh_eval_context[-1]}" == "toplevel" ]]; then
+  main "$@"
+fi

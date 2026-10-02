@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Security audit of all first-party agent skills via skill-security-auditor.
-# Skips *-workspace scratch dirs: they are git-ignored and are not skills.
+# Audits a snapshot of the files git does not ignore (tracked plus untracked, not
+# ignored), so local state such as config/.env tokens or caches does not make the
+# baseline differ between hosts. *-workspace scratch dirs are git-ignored and skipped.
 #
 # Usage:
 #   scripts/audit-skills.sh                    # audit and compare with baseline
@@ -16,9 +18,19 @@ baseline="$repo_root/scripts/skills-audit-baseline.json"
 mode="${1:-check}"
 
 raw="$(mktemp)"
-trap 'rm -f "$raw"' EXIT
+snapshot="$(mktemp -d)"
+trap 'rm -rf "$raw" "$snapshot"' EXIT
 
-for skill in "$skills_dir"/*/; do
+git -C "$repo_root" ls-files -z --cached --others --exclude-standard -- ai-agents/.agents/skills \
+  | while IFS= read -r -d '' path; do
+      if [[ -e "$repo_root/$path" || -L "$repo_root/$path" ]]; then
+        printf '%s\0' "$path"
+      fi
+    done \
+  | tar -C "$repo_root" --null -T - -cf - \
+  | tar -C "$snapshot" -xf -
+
+for skill in "$snapshot/ai-agents/.agents/skills"/*/; do
   case "$skill" in
     *-workspace/) continue ;;
   esac

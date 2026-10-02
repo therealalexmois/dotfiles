@@ -3,6 +3,7 @@ name: arxiv-search
 disable-model-invocation: true
 description: Search arXiv by keywords and return structured results (text, JSON, or JSONL). Use when the user asks to "search arXiv", "find papers about <topic>", "latest preprints on <topic>", monitor fresh LLM/agent research, or needs a structured paper list to feed into a note-building pipeline. Pairs with arxiv-doc-builder for converting a chosen paper into a markdown note.
 metadata:
+  origin: unresolved
   version: "1.0"
 ---
 

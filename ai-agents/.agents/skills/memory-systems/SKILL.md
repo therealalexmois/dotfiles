@@ -1,12 +1,11 @@
 ---
 name: memory-systems
 disable-model-invocation: true
-description: >
-  This skill should be used for persistent semantic memory in agent systems:
-  cross-session knowledge retention, entity tracking, temporal validity,
-  graph or vector retrieval, memory consolidation, and memory benchmark selection.
-  Route file-backed scratchpads to filesystem-context, handoff summaries to
-  context-compression, and token-efficiency tactics to context-optimization.
+description: "This skill should be used for persistent semantic memory in agent systems: cross-session knowledge retention, entity tracking, temporal validity, graph or vector retrieval, memory consolidation, and memory benchmark selection. Route file-backed scratchpads to filesystem-context, handoff summaries to context-compression, and token-efficiency tactics to context-optimization."
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/memory-systems
+  imported_at: 2026-10-02
 ---
 
 # Memory System Design

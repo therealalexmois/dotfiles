@@ -2,6 +2,10 @@
 name: "api-test-suite-builder"
 disable-model-invocation: true
 description: "Use when the user asks to generate API tests, create integration test suites, test REST endpoints, or build contract tests."
+metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/api-test-suite-builder
+  imported_at: 2026-06-07
 ---
 
 # API Test Suite Builder

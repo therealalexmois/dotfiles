@@ -1,6 +1,10 @@
 ---
 name: anthropic-skill-creator
 description: Create and improve agent skills using Anthropic's skill-authoring workflow, including evals, benchmarks, and trigger optimization. Use when users want to create a skill from scratch, edit or optimize an existing skill, measure skill performance, or improve triggering accuracy.
+metadata:
+  origin: vendored
+  upstream: https://github.com/anthropics/skills/tree/main/skills/skill-creator
+  imported_at: 2026-05-31
 ---
 
 # Anthropic Skill Creator

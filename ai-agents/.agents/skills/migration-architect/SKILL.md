@@ -2,6 +2,10 @@
 name: "migration-architect"
 disable-model-invocation: true
 description: "Zero-downtime migration planning, compatibility validation, and rollback strategy generation. Tools for system, database, and infrastructure migrations with minimal business impact. Use when planning a database migration, infrastructure cutover, system replacement, or any high-risk transition that needs explicit rollback paths."
+metadata:
+  origin: derived
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/migration-architect
+  imported_at: 2026-06-07
 ---
 
 # Migration Architect

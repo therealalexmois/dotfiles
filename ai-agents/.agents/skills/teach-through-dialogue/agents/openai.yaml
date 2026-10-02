@@ -1,0 +1,13 @@
+interface:
+  display_name: Teach Through Dialogue
+  short_description: Guide understanding through adaptive questions
+  default_prompt: Use $teach-through-dialogue to help me understand this concept through
+    an adaptive dialogue.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  allow_implicit_invocation: false
+  products:
+  - chatgpt
+  - codex
+  - atlas

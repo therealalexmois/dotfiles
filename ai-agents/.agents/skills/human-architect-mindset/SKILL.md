@@ -1,6 +1,10 @@
 ---
 name: human-architect-mindset
 description: Systematic architectural thinking for irreplaceable human capabilities - domain modeling, systems thinking, constraint navigation, and AI-aware problem decomposition. Use proactively when detecting architectural decisions, system design discussions, or multi-component planning.
+metadata:
+  origin: derived
+  upstream: https://github.com/bencium/bencium-claude-code-design-skill/tree/main/human-architect-mindset/skills/human-architect-mindset
+  imported_at: 2026-10-02
 ---
 
 # Human Architect Mindset
@@ -607,8 +611,8 @@ You cannot make AI truly loyal. But you can make AI operationally useful for mai
 ## Related Skills
 
 **Before implementation:**
-- `superpowers:brainstorming` - Refine ideas into designs
-- `superpowers:writing-plans` - Create detailed implementation plans
+- `brainstorming` - Refine ideas into designs
+- `writing-plans` - Create detailed implementation plans
 
 **During design:**
 - `relationship-design` - For AI-first interfaces

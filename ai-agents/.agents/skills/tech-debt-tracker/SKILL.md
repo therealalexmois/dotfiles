@@ -2,6 +2,10 @@
 name: tech-debt-tracker
 disable-model-invocation: true
 description: Scan codebases for technical debt, score severity, track trends, and generate prioritized remediation plans. Use when users mention tech debt, code quality, refactoring priority, debt scoring, cleanup sprints, or code health assessment. Also use for legacy code modernization planning and maintenance cost estimation.
+metadata:
+  origin: derived
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/tech-debt-tracker
+  imported_at: 2026-06-04
 ---
 
 # Tech Debt Tracker

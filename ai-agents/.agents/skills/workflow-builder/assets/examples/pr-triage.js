@@ -3,7 +3,7 @@
 // Shape: fan-out (one reviewer per PR) -> skeptic-vote (verify each high-severity
 // finding so a false positive doesn't waste review time) -> synthesize one report.
 //
-// Run: enable CLAUDE_CODE_WORKFLOWS=1, save under .claude/workflows/, launch via /workflows.
+// Run: save under .claude/workflows/, launch via /workflows (needs explicit opt-in, e.g. ultracode).
 // Pass PR identifiers in via args, e.g. Workflow({ scriptPath, args: { prs: ['#12', '#15'] } }).
 
 export const meta = {

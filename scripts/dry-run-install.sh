@@ -70,11 +70,15 @@ expect_link "$FAKE_HOME/.config/alacritty" "$REPO_DIR/alacritty/.config/alacritt
 echo
 
 echo "=== stow: ai-agents ==="
-stow -n -v --target "$FAKE_HOME" ai-agents
-stow --target "$FAKE_HOME" ai-agents
+stow -n -v --ignore='^\.agents$' --target "$FAKE_HOME" ai-agents
+stow --ignore='^\.agents$' --target "$FAKE_HOME" ai-agents
 for f in .codex/AGENTS.md .claude/CLAUDE.md .claude/settings.json .claude/agents; do
   [[ -L "$FAKE_HOME/$f" || -e "$FAKE_HOME/$f" ]] || { echo "FAIL: missing $FAKE_HOME/$f" >&2; fail=1; }
 done
+if [[ -e "$FAKE_HOME/.agents/skills" ]]; then
+  echo "FAIL: Stow must leave ~/.agents/skills to the curated Codex installer" >&2
+  fail=1
+fi
 find "$FAKE_HOME/.claude" "$FAKE_HOME/.codex" -maxdepth 1 2>/dev/null | sort
 echo
 
@@ -94,7 +98,7 @@ for skill_dir in "$REPO_DIR"/ai-agents/.agents/skills/*/; do
   [[ -f "${skill_dir}SKILL.md" ]] || { echo "FAIL: $skill_name has no SKILL.md" >&2; fail=1; continue; }
   skill_count=$((skill_count + 1))
 done
-echo "ok: $skill_count skills have a SKILL.md (scripts/install-ai-cli-dotfiles.sh would link all of them)"
+echo "ok: $skill_count skills have a SKILL.md (installer links all to Claude; Codex uses scripts/codex-global-skills.txt)"
 echo
 
 if (( fail )); then

@@ -1,0 +1,10 @@
+# Skills available globally to Codex. Claude keeps the complete source catalog.
+anthropic-skill-creator
+create-prompt
+git-worktree
+python-code-style
+security-guidance
+test-driven-development
+writing
+writing-plans
+writing-technical-documentation

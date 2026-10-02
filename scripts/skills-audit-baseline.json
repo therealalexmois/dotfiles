@@ -120,6 +120,16 @@
   }
  },
  {
+  "skill": "audit-repository-documentation",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "autoresearch-agent",
   "verdict": "PASS",
   "counts": {
@@ -151,12 +161,12 @@
  },
  {
   "skill": "brainstorming",
-  "verdict": "PASS",
+  "verdict": "FAIL",
   "counts": {
-   "critical": 0,
+   "critical": 2,
    "high": 0,
    "info": 0,
-   "total": 0
+   "total": 2
   }
  },
  {
@@ -310,6 +320,26 @@
   }
  },
  {
+  "skill": "create-learning-roadmap",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 2,
+   "info": 0,
+   "total": 2
+  }
+ },
+ {
+  "skill": "create-prompt",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "customer-research",
   "verdict": "PASS",
   "counts": {
@@ -401,6 +431,16 @@
  },
  {
   "skill": "distill-thoughts",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "draft-in-alex-style",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -600,6 +640,16 @@
   }
  },
  {
+  "skill": "interactive-interview",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "interview-system-designer",
   "verdict": "PASS",
   "counts": {
@@ -751,6 +801,16 @@
  },
  {
   "skill": "plantuml-ascii",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "postgres-engineer",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -1140,7 +1200,17 @@
   }
  },
  {
-  "skill": "tdd",
+  "skill": "teach-through-dialogue",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
+  "skill": "team-lead",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -1277,6 +1347,16 @@
    "high": 0,
    "info": 0,
    "total": 0
+  }
+ },
+ {
+  "skill": "yandex-metrica",
+  "verdict": "WARN",
+  "counts": {
+   "critical": 0,
+   "high": 2,
+   "info": 0,
+   "total": 2
   }
  },
  {

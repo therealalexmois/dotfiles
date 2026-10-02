@@ -1,6 +1,12 @@
 ---
 name: handoff
+disable-model-invocation: true
+argument-hint: "What will the next session be used for?"
 description: Create a verified, self-contained Markdown handoff that lets a fresh agent continue work without the previous conversation. Use when the user asks to hand work over, preserve context for a new chat or session, resume work elsewhere, prepare a continuation brief, or identify which sources the next session needs.
+metadata:
+  origin: derived
+  upstream: https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff
+  imported_at: 2026-10-02
 ---
 
 # Handoff

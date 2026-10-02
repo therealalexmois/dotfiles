@@ -1,6 +1,10 @@
 ---
 name: python-configuration
 description: Python configuration management via environment variables and typed settings. Use when externalizing config, setting up pydantic-settings, managing secrets, or implementing environment-specific behavior.
+metadata:
+  origin: vendored
+  upstream: https://github.com/wshobson/agents/tree/main/plugins/python-development/skills/python-configuration
+  imported_at: 2026-06-25
 ---
 
 # Python Configuration Management

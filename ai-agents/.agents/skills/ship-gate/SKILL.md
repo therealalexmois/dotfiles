@@ -10,6 +10,9 @@ description: >
   checklist", "preflight check". Not for CI/CD setup or infra provisioning.
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/ship-gate
+  imported_at: 2026-06-07
   author: Rajaraman Arumugam
   version: 1.0.0
 ---

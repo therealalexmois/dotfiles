@@ -1,0 +1,14 @@
+{
+  "meta": {"id":"asyncio-cancellation","title":"Asyncio Cancellation","goal":"Design and verify cancellation-safe asyncio components","audience":"Experienced Python backend engineer","generated_at":"2026-08-17","language":"en","assumptions":["Python 3.14 is the target runtime"]},
+  "stages": [{"id":"foundations","title":"Cancellation foundations","description":"Build the task-lifecycle model required for safe cancellation.","order":1}],
+  "nodes": [{
+    "id":"task-cancellation","stage":"foundations","title":"Task cancellation semantics","summary":"Understand how cancellation is requested, delivered, propagated, and observed.","kind":"core","prerequisites":[],
+    "learning_outcomes":["Explain when CancelledError is injected into a task","Write cleanup that preserves cancellation"],
+    "sources":{"foundation":[{"title":"Coroutines and Tasks","url":"https://docs.python.org/3/library/asyncio-task.html","type":"official-docs","why":"Defines Task.cancel, CancelledError, TaskGroup, and cancellation behaviour.","level":"intermediate","language":"en","estimated_minutes":45,"verified_at":"2026-08-17"}],"deepening":[],"reference":[]},
+    "practice":[{"title":"Preserve cancellation during cleanup","type":"implementation","task":"Implement a coroutine that releases a resource when cancelled and still propagates cancellation.","constraints":["Use try/finally","Do not suppress CancelledError"],"deliverable":"A Python module and deterministic tests","allowed_assistance":"Official documentation allowed; AI review only after tests pass","checks":["Cleanup runs exactly once","Awaiting the task raises CancelledError"]}],
+    "completion_criteria":["Predict the observable state of a task before and after cancel()","Pass the cancellation cleanup tests"],
+    "anki_cards":[{"front":"What does asyncio.Task.cancel() do before the task reaches its next suspension point?","back":"It requests cancellation; CancelledError is injected on the next event-loop cycle rather than terminating the task immediately.","type":"mechanism","tags":["asyncio-cancellation","task-cancellation","mechanism"],"source":"https://docs.python.org/3/library/asyncio-task.html"}],
+    "socratic_recommended":true
+  }],
+  "capstone":null
+}

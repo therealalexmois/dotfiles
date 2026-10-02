@@ -4,6 +4,10 @@ disable-model-invocation: true
 description: Optimize for search engine visibility and ranking. Use when asked to "improve SEO", "optimize for search", "fix meta tags", "add structured data", "sitemap optimization", or "search engine optimization".
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/Dicklesworthstone/pi_agent_rust/tree/main/tests/ext_conformance/artifacts
+  upstream_note: "content-identical copy; the original publisher was not established"
+  imported_at: 2026-06-07
   author: web-quality-skills
   version: "1.0"
 ---
@@ -21,7 +25,7 @@ Search ranking factors (approximate influence):
 | Content quality & relevance | ~40% | Partial (structure) |
 | Backlinks & authority | ~25% | ✗ |
 | Technical SEO | ~15% | ✓ |
-| Page experience (Core Web Vitals) | ~10% | See [Core Web Vitals](../core-web-vitals/SKILL.md) |
+| Page experience (Core Web Vitals) | ~10% | See the `core-web-vitals` skill |
 | On-page SEO | ~10% | ✓ |
 
 ---
@@ -245,155 +249,7 @@ X-Frame-Options: DENY
 
 ## Structured data (JSON-LD)
 
-### Organization
-
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Example Company",
-  "url": "https://example.com",
-  "logo": "https://example.com/logo.png",
-  "sameAs": [
-    "https://twitter.com/example",
-    "https://linkedin.com/company/example"
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+1-555-123-4567",
-    "contactType": "customer service"
-  }
-}
-</script>
-```
-
-### Article
-
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "How to Choose the Right Widget",
-  "description": "Complete guide to selecting widgets for your needs.",
-  "image": "https://example.com/article-image.jpg",
-  "author": {
-    "@type": "Person",
-    "name": "Jane Smith",
-    "url": "https://example.com/authors/jane-smith"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Example Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://example.com/logo.png"
-    }
-  },
-  "datePublished": "2024-01-15",
-  "dateModified": "2024-01-20"
-}
-</script>
-```
-
-### Product
-
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "Blue Widget Pro",
-  "image": "https://example.com/blue-widget.jpg",
-  "description": "Premium blue widget with advanced features.",
-  "brand": {
-    "@type": "Brand",
-    "name": "WidgetCo"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "49.99",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": "https://example.com/products/blue-widget"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "1250"
-  }
-}
-</script>
-```
-
-### FAQ
-
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What colors are available?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Our widgets come in blue, red, and green."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What is the warranty?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "All widgets include a 2-year warranty."
-      }
-    }
-  ]
-}
-</script>
-```
-
-### Breadcrumbs
-
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://example.com"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Products",
-      "item": "https://example.com/products"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Blue Widgets",
-      "item": "https://example.com/products/blue-widgets"
-    }
-  ]
-}
-</script>
-```
-
-### Validation
-
-Test structured data at:
-- [Google Rich Results Test](https://search.google.com/test/rich-results)
-- [Schema.org Validator](https://validator.schema.org/)
-
----
+Schema types, JSON-LD templates, and validation rules live in the reference. See [references/structured-data.md](references/structured-data.md).
 
 ## AI search visibility (emerging)
 
@@ -524,5 +380,5 @@ body {
 
 - [Google Search Central](https://developers.google.com/search)
 - [Schema.org](https://schema.org/)
-- [Core Web Vitals](../core-web-vitals/SKILL.md)
-- [Web Quality Audit](../web-quality-audit/SKILL.md)
+- The `core-web-vitals` skill
+- The `web-quality-audit` skill

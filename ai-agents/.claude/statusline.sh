@@ -22,6 +22,15 @@ limit_7d="$(jq -r '.rate_limits.seven_day.used_percentage // empty' <<< "$input"
 reset_5h="$(jq -r '.rate_limits.five_hour.resets_at // empty' <<< "$input")"
 reset_7d="$(jq -r '.rate_limits.seven_day.resets_at // empty' <<< "$input")"
 
+# Snapshot rate limits for tools that cannot read the status line input
+# (team-lead skill: scripts/claude-quota.py). Best effort: never break the status line.
+if rate_limits="$(jq -ce '.rate_limits // empty' <<< "$input" 2>/dev/null)"; then
+  rl_dir="${XDG_CACHE_HOME:-$HOME/.cache}/claude-code"
+  { mkdir -p "$rl_dir" \
+    && printf '{"at":%s,"rate_limits":%s}\n' "$(date +%s)" "$rate_limits" > "$rl_dir/rate-limits.json.$$" \
+    && mv -f "$rl_dir/rate-limits.json.$$" "$rl_dir/rate-limits.json"; } 2>/dev/null || true
+fi
+
 # Format seconds-until-reset as "Xh Ym" or "Ym" when under one hour.
 _fmt_reset() {
   local epoch="$1"

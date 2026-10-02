@@ -1,7 +1,11 @@
 ---
 name: multi-agent-patterns
 disable-model-invocation: true
-description: This skill should be used when designing multi-agent systems that need context isolation, supervisor or swarm coordination, explicit handoffs, parallel execution, or a decision on whether multiple agents are justified.
+description: "This skill should be used when designing multi-agent systems that need context isolation, supervisor or swarm coordination, explicit handoffs, parallel execution, or a decision on whether multiple agents are justified."
+metadata:
+  origin: vendored
+  upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/multi-agent-patterns
+  imported_at: 2026-10-02
 ---
 
 # Multi-Agent Architecture Patterns

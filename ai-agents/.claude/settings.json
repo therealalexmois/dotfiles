@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": %s}}' \"$(jq -Rs '.' ~/.claude/skills/claude-coach/coach-context.md)\"",
+            "command": "printf '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": %s}}' \"$(jq -Rs '.' ~/.claude/skills/claude-coach/references/coach-context.md)\"",
             "statusMessage": "Loading claude-coach..."
           }
         ]

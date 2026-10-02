@@ -75,13 +75,12 @@
     {
       "id": 7,
       "prompt": "Напиши короткий продуктовый блок для страницы сервиса. Аудитория - команды, которые вручную проверяют качество SQL перед merge. Факты: сервис запускает 12 статических проверок в MR, показывает замечания рядом со строкой и поддерживает PostgreSQL. Данных о снижении числа дефектов нет. Нужны заголовок, один абзац и простой следующий шаг.",
-      "expected_output": "Продуктовый блок, который связывает свойства со сценарием пользователя и не выдумывает business impact.",
+      "expected_output": "Запрос на контент для страницы продукта направлен в writing-technical-marketing-content, а writing используется только для языкового слоя по явному запросу.",
       "files": [],
       "expectations": [
-        "Output has a heading, one concise body paragraph, and one next step",
-        "Output preserves 12 checks, inline MR feedback, and PostgreSQL support",
-        "Output does not claim fewer defects, guaranteed quality, or unsupported customer results",
-        "Output addresses teams that review SQL before merge"
+        "The primary workflow is writing-technical-marketing-content",
+        "The content preserves 12 checks, inline MR feedback, and PostgreSQL support",
+        "The content does not claim fewer defects or unsupported customer results"
       ]
     },
     {
@@ -115,37 +114,34 @@
     {
       "id": 10,
       "prompt": "Напиши короткую how-to инструкцию по фактам. Цель: проверить readiness сервиса перед rollout. Prerequisites: есть доступ к namespace analytics-dev и kubectl. Шаги: выполнить kubectl -n analytics-dev get pods; убедиться, что все pod имеют Ready 1/1; выполнить curl -f https://analytics-dev.example.com/ready; успешный ответ - HTTP 200. Если pod не Ready или endpoint отвечает не 200, rollout не начинать. Не добавляй неизвестные команды.",
-      "expected_output": "Исполнимая task-oriented инструкция с prerequisites, последовательными шагами, ожидаемым результатом и стоп-условием.",
+      "expected_output": "Новая how-to инструкция направлена в writing-technical-documentation.",
       "files": [],
       "expectations": [
-        "Output preserves namespace analytics-dev, both commands, Ready 1/1, HTTP 200, and the stop condition",
-        "Output places prerequisites before the procedure",
-        "Output uses numbered steps for the sequence",
-        "Output does not invent rollout, diagnostic, or recovery commands"
+        "The primary workflow is writing-technical-documentation",
+        "The instruction preserves namespace analytics-dev, both commands, Ready 1/1, HTTP 200, and the stop condition",
+        "The instruction does not invent rollout, diagnostic, or recovery commands"
       ]
     },
     {
       "id": 11,
       "prompt": "Проведи review фрагмента troubleshooting, но не переписывай его: Если API отвечает 500, сразу удалите таблицу request_cache и перезапустите сервис. Ошибка обычно связана с кэшем. После перезапуска проблема должна исчезнуть. Данных о причинах ошибки, резервной копии и проверке восстановления нет.",
-      "expected_output": "Review должен остановить опасную инструкцию, отделить неизвестную причину от факта и указать отсутствующую диагностику и проверку восстановления.",
+      "expected_output": "Содержательный review troubleshooting направлен в writing-technical-documentation.",
       "files": [],
       "expectations": [
-        "Output treats deleting request_cache as a blocker or equivalently critical issue",
-        "Output flags the unsupported cache root-cause claim",
-        "Output notes missing diagnosis, backup or recovery safeguards, and verification",
-        "Output does not invent safe commands or rewrite the troubleshooting guide"
+        "The primary workflow is writing-technical-documentation",
+        "The review treats deleting request_cache as a critical issue and flags the unsupported cause",
+        "The review notes missing diagnosis, safeguards, and verification without inventing commands"
       ]
     },
     {
       "id": 12,
       "prompt": "Отредактируй как release notes без объяснения правок. Факты: в версии 2.4 параметр timeout_ms переименован в request_timeout_ms; старое имя поддерживается до версии 3.0; изменение касается YAML-конфигурации worker; автоматической миграции нет; производительность не измеряли. Верни только готовый текст.",
-      "expected_output": "Короткие release notes с изменением, областью влияния, совместимостью и требуемым действием без недоказанных улучшений.",
+      "expected_output": "Создание release notes из фактов направлено в writing-technical-documentation.",
       "files": [],
       "expectations": [
-        "Output preserves versions 2.4 and 3.0 and both parameter names exactly",
-        "Output identifies YAML worker configuration as affected",
-        "Output states that migration is not automatic and makes the required rename clear",
-        "Output does not claim performance or reliability improvements"
+        "The primary workflow is writing-technical-documentation",
+        "The release notes preserve versions 2.4 and 3.0, both parameter names, and the YAML worker scope",
+        "The release notes state that migration is not automatic and do not claim performance improvements"
       ]
     },
     {
@@ -291,13 +287,12 @@
     {
       "id": 24,
       "prompt": "Отредактируй как спокойный продуктовый текст без объяснения правок: Все еще теряете время на проверку Alembic-миграций? Оставьте заявку прямо сейчас и навсегда забудьте об ошибках! Факты: инженер проверяет конфигурацию Alembic и возвращает замечания в течение двух рабочих дней; гарантии отсутствия ошибок нет. Нужны заголовок, один абзац и следующий шаг.",
-      "expected_output": "Спокойный продуктовый блок с фактической услугой, сроком и следующим шагом без давления и гарантии результата.",
+      "expected_output": "Структурная правка продуктового блока направлена в writing-technical-marketing-content.",
       "files": [],
       "expectations": [
-        "Output includes review of Alembic configuration and a two-business-day response time",
-        "Output contains a heading, one concise paragraph, and a next step",
-        "Output removes the rhetorical pressure and permanent-error-elimination promise",
-        "Output does not invent submission channel, price, or additional review scope"
+        "The primary workflow is writing-technical-marketing-content",
+        "The edited block keeps Alembic configuration review and a two-business-day response time",
+        "The edited block removes pressure and guarantees without inventing submission channel, price, or scope"
       ]
     },
     {
@@ -721,12 +716,12 @@
     {
       "id": 57,
       "prompt": "Проведи review длинного раздела документации, но не переписывай его: Перед релизом инженер проверяет readiness сервиса и доступность зависимостей, и при ошибке любой проверки релиз не начинают. Откат выполняется установкой флага в предыдущее значение, после чего новые запросы идут по старому пути. Квоты токенов делятся между основным агентом и субагентами в пределах одного запроса, поэтому параллельные вызовы модели не возникают. Дай краткий вывод и только приоритетные проблемы.",
-      "expected_output": "Review, который отмечает, что длинный многотемный текст без навигационных опор трудно просматривать по диагонали, и не требует опор в каждом абзаце.",
+      "expected_output": "Review раздела документации направлен в writing-technical-documentation.",
       "files": [],
       "expectations": [
-        "Output identifies that the long multi-topic text lacks navigational lead-ins or anchors and is hard to skim",
-        "Output frames missing anchors as a structural readability problem, not as a mandatory rewrite of every paragraph",
-        "Output does not rewrite the full text or convert the prose into headings"
+        "The primary workflow is writing-technical-documentation",
+        "The review checks the operational claims as well as readability",
+        "The review does not rewrite the full text without a request"
       ]
     }
   ]

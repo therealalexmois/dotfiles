@@ -4,6 +4,9 @@ disable-model-invocation: true
 description: Designs distributed system architectures, decomposes monoliths into bounded-context services, recommends communication patterns, and produces service boundary diagrams and resilience strategies. Use when designing distributed systems, decomposing monoliths, or implementing microservices patterns — including service boundaries, DDD, saga patterns, event sourcing, CQRS, service mesh, or distributed tracing.
 license: MIT
 metadata:
+  origin: vendored
+  upstream: https://github.com/Jeffallan/claude-skills/tree/main/skills/microservices-architect
+  imported_at: 2026-08-15
   author: https://github.com/Jeffallan
   version: "1.1.0"
   domain: api-architecture

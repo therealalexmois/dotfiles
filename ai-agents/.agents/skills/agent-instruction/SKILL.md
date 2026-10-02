@@ -1,6 +1,5 @@
 ---
 name: agent-instruction
-layer: workflow
 description: >
   Создает, редактирует и ревьюит постоянные инструкции для AI agents: SKILL.md,
   AGENTS.md, CLAUDE.md, SYSTEM.md, project rules и другие operational contracts.
@@ -8,6 +7,10 @@ description: >
   проверить или исправить agent instruction artifact. Не используй для обычной
   документации, разовых пользовательских prompt, code review, архитектурного
   проектирования или domain workflow, который инструкция должна только описывать.
+metadata:
+  version: "1.0"
+  origin: first-party
+  layer: workflow
 ---
 
 # Agent Instruction

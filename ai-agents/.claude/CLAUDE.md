@@ -74,5 +74,3 @@ When the task is ambiguous, underspecified, or has multiple valid implementation
 - Include a recommended/default option when reasonable.
 - If a question is non-blocking, state the assumption and continue.
 - After answers are received, produce a short plan before implementation.
-
-@../.tessl/RULES.md

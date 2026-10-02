@@ -1,6 +1,10 @@
 ---
 name: fastapi-python
 description: Expert in FastAPI Python development with best practices for APIs and async operations
+metadata:
+  origin: vendored
+  upstream: https://github.com/mindrally/skills/tree/main/fastapi-python
+  imported_at: 2026-06-25
 ---
 
 # FastAPI Python
