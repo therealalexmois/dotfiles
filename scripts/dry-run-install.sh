@@ -98,7 +98,7 @@ for skill_dir in "$REPO_DIR"/ai-agents/.agents/skills/*/; do
   [[ -f "${skill_dir}SKILL.md" ]] || { echo "FAIL: $skill_name has no SKILL.md" >&2; fail=1; continue; }
   skill_count=$((skill_count + 1))
 done
-echo "ok: $skill_count skills have a SKILL.md (installer links all to Claude; Codex uses scripts/codex-global-skills.txt)"
+echo "ok: $skill_count skills have a SKILL.md (installer links all but scripts/claude-project-only-skills.txt to ~/.claude/skills; Codex uses scripts/codex-global-skills.txt)"
 echo
 
 if (( fail )); then

@@ -1,0 +1,17 @@
+# Skills excluded from the global ~/.claude/skills/ link set. Claude still gets
+# every other source skill there (see AGENTS.md "Claude gets every source skill").
+# Names listed here are linked instead into this repo's own project-scoped
+# .claude/skills/ (gitignored at /.claude/), so they are visible only when Claude
+# Code runs inside ~/.dotfiles, not in every other project.
+#
+# To scope a skill into a different repository instead (one that only exists on
+# some machines), do not list it here for that purpose alone: run
+# scripts/link-project-skill.sh <skill-name> <path-to-repo> there, and add it
+# here only if it should also stop being linked into ~/.claude/skills/ globally.
+agent-instruction
+audit-repository-documentation
+claude-automation-recommender
+skill-param-auditor
+skill-quality-reviewer
+skill-security-auditor
+skill-tester

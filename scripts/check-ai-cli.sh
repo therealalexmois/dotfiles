@@ -9,12 +9,14 @@ status=0
 note() { printf '\n== %s ==\n' "$1"; }
 fail() { printf 'FAIL: %s\n' "$1" >&2; status=1; }
 
-note "zsh syntax: install-ai-cli-dotfiles.sh"
-if zsh -n "${repo_dir}/scripts/install-ai-cli-dotfiles.sh"; then
-  echo "ok"
-else
-  fail "install-ai-cli-dotfiles.sh has zsh syntax errors"
-fi
+note "zsh syntax: installer and skill link helpers"
+for zsh_script in install-ai-cli-dotfiles.sh link-project-skill.sh; do
+  if zsh -n "${repo_dir}/scripts/${zsh_script}"; then
+    echo "ok: ${zsh_script}"
+  else
+    fail "${zsh_script} has zsh syntax errors"
+  fi
+done
 
 note "bash lint: AI CLI shell scripts"
 if command -v shellcheck >/dev/null 2>&1; then
@@ -93,6 +95,27 @@ if zsh "${repo_dir}/scripts/test-prune-stray-skill-links.sh"; then
   :
 else
   fail "prune_stray_skill_links does not prune stray or dangling links"
+fi
+
+note "Codex global skill scope unit test"
+if zsh "${repo_dir}/scripts/test-codex-skill-scope.sh"; then
+  :
+else
+  fail "Codex global skill scope regressed"
+fi
+
+note "Claude project-only skill scope unit test"
+if zsh "${repo_dir}/scripts/test-claude-project-only-skills.sh"; then
+  :
+else
+  fail "Claude project-only skill scope regressed"
+fi
+
+note "link-project-skill unit test"
+if zsh "${repo_dir}/scripts/test-link-project-skill.sh"; then
+  :
+else
+  fail "link-project-skill.sh regressed"
 fi
 
 note "result"

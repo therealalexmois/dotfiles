@@ -13,8 +13,11 @@
 #     scripts/skills-provenance-unresolved.txt.
 #
 # Installed invariants (checked when the agent CLIs are installed on this host):
-#   - no dangling repository-managed skill symlinks under ~/.agents, ~/.claude, ~/.codex;
-#   - Claude links every tracked skill; Codex receives only the curated global set;
+#   - no dangling repository-managed skill symlinks under ~/.agents, ~/.claude, ~/.codex,
+#     or this repo's own .claude/skills;
+#   - Claude links every tracked skill except scripts/claude-project-only-skills.txt,
+#     which is linked instead into this repo's own .claude/skills; Codex receives only
+#     the curated global set;
 #   - no skill name collides with a Codex system skill;
 #   - missing links for each layer are warnings until the next install run.
 #   - account-synced Claude skills with the same name are reported separately;
@@ -124,6 +127,32 @@ if (( ${#codex_global_skills[@]} == 0 )); then
   fail "scripts/codex-global-skills.txt: no global skills selected"
 fi
 printf 'selected %d global Codex skills\n\n' "${#codex_global_skills[@]}"
+
+claude_project_only_skills=()
+printf '== Claude project-only skill selection ==\n'
+while IFS= read -r skill || [[ -n "$skill" ]]; do
+  [[ -z "$skill" || "$skill" == \#* ]] && continue
+  if [[ ! "$skill" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+    fail "scripts/claude-project-only-skills.txt: invalid skill name: $skill"
+    continue
+  fi
+  if printf '%s\n' "${claude_project_only_skills[@]:-}" | grep -qx "$skill"; then
+    fail "scripts/claude-project-only-skills.txt: duplicate skill: $skill"
+    continue
+  fi
+  if [[ ! -f "$skills_dir/$skill/SKILL.md" ]]; then
+    fail "scripts/claude-project-only-skills.txt: missing skill source: $skill"
+    continue
+  fi
+  claude_project_only_skills+=("$skill")
+done < "$repo_root/scripts/claude-project-only-skills.txt"
+printf 'selected %d Claude project-only skills\n\n' "${#claude_project_only_skills[@]}"
+
+claude_global_skills=()
+for skill in "${tracked_skills[@]}"; do
+  printf '%s\n' "${claude_project_only_skills[@]:-}" | grep -qx "$skill" && continue
+  claude_global_skills+=("$skill")
+done
 
 printf '== skill sources: SKILL.md and name ==\n'
 for skill in "${tracked_skills[@]}"; do
@@ -300,7 +329,7 @@ if [[ "$mode" == "--repo-only" ]]; then
 fi
 
 printf '\n== installed link layers ==\n'
-installed_dirs=("$HOME/.agents/skills" "$HOME/.claude/skills" "$HOME/.codex/skills")
+installed_dirs=("$HOME/.agents/skills" "$HOME/.claude/skills" "$HOME/.codex/skills" "$repo_root/.claude/skills")
 for dir in "${installed_dirs[@]}"; do
   if [[ ! -d "$dir" ]]; then
     printf 'skip: %s does not exist\n' "$dir"
@@ -308,9 +337,11 @@ for dir in "${installed_dirs[@]}"; do
   fi
   linked=()
   if [[ "$dir" == "$HOME/.claude/skills" ]]; then
-    expected_skills=("${tracked_skills[@]}")
+    expected_skills=("${claude_global_skills[@]}")
   elif [[ "$dir" == "$HOME/.agents/skills" ]]; then
     expected_skills=("${codex_global_skills[@]}")
+  elif [[ "$dir" == "$repo_root/.claude/skills" ]]; then
+    expected_skills=("${claude_project_only_skills[@]:-}")
   else
     expected_skills=()
   fi
@@ -338,6 +369,18 @@ for dir in "${installed_dirs[@]}"; do
           continue
         fi
         expected_target="../../.dotfiles/ai-agents/.agents/skills/$name"
+      elif [[ "$dir" == "$HOME/.claude/skills" ]]; then
+        if printf '%s\n' "${claude_project_only_skills[@]:-}" | grep -qx "$name"; then
+          fail "$entry is a project-only skill; it belongs in $repo_root/.claude/skills, not ~/.claude/skills"
+          continue
+        fi
+        expected_target="../../.dotfiles/ai-agents/.agents/skills/$name"
+      elif [[ "$dir" == "$repo_root/.claude/skills" ]]; then
+        if ! printf '%s\n' "${claude_project_only_skills[@]:-}" | grep -qx "$name"; then
+          fail "$entry is outside the Claude project-only skill selection"
+          continue
+        fi
+        expected_target="../../ai-agents/.agents/skills/$name"
       else
         expected_target="../../.dotfiles/ai-agents/.agents/skills/$name"
       fi
