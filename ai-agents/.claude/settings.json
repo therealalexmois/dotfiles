@@ -218,5 +218,19 @@
   "skipWorkflowUsageWarning": true,
   "theme": "light-ansi",
   "editorMode": "vim",
-  "voiceEnabled": false
+  "voiceEnabled": false,
+  "skillOverrides": {
+    "anthropic-skills:adversarial-advisor": "off",
+    "anthropic-skills:create-learning-roadmap": "off",
+    "anthropic-skills:create-prompt": "off",
+    "anthropic-skills:distill-thoughts": "off",
+    "anthropic-skills:draft-in-alex-style": "off",
+    "anthropic-skills:handoff": "off",
+    "anthropic-skills:human-architect-mindset": "off",
+    "anthropic-skills:interactive-interview": "off",
+    "anthropic-skills:select-reasoning-effort": "off",
+    "anthropic-skills:six-thinking-hats": "off",
+    "anthropic-skills:teach-through-dialogue": "off",
+    "anthropic-skills:writing": "off"
+  }
 }
