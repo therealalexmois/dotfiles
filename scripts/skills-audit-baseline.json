@@ -690,16 +690,6 @@
   }
  },
  {
-  "skill": "llm-wiki",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "mcp-builder",
   "verdict": "PASS",
   "counts": {
