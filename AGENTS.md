@@ -352,6 +352,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | design a reusable, system, or production-model prompt | `prompt-design` | yes |
 | review an existing prompt with findings and a verdict | `prompt-review` | yes |
 | build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | manual |
+| learn a concept through Socratic dialogue, graduated hints, or guided discovery | `teach-through-dialogue` | manual |
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |

@@ -1,0 +1,84 @@
+{
+  "skill_name": "teach-through-dialogue",
+  "date": "2026-08-16",
+  "method": "Independent fresh-context forward tests using the skill and only the task-local user prompt",
+  "summary": {
+    "passed": 12,
+    "failed": 0,
+    "total": 12
+  },
+  "results": [
+    {
+      "id": 1,
+      "name": "starts-with-diagnostic-question",
+      "status": "pass",
+      "note": "Opened with one concrete I/O timing question and no lecture."
+    },
+    {
+      "id": 2,
+      "name": "deepens-correct-answer",
+      "status": "pass",
+      "note": "Recognized the correct model and advanced to an idle-loop boundary case."
+    },
+    {
+      "id": 3,
+      "name": "isolates-partial-understanding",
+      "status": "pass",
+      "note": "Separated testability from dependency direction with one replacement scenario."
+    },
+    {
+      "id": 4,
+      "name": "uses-counterexample-for-misconception",
+      "status": "pass",
+      "note": "Used a CPU-bound coroutine without await and requested a prediction."
+    },
+    {
+      "id": 5,
+      "name": "first-stuck-response-gives-small-hint",
+      "status": "pass",
+      "note": "Reframed the question around yielding control without giving a full lecture."
+    },
+    {
+      "id": 6,
+      "name": "repeated-stuck-response-explains",
+      "status": "pass",
+      "note": "Stated the missing await rule directly and asked one immediate application question."
+    },
+    {
+      "id": 7,
+      "name": "direct-answer-control-exits-mode",
+      "status": "pass",
+      "note": "Answered thread versus process directly and asked no follow-up question."
+    },
+    {
+      "id": 8,
+      "name": "advanced-learner-calibration",
+      "status": "pass",
+      "note": "Started from TaskGroup cancellation propagation and exception behavior."
+    },
+    {
+      "id": 9,
+      "name": "minimal-hint-for-problem-solving",
+      "status": "pass",
+      "note": "Focused only on semaphore ownership across retries and withheld the full fix."
+    },
+    {
+      "id": 10,
+      "name": "verifies-transfer-not-confidence",
+      "status": "pass",
+      "note": "Used a novel sanctions-check scenario instead of asking whether the learner understood."
+    },
+    {
+      "id": 11,
+      "name": "finishes-after-demonstrated-transfer",
+      "status": "pass",
+      "note": "Gave a concise canonical distinction and ended without another question."
+    },
+    {
+      "id": 12,
+      "name": "high-stakes-guidance-comes-first",
+      "status": "pass",
+      "note": "Put immediate safety guidance before any optional learning question."
+    }
+  ]
+}
