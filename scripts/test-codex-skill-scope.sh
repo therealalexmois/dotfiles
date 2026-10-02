@@ -15,6 +15,7 @@ touch "$test_home/.dotfiles/ai-agents/.agents/skills/kept/SKILL.md"
 touch "$test_home/.dotfiles/ai-agents/.agents/skills/dropped/SKILL.md"
 print kept > "$test_home/.dotfiles/scripts/codex-global-skills.txt"
 : > "$test_home/.dotfiles/scripts/claude-project-only-skills.txt"
+: > "$test_home/.dotfiles/scripts/claude-external-project-skills.txt"
 
 ln -s ../../.dotfiles/ai-agents/.agents/skills/kept "$test_home/.agents/skills/kept"
 ln -s ../../.dotfiles/ai-agents/.agents/skills/dropped "$test_home/.agents/skills/dropped"

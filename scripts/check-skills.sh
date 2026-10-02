@@ -16,8 +16,9 @@
 #   - no dangling repository-managed skill symlinks under ~/.agents, ~/.claude, ~/.codex,
 #     or this repo's own .claude/skills;
 #   - Claude links every tracked skill except scripts/claude-project-only-skills.txt,
-#     which is linked instead into this repo's own .claude/skills; Codex receives only
-#     the curated global set;
+#     which is linked instead into this repo's own .claude/skills, and
+#     scripts/claude-external-project-skills.txt, which link-project-skill.sh links per
+#     machine into other repos; Codex receives only the curated global set;
 #   - no skill name collides with a Codex system skill;
 #   - missing links for each layer are warnings until the next install run.
 #   - account-synced Claude skills with the same name are reported separately;
@@ -148,9 +149,33 @@ while IFS= read -r skill || [[ -n "$skill" ]]; do
 done < "$repo_root/scripts/claude-project-only-skills.txt"
 printf 'selected %d Claude project-only skills\n\n' "${#claude_project_only_skills[@]}"
 
+claude_external_skills=()
+printf '== Claude external-project skill selection ==\n'
+while IFS= read -r skill || [[ -n "$skill" ]]; do
+  [[ -z "$skill" || "$skill" == \#* ]] && continue
+  if [[ ! "$skill" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+    fail "scripts/claude-external-project-skills.txt: invalid skill name: $skill"
+    continue
+  fi
+  if printf '%s\n' "${claude_external_skills[@]:-}" | grep -qx "$skill"; then
+    fail "scripts/claude-external-project-skills.txt: duplicate skill: $skill"
+    continue
+  fi
+  if printf '%s\n' "${claude_project_only_skills[@]:-}" | grep -qx "$skill"; then
+    fail "scripts/claude-external-project-skills.txt: also project-only: $skill"
+    continue
+  fi
+  if [[ ! -f "$skills_dir/$skill/SKILL.md" ]]; then
+    fail "scripts/claude-external-project-skills.txt: missing skill source: $skill"
+    continue
+  fi
+  claude_external_skills+=("$skill")
+done < "$repo_root/scripts/claude-external-project-skills.txt"
+printf 'selected %d Claude external-project skills\n\n' "${#claude_external_skills[@]}"
+
 claude_global_skills=()
 for skill in "${tracked_skills[@]}"; do
-  printf '%s\n' "${claude_project_only_skills[@]:-}" | grep -qx "$skill" && continue
+  printf '%s\n' "${claude_project_only_skills[@]:-}" "${claude_external_skills[@]:-}" | grep -qx "$skill" && continue
   claude_global_skills+=("$skill")
 done
 
@@ -372,6 +397,10 @@ for dir in "${installed_dirs[@]}"; do
       elif [[ "$dir" == "$HOME/.claude/skills" ]]; then
         if printf '%s\n' "${claude_project_only_skills[@]:-}" | grep -qx "$name"; then
           fail "$entry is a project-only skill; it belongs in $repo_root/.claude/skills, not ~/.claude/skills"
+          continue
+        fi
+        if printf '%s\n' "${claude_external_skills[@]:-}" | grep -qx "$name"; then
+          fail "$entry is an external-project skill; link it into its project with scripts/link-project-skill.sh, not ~/.claude/skills"
           continue
         fi
         expected_target="../../.dotfiles/ai-agents/.agents/skills/$name"

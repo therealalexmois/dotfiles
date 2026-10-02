@@ -1,0 +1,17 @@
+# Skills excluded from the global ~/.claude/skills/ link set and NOT linked into
+# this repo either. Each belongs to another project repository that exists only
+# on some machines, so its link is created per machine, outside the tracked
+# state:
+#
+#   scripts/link-project-skill.sh <skill-name> <path-to-repo>
+#
+# The source stays in ai-agents/.agents/skills/. Use
+# scripts/claude-project-only-skills.txt instead for skills scoped to this repo.
+
+# markova.studio
+analytics-tracking
+customer-research
+seo
+seo-audit
+writing-technical-marketing-content
+yandex-metrica

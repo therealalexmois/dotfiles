@@ -70,6 +70,8 @@ Everything else:
   in the four installed layers),
   `claude-project-only-skills.txt` (names excluded from the global `~/.claude/skills/`
   link set and linked instead into this repo's own `.claude/skills/`),
+  `claude-external-project-skills.txt` (names excluded from `~/.claude/skills/` and
+  linked per machine into another project repo by `link-project-skill.sh`),
   `link-project-skill.sh` (symlinks one skill into, or with `--remove` out of, an
   external project repo's own `.claude/skills/`/`.agents/skills/` and keeps the link
   in that repo's local `.git/info/exclude`; generic, machine-local, no path tracked in
@@ -218,7 +220,7 @@ Neovim: init.lua → lazy_setup.lua → AstroNvim + community.lua + plugins/
                                ├→ CodeCompanion  (NVIM_AI_PROFILE: home | work | claude)
                                └→ claudecode.nvim (claude CLI over IDE protocol, no nvim wiring)
 
-AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all skills except claude-project-only-skills.txt)
+AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all except claude-project-only and claude-external-project lists)
                                   ├→ ~/.agents/skills/ (Codex global selection)
                                   └→ .claude/skills/ (this repo only; claude-project-only-skills.txt)
         ~/.codex/skills/.system remains untouched
@@ -236,7 +238,9 @@ AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all skills except claud
 
 Claude gets every source skill except the names in
 `scripts/claude-project-only-skills.txt`, which are linked only into this repo's
-own project-scoped `.claude/skills/`. Claude Code loads `<project>/.claude/skills/`
+own project-scoped `.claude/skills/`, and the names in
+`scripts/claude-external-project-skills.txt`, which `link-project-skill.sh` links
+per machine into another project repo. Claude Code loads `<project>/.claude/skills/`
 only for sessions started inside that repository, so leaving these names out of
 `~/.claude/skills/` hides them from every other project without disabling them
 here. Do not rely on the project copy to override a global one: for the same name,
@@ -248,13 +252,14 @@ available from each project's `.agents/skills/`.
 ai-agents/.agents/skills/<name>/SKILL.md  ← source of truth
 
 scripts/install-ai-cli-dotfiles.sh creates:
-~/.claude/skills/<name>  → .dotfiles/ai-agents/.agents/skills/<name>  (all except project-only)
+~/.claude/skills/<name>  → .dotfiles/ai-agents/.agents/skills/<name>  (all except project-only and external-project)
 ~/.agents/skills/<name>  → .dotfiles/ai-agents/.agents/skills/<name>  (Codex global)
 .claude/skills/<name>    → ai-agents/.agents/skills/<name>            (this repo; claude-project-only-skills.txt)
 ```
 
-The Codex selection is in `scripts/codex-global-skills.txt`; the Claude exclusion
-is in `scripts/claude-project-only-skills.txt`. The installer removes old
+The Codex selection is in `scripts/codex-global-skills.txt`; the Claude exclusions
+are in `scripts/claude-project-only-skills.txt` and
+`scripts/claude-external-project-skills.txt`. The installer removes old
 repository-managed links under `~/.codex/skills/`, preserving `.system` and
 unrelated live links. Restart Claude Code and Codex after changing skill links.
 This repo's own `.claude/skills/` is gitignored (`/.claude/` at the repo root),
@@ -270,21 +275,20 @@ machine; it symlinks the skill into `<path-to-repo>/.claude/skills/` and
 independent of this repo's own global/project-only split. The link target is an
 absolute path into this checkout, so the script adds each link to the target
 repo's local `.git/info/exclude`; `--remove` deletes the link and that entry
-again. The current placement decisions (which skills *should* go where,
-manually, per machine) are:
+again. Add a skill linked this way to `scripts/claude-external-project-skills.txt`
+so the installer stops linking it globally. The current placement decisions are:
 
-| Project | Skills from this repository to make project-local when needed |
+| Project | Placement |
 | --- | --- |
 | `.dotfiles` | `agent-instruction`, `audit-repository-documentation`, `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester`; enforced for Claude by `scripts/claude-project-only-skills.txt`, not available to Codex here |
-| `life-os` | `close-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` |
-| `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` |
-| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica` |
-| `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python`; add database or spreadsheet skills only where the workflow uses them |
+| `life-os` | `close-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` moved into that repo's `.agents/skills/`; no longer managed here |
+| `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` moved into that repo's `.agents/skills/`; no longer managed here |
+| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica`; listed in `scripts/claude-external-project-skills.txt`, linked per machine with `link-project-skill.sh` |
+| `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python` stay global and manual-only, since both repos and any FastAPI project use them |
 
-Rows other than `.dotfiles` select scope only; run `link-project-skill.sh` on
-each machine where that repository actually exists. Other specialized skills
-remain in the source catalog and can be linked into a project when a concrete
-workflow calls for them.
+Run `link-project-skill.sh` for the `markova.studio` row on each machine where
+that repository exists. Other specialized skills remain in the source catalog
+and can be linked into a project when a concrete workflow calls for them.
 
 Layout follows the [Agent Skills specification](https://agentskills.io/specification):
 
@@ -393,7 +397,6 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | brainstorm a small or medium engineering decision | `brainstorm-lite` | yes |
 | design a complex or materially uncertain change before implementation | `brainstorming` | yes |
 | structured brainstorm | `six-thinking-hats` | manual |
-| productivity coaching | `productivity-coach` | manual |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
 | onboard to a codebase | `codebase-onboarding` | manual |
@@ -440,7 +443,9 @@ Rename checklist (every step is required, the link layers break silently):
 1. Rename the directory under `ai-agents/.agents/skills/`.
 2. Update `name:` in the skill's `SKILL.md` frontmatter.
 3. Update `scripts/codex-global-skills.txt` if the skill is in Codex's global set,
-   and `scripts/claude-project-only-skills.txt` if it is project-only for Claude.
+   `scripts/claude-project-only-skills.txt` if it is project-only for Claude, and
+   `scripts/claude-external-project-skills.txt` if it is linked into another repo
+   (then relink it there with `link-project-skill.sh`).
 4. Rerun `scripts/install-ai-cli-dotfiles.sh --skills-only` to update Claude and
    Codex links.
 5. Update cross-references to the old name in other `SKILL.md` files.
@@ -452,8 +457,8 @@ Rename checklist (every step is required, the link layers break silently):
 - Unit tests: `scripts/test-prune-stray-skill-links.sh` covers the installer's link
   pruning (sourcing the installer does not run it; `main` is guarded),
   `scripts/test-codex-skill-scope.sh` the Codex global selection,
-  `scripts/test-claude-project-only-skills.sh` the Claude project-only selection and
-  its migration, and `scripts/test-link-project-skill.sh` the external-repo link
+  `scripts/test-claude-project-only-skills.sh` the Claude project-only and
+  external-project selections and their migration, and `scripts/test-link-project-skill.sh` the external-repo link
   helper. `scripts/check-ai-cli.sh` runs all four. No other first-party unit test
   suite is documented.
   > TODO: Add tests for `nvim/lua/config/ai/docstring/extractor.lua` if its behavior
@@ -589,9 +594,9 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | --- | --- | --- |
 | Reusable AI prompt | `llm/prompts/<name>.md` | Project overrides in `<repo>/.prompts` |
 | Agent skill | `ai-agents/.agents/skills/<name>/SKILL.md` | See "Agent Skills" section |
-| Codex global skill selection | `scripts/codex-global-skills.txt` | Claude receives all source skills except project-only ones |
+| Codex global skill selection | `scripts/codex-global-skills.txt` | Claude receives all source skills except project-only and external-project ones |
 | Claude project-only skill selection | `scripts/claude-project-only-skills.txt` | Linked instead into this repo's own `.claude/skills/` |
-| Skill scoped into another project repo | `scripts/link-project-skill.sh <skill> <path>` | Generic, machine-local; no path tracked in this repo |
+| Skill scoped into another project repo | `scripts/claude-external-project-skills.txt` + `scripts/link-project-skill.sh <skill> <path>` | The list is tracked; the link is machine-local |
 | Claude subagent | `ai-agents/.claude/agents/<name>.md` | Stow-folded to `~/.claude/agents/` |
 | Codex reasoning profile | `ai-agents/.codex/<name>.config.toml` | Symlinked to `~/.codex/` |
 | Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |

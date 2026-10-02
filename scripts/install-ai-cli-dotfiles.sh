@@ -17,8 +17,8 @@ for skill_dir in "${repo_dir}/ai-agents/.agents/skills/"*/(N); do
 done
 
 # Keep Codex's user-level discovery small. Claude links every source skill
-# directly except the project-only ones below, so pruning ~/.agents/skills does
-# not remove Claude capabilities.
+# directly except the project-only and external-project ones below, so pruning
+# ~/.agents/skills does not remove Claude capabilities.
 codex_global_skills=()
 while IFS= read -r skill || [[ -n "$skill" ]]; do
   [[ -z "$skill" || "$skill" == \#* ]] && continue
@@ -34,13 +34,22 @@ while IFS= read -r skill || [[ -n "$skill" ]]; do
   claude_project_only_skills+=("$skill")
 done < "${repo_dir}/scripts/claude-project-only-skills.txt"
 
+# Skills excluded from ~/.claude/skills and linked per machine into another
+# project repo by scripts/link-project-skill.sh, per
+# scripts/claude-external-project-skills.txt. The installer never links them.
+claude_external_skills=()
+while IFS= read -r skill || [[ -n "$skill" ]]; do
+  [[ -z "$skill" || "$skill" == \#* ]] && continue
+  claude_external_skills+=("$skill")
+done < "${repo_dir}/scripts/claude-external-project-skills.txt"
+
 claude_global_skills=()
-typeset -A project_only_lookup=()
-for skill in "${claude_project_only_skills[@]}"; do
-  project_only_lookup[$skill]=1
+typeset -A not_global_lookup=()
+for skill in "${claude_project_only_skills[@]}" "${claude_external_skills[@]}"; do
+  not_global_lookup[$skill]=1
 done
 for skill in "${skills[@]}"; do
-  [[ -n "${project_only_lookup[$skill]:-}" ]] && continue
+  [[ -n "${not_global_lookup[$skill]:-}" ]] && continue
   claude_global_skills+=("$skill")
 done
 
@@ -250,6 +259,22 @@ validate_sources() {
       exit 1
     fi
   done
+  local -A external_selected=()
+  for skill in "${claude_external_skills[@]}"; do
+    if [[ ! "$skill" =~ '^[a-z0-9]+(-[a-z0-9]+)*$' || -n "${external_selected[$skill]:-}" ]]; then
+      echo "invalid or duplicate Claude external-project skill: ${skill}" >&2
+      exit 1
+    fi
+    if [[ -n "${project_only_selected[$skill]:-}" ]]; then
+      echo "Claude external-project skill is also project-only: ${skill}" >&2
+      exit 1
+    fi
+    external_selected[$skill]=1
+    if [[ ! -f "${repo_dir}/ai-agents/.agents/skills/${skill}/SKILL.md" ]]; then
+      echo "missing Claude external-project skill source: ${skill}" >&2
+      exit 1
+    fi
+  done
 }
 
 backup_skill_links() {
@@ -299,7 +324,7 @@ main() {
 
   if [[ "$mode" == "--skills-only" ]]; then
     install_skill_links
-    echo "installed ${#codex_global_skills[@]} global Codex skills, ${#claude_global_skills[@]} global Claude skills, and ${#claude_project_only_skills[@]} project-only Claude skills"
+    echo "installed ${#codex_global_skills[@]} global Codex skills, ${#claude_global_skills[@]} global Claude skills, and ${#claude_project_only_skills[@]} project-only Claude skills (${#claude_external_skills[@]} external-project skills are linked per machine by link-project-skill.sh)"
     return 0
   fi
 

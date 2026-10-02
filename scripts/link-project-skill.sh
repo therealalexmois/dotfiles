@@ -12,7 +12,7 @@
 # scoped there.
 #
 # To also stop linking a skill into ~/.claude/skills/ globally, add it to
-# scripts/claude-project-only-skills.txt and rerun
+# scripts/claude-external-project-skills.txt and rerun
 # scripts/install-ai-cli-dotfiles.sh --skills-only. Claude reads
 # <repo>/.claude/skills/ and Codex reads <repo>/.agents/skills/; --agent picks
 # which of the two gets the link (default: both).
