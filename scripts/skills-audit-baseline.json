@@ -170,6 +170,16 @@
   }
  },
  {
+  "skill": "build-engineering-self-presentation",
+  "verdict": "PASS",
+  "counts": {
+   "critical": 0,
+   "high": 0,
+   "info": 0,
+   "total": 0
+  }
+ },
+ {
   "skill": "call-tracer",
   "verdict": "PASS",
   "counts": {
@@ -651,16 +661,6 @@
  },
  {
   "skill": "interview-system-designer",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "karpathy-coder",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
