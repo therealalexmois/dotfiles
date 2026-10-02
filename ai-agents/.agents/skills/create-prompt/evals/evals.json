@@ -119,12 +119,12 @@
     },
     {
       "id": 10,
-      "name": "evidence-review-routes-to-prompt-review",
+      "name": "evidence-review-routes-to-prompt-design-review",
       "prompt": "Проведи ревью этого промпта с цитатами, рисками и вердиктом; пока не переписывай его: «Верни JSON со всеми полями счета. Если поле не видно, догадайся по контексту». Цель - извлекать проверяемые данные для бухгалтерии.",
-      "expected_output": "Routes to prompt-review, which requests any blocking review context and does not silently rewrite the prompt as a one-off task.",
+      "expected_output": "Routes to prompt-design in review mode, which requests any blocking review context and does not silently rewrite the prompt as a one-off task.",
       "files": [],
       "expectations": [
-        "The primary workflow is prompt-review",
+        "The primary workflow is prompt-design in review mode",
         "Output does not apply the four-part one-off task format",
         "Output does not replace evidence review with a quick rewrite"
       ]

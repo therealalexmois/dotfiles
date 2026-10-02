@@ -1,18 +1,5 @@
----
-name: slo-architect
-disable-model-invocation: true
-description: Use when defining, reviewing, or operating SLOs/SLIs/error budgets. Triggers on "define an SLO", "what should our SLO be", "error budget", "burn rate", "SLI", "service level objective", "Google SRE workbook", "multi-window burn-rate alert", or any reliability-target question. Ships SLO designer, error-budget calculator with multi-window burn-rate thresholds, and SLO reviewer that catches the common bugs (target too aggressive, window too short, conflicting SLOs, no SLI definition). 4 references on SLO principles + SLI design + error budget math + composition with feature-flags-architect/chaos-engineering/kubernetes-operator. NOT a generic observability skill — specifically the SLO discipline.
-license: MIT
-metadata:
-  origin: vendored
-  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/slo-architect
-  imported_at: 2026-06-04
-  context: fork
-  version: 2.9.0
-  author: claude-code-skills
-  tags: slo, sli, sla, error-budget, burn-rate, sre, reliability, google-sre-workbook, observability
-  compatible_tools: claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli
----
+<!-- Merged from the slo-architect skill (MIT, per its frontmatter):
+https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/slo-architect -->
 
 # SLO Architect
 
@@ -28,7 +15,6 @@ Define SLOs that mean something. Most "SLOs" in the wild are arbitrary numbers n
 
 ## When NOT to use
 
-- General observability strategy (metrics + logs + traces) → use `observability-designer`
 - Customer-facing SLAs with legal teeth → that's contract drafting, not engineering
 - Performance load testing (capacity, not reliability) → use `performance-profiler`
 - Active incident response → use `incident-response`
@@ -55,10 +41,10 @@ The 3 tools below catch each of these.
 ## Quick start
 
 ```bash
-SKILL=engineering/slo-architect/skills/slo-architect
+SKILL=<path to the observability-designer skill>
 
 # 1. Design an SLO
-python "$SKILL/scripts/slo_designer.py" \
+python "$SKILL/scripts/slo_definition.py" \
   --service checkout-svc \
   --sli-type request-success-rate \
   --target 99.9 \
@@ -76,12 +62,12 @@ python "$SKILL/scripts/slo_review.py" --slo-doc docs/slos/
 
 All stdlib-only.
 
-### `slo_designer.py`
+### `slo_definition.py` (renamed from slo-architect's `slo_designer.py`; this skill's own `slo_designer.py` builds a whole framework)
 
 Generates a structured SLO definition with required fields. Refuses to render if any required field is missing (`exit 1`).
 
 ```bash
-python scripts/slo_designer.py \
+python scripts/slo_definition.py \
   --service checkout-svc \
   --sli-type request-success-rate \
   --target 99.9 \
@@ -174,7 +160,7 @@ The `error_budget_calculator.py` output is in the same shape `chaos-engineering/
      target = floor(p50 of last 30 days × 100) / 100
    This avoids targets the system has never sustained.
 5. Pick a window (28 days = 4 calendar weeks, recommended).
-6. Run slo_designer.py to render the SLO definition.
+6. Run slo_definition.py to render the SLO definition.
 7. Run error_budget_calculator.py to get burn-rate alerts.
 8. Write the error budget policy (what happens when budget burns).
 9. Run slo_review.py — must pass before the SLO is "live".
@@ -207,10 +193,6 @@ The `error_budget_calculator.py` output is in the same shape `chaos-engineering/
 - `references/sli_design.md` — picking the right SLI; 5 types with examples
 - `references/error_budget.md` — error budget math, burn-rate alerts, budget policy
 - `references/composition.md` — how SLOs feed feature flags, chaos, operators
-
-## Slash command
-
-`/slo-design` — interactive SLO design wizard that runs all 3 tools.
 
 ## Asset templates
 

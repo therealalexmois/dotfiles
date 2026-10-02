@@ -1,12 +1,12 @@
 # Composition with the rest of the portfolio
 
-`slo-architect` is the keystone. Three other skills in this library already lean on the SLO + error budget concept. This page shows how to wire them together for a coherent reliability stack.
+`observability-designer` (SLO discipline) is the keystone. Three other skills in this library already lean on the SLO + error budget concept. This page shows how to wire them together for a coherent reliability stack.
 
 ## The unified concept: error budget
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                      slo-architect                         │
+│                      SLO discipline                        │
 │             defines SLO, error budget, burn rate           │
 └──────────┬─────────────────┬────────────────┬─────────────┘
            │                 │                │
@@ -32,7 +32,7 @@ abort_if: "burn_rate.fast > 14.4 over 1h (per SLO checkout-success)"
 
 Wire-up:
 
-1. Define SLO via `slo_designer.py`
+1. Define SLO via `slo_definition.py`
 2. Run `error_budget_calculator.py` to get the burn-rate threshold
 3. Use that threshold in the flag's abort criteria
 4. The kill_switch_audit.py from feature-flags-architect now has a real signal to verify against
@@ -64,19 +64,19 @@ OperatorHub Capability Level 4 ("Deep Insights") requires:
 - Prometheus alert rules
 - SLOs documented for the operator's managed resources
 
-`slo-architect` provides the SLO definitions; `error_budget_calculator.py` provides the alert rules. Drop them in the operator's Helm chart or OperatorHub bundle.
+`observability-designer` (SLO discipline) provides the SLO definitions; `error_budget_calculator.py` provides the alert rules. Drop them in the operator's Helm chart or OperatorHub bundle.
 
 ## End-to-end example
 
 Goal: ship a new checkout flow.
 
-1. **Define the SLO** (slo-architect):
+1. **Define the SLO** (observability-designer):
    ```bash
-   slo_designer.py --service checkout-svc --sli-type request-success-rate \
+   slo_definition.py --service checkout-svc --sli-type request-success-rate \
      --target 99.9 --window-days 28 --owner team-checkout
    ```
 
-2. **Compute burn-rate alerts** (slo-architect):
+2. **Compute burn-rate alerts** (observability-designer):
    ```bash
    error_budget_calculator.py --target 99.9 --window-days 28
    # → fast_burn threshold = 14.4
@@ -109,13 +109,13 @@ Goal: ship a new checkout flow.
 
 Each step uses the previous step's output as input. The SLO is the unifying number.
 
-## What slo-architect does NOT replace
+## What the SLO discipline does NOT replace
 
 - **observability-designer** — broader observability strategy (metrics, logs, traces, dashboards beyond SLO)
 - **incident-response** — SLO violation may trigger an incident, but incident response is a separate discipline
 - **performance-profiler** — capacity planning needs different metrics than SLO does
 
-Use slo-architect for SLO+error-budget; use the others for their specific scopes.
+Use the SLO discipline for SLO+error-budget; use the others for their specific scopes.
 
 ## Anti-pattern: SLO without composition
 
@@ -131,7 +131,7 @@ The SLOs become a reporting artifact, not an operating tool. The composition sto
 
 For any service with a new SLO, verify:
 
-- [ ] SLO defined via `slo_designer.py` (`slo_review.py` passes)
+- [ ] SLO defined via `slo_definition.py` (`slo_review.py` passes)
 - [ ] Burn-rate alerts deployed via `error_budget_calculator.py` output
 - [ ] If using feature flags: rollout abort references the SLO burn-rate threshold
 - [ ] If running chaos: blast radius bounded by SLO error budget

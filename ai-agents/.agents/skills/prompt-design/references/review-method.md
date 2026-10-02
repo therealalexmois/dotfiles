@@ -1,6 +1,6 @@
 # Review Method: Axes, Problem Taxonomy, Severity, Verdict, Output
 
-Reference for `prompt-review`. Read during analysis and before writing the verdict.
+Reference for the prompt-design review mode. Read during analysis and before writing the verdict.
 
 ## Evidence-based review (the core rule)
 

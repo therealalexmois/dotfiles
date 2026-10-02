@@ -1,10 +1,11 @@
 ---
 name: "database-designer"
 disable-model-invocation: true
-description: "Use explicitly for cross-database architecture decisions, SQL-versus-NoSQL selection, or physical design and index analysis across several database engines. For a new relational schema or ERD use database-schema-designer; for SQL queries use sql-database-assistant; for PostgreSQL-specific work use postgres-engineer; for a high-risk migration use migration-architect."
+description: "Use explicitly for database design: a new relational schema or ERD from requirements (entities, relationships, constraints, indexes, RLS, seed data, schema migrations), cross-database architecture decisions, SQL-versus-NoSQL selection, or physical design and index analysis across several database engines. For SQL queries use sql-database-assistant; for PostgreSQL-specific work use postgres-engineer; for a high-risk migration use migration-architect."
 metadata:
   origin: derived
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/database-designer
+  upstream_note: "merged with database-schema-designer from the same upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/database-schema-designer"
   imported_at: 2026-06-07
 ---
 
@@ -12,9 +13,12 @@ metadata:
 
 ## Overview
 
-Use this skill for a cross-engine database choice or physical-design decision that needs trade-offs across engines. State the workload, constraints, and candidate engines before recommending a design. Do not use the examples below as a production schema, executable migration plan, or reason to take over a narrower task.
+Use this skill in one of two modes:
 
-Route a relational schema or ERD to `database-schema-designer`, ordinary SQL writing and query optimization to `sql-database-assistant`, PostgreSQL-specific work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. The sections on queries, schemas, and migrations below are reference material only when they inform the cross-engine decision.
+- **Relational schema or ERD**: turn requirements into entities, relationships, constraints, indexes, and an ERD. Follow the process in [references/relational-schema-design.md](references/relational-schema-design.md); [references/full-schema-examples.md](references/full-schema-examples.md) holds a complete worked example.
+- **Cross-engine decision**: choose an engine or physical design that needs trade-offs across engines. State the workload, constraints, and candidate engines before recommending a design.
+
+Do not use the examples in this skill as a production schema, executable migration plan, or reason to take over a narrower task. Route ordinary SQL writing and query optimization to `sql-database-assistant`, PostgreSQL-specific work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. The sections on queries and migrations below are reference material only when they inform the design.
 
 ## Bundled Reference Coverage
 
@@ -286,7 +290,6 @@ Fixes:
 ## Cross-References
 
 - **sql-database-assistant** — query writing, optimization, and debugging for day-to-day SQL work
-- **database-schema-designer** — ERD modeling, normalization analysis, and schema generation
 - **migration-architect** — large-scale migration planning across database engines or major schema overhauls
 - **postgres-engineer** — PostgreSQL-specific schema, index, query, and operational work
 
@@ -294,4 +297,4 @@ Fixes:
 
 ## Output and Check
 
-Return the candidate engines or physical designs, workload assumptions, material trade-offs, and evidence needed to validate the recommendation. Stop at a design recommendation. Do not execute queries, deploy schema changes, or infer current production state from examples. If the request resolves to a narrower deliverable, use the corresponding skill above instead.
+For a relational schema, return the entities, relationships, constraints, indexes, and ERD as a proposal with the assumptions behind them. For a cross-engine decision, return the candidate engines or physical designs, workload assumptions, material trade-offs, and evidence needed to validate the recommendation. Stop at a design recommendation. Do not execute queries, deploy schema changes, or infer current production state from examples. If the request resolves to a narrower deliverable, use the corresponding skill above instead.

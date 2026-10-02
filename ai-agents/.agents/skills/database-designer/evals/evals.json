@@ -14,10 +14,11 @@
     "name": "relational_erd_route",
     "input": "/database-designer Сделай ERD и таблицы для заказов, платежей и возвратов.",
     "expected_behavior": [
-      "recommends database-schema-designer for the primary ERD deliverable after explicit database-designer invocation"
+      "designs the ERD and tables in the relational schema mode, following references/relational-schema-design.md"
     ],
     "forbidden_behavior": [
-      "treats the explicit invocation as a reason to take over ERD generation"
+      "routes the ERD to another skill instead of designing it",
+      "presents the proposed schema as an already deployed production schema"
     ]
   },
   {

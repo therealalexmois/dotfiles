@@ -1,10 +1,11 @@
 ---
 name: "observability-designer"
 disable-model-invocation: true
-description: "Design production-ready observability strategies combining metrics, logs, and traces. Includes SLI/SLO design, golden-signals monitoring, alert optimization. Use when adding observability to a new service, refactoring alerting that is too noisy, or designing an SLO program before scaling production load."
+description: "Design production-ready observability strategies combining metrics, logs, and traces, and run the SLO discipline end to end. Includes SLI/SLO design, error budgets and policies, multi-window burn-rate alerts, SLO review, golden-signals monitoring, and alert optimization. Use when adding observability to a new service, refactoring alerting that is too noisy, defining, reviewing, or operating SLOs, SLIs, and error budgets, or designing an SLO program before scaling production load."
 metadata:
   origin: derived
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/observability-designer
+  upstream_note: "merged with slo-architect (MIT) from the same upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/slo-architect"
   imported_at: 2026-06-04
 ---
 
@@ -187,6 +188,8 @@ context.
 | `references/alert_design_patterns.md` | Writing or de-noising alert rules, choosing burn-rate windows |
 | `references/dashboard_best_practices.md` | Laying out a dashboard, deciding what belongs on the first screen |
 | `references/capacity_planning.md` | Forecasting growth and sizing CPU, memory, or connection pools ahead of it |
+| `references/slo-discipline.md` | Defining one SLO, computing its error budget and burn-rate alerts, reviewing SLO documents, or running the quarterly SLO review |
+| `references/slo_principles.md`, `references/sli_design.md`, `references/error_budget.md`, `references/composition.md` | The SLO theory behind `slo-discipline.md`: SLI vs SLO vs SLA, SLI types, budget math, and how SLOs feed rollouts and chaos experiments |
 
 Capacity planning sits here rather than in a profiling skill because the inputs are the
 same metrics this skill already instruments: the forecast is only as good as the retention
@@ -196,7 +199,7 @@ queries and the resource formulas are the parts worth reusing.
 
 ## Scripts Overview
 
-This skill includes three powerful Python scripts for comprehensive observability design:
+This skill includes Python scripts for observability design and for the SLO discipline:
 
 ### 1. SLO Designer (`slo_designer.py`)
 Generates complete SLI/SLO frameworks based on service characteristics:
@@ -215,6 +218,13 @@ Creates comprehensive dashboard specifications:
 - **Input:** Service/system description JSON
 - **Output:** Grafana-compatible dashboard JSON and documentation
 - **Features:** Golden signals coverage, RED/USE methods, drill-down paths, role-based views
+
+### 4. SLO discipline (`slo_definition.py`, `error_budget_calculator.py`, `slo_review.py`)
+Stdlib-only tools for one SLO at a time, described in `references/slo-discipline.md`:
+- **`slo_definition.py`:** renders a single SLO definition and refuses to render when a required field is missing
+- **`error_budget_calculator.py`:** error budget and multi-window burn-rate alert thresholds
+- **`slo_review.py`:** catches common bugs in existing SLO documents
+- **Templates:** `assets/slo_template.yaml` and `assets/error_budget_policy.md`
 
 ## Integration Patterns
 

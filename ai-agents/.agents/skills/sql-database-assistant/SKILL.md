@@ -1,7 +1,7 @@
 ---
 name: "sql-database-assistant"
 disable-model-invocation: true
-description: "Use explicitly to write or debug SQL queries, perform ordinary query optimization, or inspect schema and ORM usage needed for those queries across database dialects. For a new relational schema or ERD use database-schema-designer; for cross-engine architecture use database-designer; for PostgreSQL-specific operations use postgres-engineer; for a high-risk or multi-step migration use migration-architect."
+description: "Use explicitly to write or debug SQL queries, perform ordinary query optimization, or inspect schema and ORM usage needed for those queries across database dialects. For a new relational schema, ERD, or cross-engine architecture use database-designer; for PostgreSQL-specific operations use postgres-engineer; for a high-risk or multi-step migration use migration-architect."
 metadata:
   origin: derived
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/sql-database-assistant
@@ -14,7 +14,7 @@ metadata:
 
 Use this skill for the query layer: write or debug a SQL statement, interpret a query plan, or inspect a schema or ORM mapping needed for that query. Ask for the target dialect and actual table definitions when they materially affect correctness. Do not infer a live schema from the examples below.
 
-Route a new relational schema or ERD to `database-schema-designer`, a cross-engine architecture or physical-design choice to `database-designer`, PostgreSQL-specific operational work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. Migration and backup examples in this file are reference material, not a primary trigger or deployment workflow.
+Route a new relational schema or ERD, or a cross-engine architecture or physical-design choice, to `database-designer`, PostgreSQL-specific operational work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. Migration and backup examples in this file are reference material, not a primary trigger or deployment workflow.
 
 ### Core Capabilities
 
@@ -463,8 +463,7 @@ sqlite3 dbname ".backup backup.db"
 
 | Skill | Relationship |
 |-------|-------------|
-| **database-designer** | Cross-engine architecture and physical-design trade-offs |
-| **database-schema-designer** | Visual ERD modeling, relationship mapping |
+| **database-designer** | Relational schema and ERD design, cross-engine architecture, physical-design trade-offs |
 | **postgres-engineer** | PostgreSQL-specific query, index, schema, and operational work |
 | **migration-architect** | High-risk or multi-step migration planning and recovery |
 | **api-design-reviewer** | Ensuring API endpoints align with query patterns |

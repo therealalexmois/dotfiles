@@ -1,10 +1,11 @@
 ---
 name: "env-secrets-manager"
 disable-model-invocation: true
-description: "Manage environment-variable hygiene and secrets safety across local development and production. Practical auditing, drift awareness, rotation readiness. Use when auditing .env files for committed secrets, planning a credential rotation, debugging missing-env-var production incidents, or hardening a new project against secrets leakage."
+description: "Manage environment-variable hygiene and secrets safety across local development and production, up to secret management infrastructure. Practical auditing, drift awareness, rotation readiness, HashiCorp Vault and cloud secret stores (AWS Secrets Manager, Azure Key Vault, GCP Secret Manager), dynamic secrets, audit-log analysis, and emergency procedures. Use when auditing .env files for committed secrets, planning a credential rotation, debugging missing-env-var production incidents, hardening a new project against secrets leakage, or setting up Vault or a cloud secret store."
 metadata:
   origin: vendored
   upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/env-secrets-manager
+  upstream_note: "merged with secrets-vault-manager from the same upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/secrets-vault-manager"
   imported_at: 2026-06-07
 ---
 
@@ -65,6 +66,8 @@ python3 scripts/env_auditor.py /path/to/repo --json
 
 - `references/validation-detection-rotation.md`
 - `references/secret-patterns.md`
+- `references/vault-infrastructure.md` - read for Vault or cloud secret store setup, dynamic secrets, audit logging, emergency procedures, and the bundled `vault_config_generator.py`, `rotation_planner.py`, and `audit_log_analyzer.py` scripts
+- `references/vault_patterns.md`, `references/cloud_secret_stores.md`, `references/emergency_procedures.md` - deeper detail behind `vault-infrastructure.md`
 
 ---
 
@@ -110,7 +113,7 @@ Production applications should never read secrets from `.env` files or environme
 3. **Init container** — a Kubernetes init container fetches secrets before the main container starts.
 4. **CSI driver** — secrets mount as a filesystem volume via the Secrets Store CSI Driver.
 
-> **Cross-reference:** See `engineering/secrets-vault-manager` for production vault infrastructure patterns, HA deployment, and disaster recovery procedures.
+> **Cross-reference:** See `references/vault-infrastructure.md` for production vault infrastructure patterns, HA deployment, and disaster recovery procedures.
 
 ---
 
@@ -258,7 +261,6 @@ This skill covers env hygiene and secret detection. For deeper coverage of relat
 
 | Skill | Path | Relationship |
 |-------|------|-------------|
-| **Secrets Vault Manager** | `engineering/secrets-vault-manager` | Production vault infrastructure, HA deployment, DR |
 | **Senior SecOps** | `engineering/senior-secops` | Security operations perspective, incident response |
 | **CI/CD Pipeline Builder** | `engineering/ci-cd-pipeline-builder` | Pipeline architecture, secret injection patterns |
 | **Infrastructure as Code** | `engineering/infrastructure-as-code` | Terraform/Pulumi secret backend configuration |

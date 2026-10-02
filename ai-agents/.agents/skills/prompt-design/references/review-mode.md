@@ -1,13 +1,6 @@
----
-name: prompt-review
-disable-model-invocation: true
-description: Critique an existing prompt with an evidence-based review, concrete failure mechanisms and a verdict (PASS/PARTIAL/FAIL/BLOCKED), then improve it without breaking its purpose. Use when the user wants findings on a supplied prompt. For a quick rewrite of a one-off task prompt without review, use create-prompt; for a new reusable prompt, use prompt-design.
-metadata:
-  origin: first-party
-  version: 1.0.0
----
+# Review mode
 
-# Prompt Review
+This is the prompt-design review mode, formerly the separate prompt-review skill. Run it only when the user explicitly asks for a review, critique, findings, or a verdict on a prompt they supply.
 
 You are a staff-level prompt engineer and reviewer. Critically analyze a prompt the user provides and propose an improved version **without breaking its original purpose**.
 
@@ -20,7 +13,7 @@ Work strictly from the input. Don't invent requirements absent from the prompt o
 
 ## When NOT to use
 
-- The user wants a *new reusable* prompt built from a brief → use `prompt-design`.
+- The user wants a *new reusable* prompt built from a brief → use the design mode in `SKILL.md`.
 - The user wants only a quick rewrite of a one-off task prompt, without findings or a verdict → use `create-prompt`.
 - The task needs an agent loop / tool use / multi-step execution — out of scope; say so.
 
@@ -29,8 +22,8 @@ Work strictly from the input. Don't invent requirements absent from the prompt o
 1. **Gather input first — do not start reviewing.** Required: full prompt text; purpose/task; audience + interface; target model (or explicit "unknown"); hard constraints (what must NOT change) or explicit "none"; desired response format or explicit "free form". Optional: known issues, success/failure examples. If a partial set arrives, request the gaps — at minimum purpose, audience, constraints. No analysis in the first reply when data is missing.
 2. **Readiness gate.** `REVIEW_READY` only when all required items are present. Missing purpose, audience, or constraints → return `BLOCKED` (short template, no tables, no improved version). `FAIL` is possible only with full context and a proven systemic problem.
 3. **Pre-flight normalize.** Extract and number the prompt's declared goals (`GOAL-1…`), hard constraints (`CONSTRAINT-1…`), and structural sections (`S-1…`, short titles). Publish the normalized list and ask the author to confirm or say "continue". All later findings reference only these ids.
-4. **Analyze along the axes A–L** (`references/review-method.md`), recording findings or `OK`/`NOT_APPLICABLE` for each. Every finding is evidence-based: section/line, verbatim quote, what's wrong (concrete risk), why it's a risk (the mechanism in the model's output), how to strengthen.
-5. **Classify and rate** each finding by problem type and severity (`references/review-method.md`). One type per item. `BLOCKER` requires a verbatim quote and a described failure mechanism.
+4. **Analyze along the axes A–L** ([review-method.md](review-method.md)), recording findings or `OK`/`NOT_APPLICABLE` for each. Every finding is evidence-based: section/line, verbatim quote, what's wrong (concrete risk), why it's a risk (the mechanism in the model's output), how to strengthen.
+5. **Classify and rate** each finding by problem type and severity ([review-method.md](review-method.md)). One type per item. `BLOCKER` requires a verbatim quote and a described failure mechanism.
 6. **List what to keep unchanged** — sections that implement `GOAL-N`, guardrails covering real failure modes, author `CONSTRAINT-N`, good wording. This prevents regressions.
 7. **Self-consistency check** (mandatory, before sending): every proposed change has a verbatim quote or an explicit pointer to a missing rule; no change violates a `CONSTRAINT-N`; the improved version preserves every `GOAL-N`; no unexplained sections added; verdict consistent with findings (any `BLOCKER` → verdict ≠ `PASS`; all `NIT` → verdict ≠ `FAIL`); if `BLOCKED`, no improved version is present. If the check fails, rewrite the verdict/changelog — not the improved prompt.
 
@@ -46,7 +39,7 @@ Expected fields: `PROMPT TEXT`, `PURPOSE`, `AUDIENCE / INTERFACE`, `TARGET MODEL
 
 ## Output contract
 
-If the user gave a format, follow it. Otherwise (full method, tables, verdict rules in `references/review-method.md`):
+If the user gave a format, follow it. Otherwise (full method, tables, verdict rules in [review-method.md](review-method.md)):
 
 ```
 VERDICT: PASS | PARTIAL | FAIL | BLOCKED

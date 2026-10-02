@@ -1,12 +1,6 @@
----
-name: "secrets-vault-manager"
-disable-model-invocation: true
-description: "Use when the user asks to set up secret management infrastructure, integrate HashiCorp Vault, configure cloud secret stores (AWS Secrets Manager, Azure Key Vault, GCP Secret Manager), implement secret rotation, or audit secret access patterns."
-metadata:
-  origin: vendored
-  upstream: https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/secrets-vault-manager
-  imported_at: 2026-06-07
----
+<!-- Merged from the secrets-vault-manager skill:
+https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/secrets-vault-manager
+Script and reference paths below are relative to the env-secrets-manager skill root. -->
 
 # Secrets Vault Manager
 
@@ -401,7 +395,7 @@ Eliminate long-lived secrets in CI by using OIDC federation:
 
 ## Cross-References
 
-- **env-secrets-manager** — Local `.env` file hygiene, leak detection, drift awareness
+- **env-secrets-manager** (this skill's `SKILL.md`) — Local `.env` file hygiene, leak detection, drift awareness
 - **senior-secops** — Security operations, incident response, threat modeling
 - **ci-cd-pipeline-builder** — Pipeline design where secrets are consumed
 - **docker-development** — Container secret injection patterns

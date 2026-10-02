@@ -361,11 +361,10 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
-| relational schema design, ERD, table relationships | `database-schema-designer` | manual |
 | SQL queries, schema exploration, ORM integration | `sql-database-assistant` | manual |
 | PostgreSQL-specific design, diagnosis, or optimization | `postgres-engineer` | manual |
 | high-risk database, system, or infrastructure migration and rollback | `migration-architect` | manual |
-| cross-database architecture, SQL versus NoSQL, or multi-engine physical design | `database-designer` | manual |
+| relational schema or ERD, cross-database architecture, SQL versus NoSQL, or multi-engine physical design | `database-designer` | manual |
 | build an MCP server without an OpenAPI contract | `mcp-builder` | manual |
 | generate an MCP server from an existing OpenAPI contract | `mcp-server-builder` | manual |
 | design one agent tool's schema, description, or error contract | `tool-design` | manual |
@@ -383,11 +382,10 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | create or substantially restructure an RFC or ADR from source material | `rfc-authoring` | yes |
 | create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
 | design a reusable, system, or production-model prompt | `prompt-design` | yes |
-| review an existing prompt with findings and a verdict | `prompt-review` | manual |
+| review an existing prompt with findings and a verdict, on explicit request | `prompt-design` (review mode) | yes |
 | build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | manual |
 | learn a concept through Socratic dialogue, graduated hints, or guided discovery | `teach-through-dialogue` | manual |
-| generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | manual |
-| create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
+| create UML diagrams (class, sequence, activity, etc.) via PlantUML, including ASCII/text output | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |
 | Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
 | set up or audit analytics tracking (GA4, GTM, events) | `analytics-tracking` | manual |
