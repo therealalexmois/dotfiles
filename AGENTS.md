@@ -284,10 +284,11 @@ so the installer stops linking it globally. The current placement decisions are:
 | `life-os` | `close-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` moved into that repo's `.agents/skills/`; no longer managed here |
 | `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` moved into that repo's `.agents/skills/`; no longer managed here |
 | `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica`; listed in `scripts/claude-external-project-skills.txt`, linked per machine with `link-project-skill.sh` |
+| work repository (work machine only) | `build-engineering-self-presentation`; listed in `scripts/claude-external-project-skills.txt`, linked there with `link-project-skill.sh` |
 | `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python` stay global and manual-only, since both repos and any FastAPI project use them |
 
-Run `link-project-skill.sh` for the `markova.studio` row on each machine where
-that repository exists. Other specialized skills remain in the source catalog
+Run `link-project-skill.sh` for the `markova.studio` and work-repository rows on
+each machine where that repository exists. Other specialized skills remain in the source catalog
 and can be linked into a project when a concrete workflow calls for them.
 
 Layout follows the [Agent Skills specification](https://agentskills.io/specification):
