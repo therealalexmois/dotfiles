@@ -358,7 +358,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
 | build a Workflow script | `workflow-builder` | manual |
 | lead a series of issues as Team Lead: delegate to Codex or Claude executors, review, merge | `team-lead` | yes |
-| design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
+| design a REST/GraphQL API, OpenAPI spec | `api-designer` | manual |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
 | SQL queries, schema exploration, ORM integration | `sql-database-assistant` | manual |

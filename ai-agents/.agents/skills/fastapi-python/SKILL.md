@@ -1,5 +1,6 @@
 ---
 name: fastapi-python
+disable-model-invocation: true
 description: Expert in FastAPI Python development with best practices for APIs and async operations
 metadata:
   origin: vendored
