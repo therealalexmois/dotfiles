@@ -75,10 +75,10 @@
     {
       "id": 7,
       "prompt": "Напиши короткий продуктовый блок для страницы сервиса. Аудитория - команды, которые вручную проверяют качество SQL перед merge. Факты: сервис запускает 12 статических проверок в MR, показывает замечания рядом со строкой и поддерживает PostgreSQL. Данных о снижении числа дефектов нет. Нужны заголовок, один абзац и простой следующий шаг.",
-      "expected_output": "Запрос на контент для страницы продукта направлен в writing-technical-marketing-content, а writing используется только для языкового слоя по явному запросу.",
+      "expected_output": "Если writing-technical-marketing-content доступен, запрос на контент для страницы продукта направлен в него. Если нет, writing пишет короткий блок сам по references/persuasive.md и использует только переданные факты.",
       "files": [],
       "expectations": [
-        "The primary workflow is writing-technical-marketing-content",
+        "The primary workflow is writing-technical-marketing-content when it is available; otherwise writing handles the short block with references/persuasive.md",
         "The content preserves 12 checks, inline MR feedback, and PostgreSQL support",
         "The content does not claim fewer defects or unsupported customer results"
       ]
@@ -287,10 +287,10 @@
     {
       "id": 24,
       "prompt": "Отредактируй как спокойный продуктовый текст без объяснения правок: Все еще теряете время на проверку Alembic-миграций? Оставьте заявку прямо сейчас и навсегда забудьте об ошибках! Факты: инженер проверяет конфигурацию Alembic и возвращает замечания в течение двух рабочих дней; гарантии отсутствия ошибок нет. Нужны заголовок, один абзац и следующий шаг.",
-      "expected_output": "Структурная правка продуктового блока направлена в writing-technical-marketing-content.",
+      "expected_output": "Если writing-technical-marketing-content доступен, структурная правка продуктового блока направлена в него. Если нет, writing правит блок сам по references/persuasive.md без давления и гарантий.",
       "files": [],
       "expectations": [
-        "The primary workflow is writing-technical-marketing-content",
+        "The primary workflow is writing-technical-marketing-content when it is available; otherwise writing handles the short block with references/persuasive.md",
         "The edited block keeps Alembic configuration review and a two-business-day response time",
         "The edited block removes pressure and guarantees without inventing submission channel, price, or scope"
       ]
