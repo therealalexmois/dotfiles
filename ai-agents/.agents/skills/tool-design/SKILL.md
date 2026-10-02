@@ -1,7 +1,7 @@
 ---
 name: tool-design
 disable-model-invocation: true
-description: "Use for the interface contract of one agent-facing tool or a tool catalog: descriptions, schemas, responses, naming, error recovery, and overlap. For a whole MCP server without an OpenAPI contract use mcp-builder; for OpenAPI-first MCP server generation use mcp-server-builder. Route project architecture to project-development and sub-agent topology to multi-agent-patterns."
+description: "Use for the interface contract of one agent-facing tool or a tool catalog: descriptions, schemas, responses, naming, error recovery, and overlap. For a whole MCP server without an OpenAPI contract suggest the manual-only mcp-builder skill; for OpenAPI-first MCP server generation use mcp-server-builder. Route project architecture to project-development and sub-agent topology to multi-agent-patterns."
 metadata:
   origin: derived
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/tool-design

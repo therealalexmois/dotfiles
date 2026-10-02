@@ -1,5 +1,6 @@
 ---
 name: redis-best-practices
+disable-model-invocation: true
 description: Redis development best practices for caching, data structures, and high-performance key-value operations
 metadata:
   origin: vendored

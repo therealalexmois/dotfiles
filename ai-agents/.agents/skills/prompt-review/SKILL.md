@@ -1,5 +1,6 @@
 ---
 name: prompt-review
+disable-model-invocation: true
 description: Critique an existing prompt with an evidence-based review, concrete failure mechanisms and a verdict (PASS/PARTIAL/FAIL/BLOCKED), then improve it without breaking its purpose. Use when the user wants findings on a supplied prompt. For a quick rewrite of a one-off task prompt without review, use create-prompt; for a new reusable prompt, use prompt-design.
 metadata:
   origin: first-party

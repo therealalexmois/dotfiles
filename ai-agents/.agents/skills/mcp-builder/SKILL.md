@@ -1,5 +1,6 @@
 ---
 name: mcp-builder
+disable-model-invocation: true
 description: Guide for building MCP (Model Context Protocol) servers around external services and custom workflows in Python or TypeScript. Use when there is no OpenAPI contract to generate from or when SDK implementation and behavioral evaluation are the main task. For an existing OpenAPI contract, use mcp-server-builder; for one tool's interface, use tool-design.
 license: Complete terms in LICENSE.txt
 metadata:

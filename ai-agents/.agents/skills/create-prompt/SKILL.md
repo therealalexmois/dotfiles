@@ -1,6 +1,6 @@
 ---
 name: create-prompt
-description: Create or refine a compact, self-contained one-off task prompt for a capable model or coding agent. Use when the user asks to formulate a specific task for ChatGPT, Claude, Gemini, Codex or Claude Code, including «сделай промпт для Codex» or a quick rewrite of that task prompt. For a reusable prompt, system prompt, production-model prompt or template with a testing checklist, use prompt-design. For an evidence-based review of an existing prompt, use prompt-review. For continuing work in a new session, use handoff.
+description: Create or refine a compact, self-contained one-off task prompt for a capable model or coding agent. Use when the user asks to formulate a specific task for ChatGPT, Claude, Gemini, Codex or Claude Code, including «сделай промпт для Codex» or a quick rewrite of that task prompt. For a reusable prompt, system prompt, production-model prompt or template with a testing checklist, use prompt-design. For an evidence-based review of an existing prompt, suggest the manual-only prompt-review skill. For continuing work in a new session, use handoff.
 metadata:
   version: "1.0"
   origin: first-party
@@ -67,7 +67,7 @@ Start as soon as the goal is clear, and infer the rest from the request and conv
 
 Rebuild a task prompt into the four parts. Keep every real requirement and the user's terminology; drop roles, generic rules, routine procedures, and boilerplate. Return the full updated prompt unless the user asked for a diff, followed by one line listing what was removed.
 
-If the prompt is a system prompt or a reusable template, do not restructure it into the four parts. Route the request to `prompt-design`. For an evidence-based review of a supplied prompt, route to `prompt-review`.
+If the prompt is a system prompt or a reusable template, do not restructure it into the four parts. Route the request to `prompt-design`. For an evidence-based review of a supplied prompt, suggest that the user invoke the manual-only `prompt-review` skill.
 
 ## Response
 

@@ -1,6 +1,6 @@
 ---
 name: prompt-design
-description: Design a reusable prompt, system prompt or production-model prompt from a brief, with an input/output contract and testing checklist. Use for repeatable extraction, review/gate, transformation, structured generation, document Q&A, data analysis or conversational tasks. For a one-off task instruction to a capable model or coding agent, use create-prompt. For evidence-based review of an existing prompt, use prompt-review.
+description: Design a reusable prompt, system prompt or production-model prompt from a brief, with an input/output contract and testing checklist. Use for repeatable extraction, review/gate, transformation, structured generation, document Q&A, data analysis or conversational tasks. For a one-off task instruction to a capable model or coding agent, use create-prompt. For evidence-based review of an existing prompt, suggest the manual-only prompt-review skill.
 metadata:
   origin: first-party
   version: 1.0.0
@@ -22,7 +22,7 @@ Work strictly from the brief. Don't add requirements the user didn't state. Don'
 
 ## When NOT to use
 
-- The user wants an *existing* prompt critiqued/improved with findings → use `prompt-review`.
+- The user wants an *existing* prompt critiqued/improved with findings → suggest the manual-only `prompt-review` skill.
 - The user wants a compact, one-off task prompt for a capable model or agent → use `create-prompt`.
 - The task needs an agent loop / tool use / multi-step execution — that is out of scope; say so and point to an agent framework.
 

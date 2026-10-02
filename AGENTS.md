@@ -355,7 +355,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |
 | run bundled skill package/script validators or tier scoring | `skill-tester` | manual |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
-| design a multi-agent workflow | `agent-workflow-designer` | yes |
+| design a multi-agent workflow | `agent-workflow-designer` | manual |
 | build a Workflow script | `workflow-builder` | manual |
 | lead a series of issues as Team Lead: delegate to Codex or Claude executors, review, merge | `team-lead` | yes |
 | design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
@@ -366,7 +366,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | PostgreSQL-specific design, diagnosis, or optimization | `postgres-engineer` | manual |
 | high-risk database, system, or infrastructure migration and rollback | `migration-architect` | manual |
 | cross-database architecture, SQL versus NoSQL, or multi-engine physical design | `database-designer` | manual |
-| build an MCP server without an OpenAPI contract | `mcp-builder` | yes |
+| build an MCP server without an OpenAPI contract | `mcp-builder` | manual |
 | generate an MCP server from an existing OpenAPI contract | `mcp-server-builder` | manual |
 | design one agent tool's schema, description, or error contract | `tool-design` | manual |
 | observability, SLO, metrics | `observability-designer` | manual |
@@ -383,10 +383,10 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | create or substantially restructure an RFC or ADR from source material | `rfc-authoring` | yes |
 | create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
 | design a reusable, system, or production-model prompt | `prompt-design` | yes |
-| review an existing prompt with findings and a verdict | `prompt-review` | yes |
+| review an existing prompt with findings and a verdict | `prompt-review` | manual |
 | build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | manual |
 | learn a concept through Socratic dialogue, graduated hints, or guided discovery | `teach-through-dialogue` | manual |
-| generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
+| generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | manual |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
 | changelog or release notes | `changelog-generator` | manual |
 | Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
@@ -399,7 +399,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | productivity coaching | `productivity-coach` | manual |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
-| onboard to a codebase | `codebase-onboarding` | yes |
+| onboard to a codebase | `codebase-onboarding` | manual |
 
 The `skill-reviewer` subagent (`ai-agents/.claude/agents/skill-reviewer.md`, Claude-only)
 runs `skill-quality-reviewer` in a clean isolated context: it reads the skill's
