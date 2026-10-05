@@ -251,11 +251,23 @@ fi
 log_file="${XDG_STATE_HOME:-$HOME/.local/state}/create-worktree.log"
 mkdir -p "$(dirname "$log_file")" 2>/dev/null || true
 setup=""
+setup_matches=0
 provisioning_method="none"
 provisioning_status="skipped"
-for candidate in "$repo_root/.worktree-setup.sh" "$repo_root/scripts/worktree-setup.sh"; do
-  [[ -x "$candidate" ]] && { setup="$candidate"; break; }
-done
+# The setup script is looked up among tracked files of the new worktree, so it
+# comes from the base branch and may live at any depth: root, scripts/, or a
+# nested tooling directory. Gitignored copies (.worktrees/, .venv/) never match.
+# More than one executable match is ambiguous, so none of them is run.
+while IFS= read -r candidate; do
+  [[ -x "$path/$candidate" ]] || continue
+  setup="$path/$candidate"
+  setup_matches=$((setup_matches + 1))
+done < <(git -C "$path" ls-files -- '.worktree-setup.sh' ':(glob)**/worktree-setup.sh')
+if (( setup_matches > 1 )); then
+  err "found $setup_matches worktree setup scripts; keep exactly one"
+  setup=""
+  provisioning_status="failed"
+fi
 if [[ -n "$setup" ]]; then
   provisioning_method="repository-script"
   if (cd "$path" && "$setup") >>"$log_file" 2>&1; then
@@ -264,7 +276,7 @@ if [[ -n "$setup" ]]; then
     provisioning_status="failed"
     err "worktree setup script failed (see $log_file); provision manually"
   fi
-elif [[ -f "$path/uv.lock" ]] && command -v uv >/dev/null 2>&1; then
+elif (( setup_matches == 0 )) && [[ -f "$path/uv.lock" ]] && command -v uv >/dev/null 2>&1; then
   provisioning_method="uv"
   if (cd "$path" && uv venv && uv sync) >>"$log_file" 2>&1; then
     provisioning_status="completed"
