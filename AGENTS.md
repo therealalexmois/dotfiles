@@ -294,6 +294,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | `gitlab-` | GitLab workflows |
 | `spirit-deploy` | deploy (single-skill domain) |
 | `team-lead` | leading a task series through Codex and Claude executors (single-skill domain) |
+| `hypothesis` | formulating, verifying, and reporting hypotheses (single-skill domain) |
 
 Third-party imported skills keep their upstream names and are exempt unless a provider
 prefix is needed to avoid a system-skill collision. The `obsidian-*` skills moved out of
@@ -348,6 +349,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | write, edit, or review technical documentation (tutorial, how-to, reference, API/CLI, troubleshooting, README, runbook) | `writing-technical-documentation` | yes |
 | plan, write, edit, or review technical marketing content (blog post, case study, white paper, landing page, announcement) | `writing-technical-marketing-content` | yes |
 | create or substantially restructure an RFC or ADR from source material | `rfc-authoring` | yes |
+| formulate, verify, or re-assess hypotheses and report on them (reviews, RFC, experiment plans, goals) | `hypothesis` | yes |
 | create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
 | design a reusable, system, or production-model prompt | `prompt-design` | yes |
 | review an existing prompt with findings and a verdict | `prompt-review` | yes |

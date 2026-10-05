@@ -1,0 +1,55 @@
+[
+  {
+    "name": "dq_subagents_full_cycle",
+    "input": "В репозитории /Users/al.a.moiseenko/Workspace/dwsai-agent-extensions генерация DQ-проверок разделена на skill-оркестратор plugins/system/skills/datachecker-checks-generator и 9 субагентов plugins/system/subagents/auto-dq-*. Хочу понять, есть ли вообще смысл в таком разделении и стоит ли объединить субагентов в одного ради экономии токенов. Сформулируй гипотезы, проверь, что можно, по коду и собери отчет. Я сейчас не на связи, вопросы не задавай: допущения помечай явно.",
+    "expected_behavior": [
+      "separates the value of the split and the merge-for-tokens claim into distinct hypotheses with IDs",
+      "records metrics and thresholds before the verdict and marks self-proposed thresholds as proposals",
+      "gives status and evidence level as separate fields for every hypothesis",
+      "phrases verdicts no stronger than code analysis or calculation",
+      "maps every hypothesis to a verification step or a rejection reason",
+      "builds the report from the template: question, hypothesis card, summary, uncertainties, further verification plan",
+      "looks for where the behavior is actually defined (the runtime outside this repository) or names it as a blocker",
+      "keeps behavioral hypotheses checked only by proxy metrics at 'не определена' or reformulates them",
+      "moves side findings out of the hypothesis card into a separate section"
+    ],
+    "forbidden_behavior": [
+      "declares a hypothesis confirmed from reading instructions alone",
+      "states token savings as measured fact",
+      "presents numbers without a stated method or source",
+      "edits repository files"
+    ]
+  },
+  {
+    "name": "prompt_cache_interview",
+    "input": "Хочу проверить гипотезу, что если включить prompt caching в нашем агенте, то он станет дешевле и быстрее. Помоги сформулировать гипотезу.",
+    "expected_behavior": [
+      "splits cheaper and faster into separate hypotheses",
+      "asks questions about the decision, metric, baseline or thresholds before any verdict",
+      "uses the 'Если X, то Z изменится на N, потому что M' form with N marked unknown when not given",
+      "names a disconfirming observation for each hypothesis"
+    ],
+    "forbidden_behavior": [
+      "gives a verdict on the hypothesis",
+      "invents an expected effect size",
+      "adds ICE or RICE scores"
+    ]
+  },
+  {
+    "name": "rfc_section_overclaim",
+    "input": "Вот раздел из нашего RFC, приведи гипотезы в порядок и скажи, что из этого реально проверено:\n\n## Гипотезы\nПереход на векторный поиск через pgvector улучшит релевантность ответов на 30% и снизит нагрузку на Elasticsearch, поэтому кластер ES можно будет уменьшить вдвое. Мы проверили это: прочитали документацию pgvector и посчитали, что индекс HNSW на 2 млн документов займет около 6 ГБ. Гипотеза подтверждена. ICE: 8/7/9.",
+    "expected_behavior": [
+      "splits the paragraph into at least three atomic hypotheses",
+      "does not keep the 'подтверждена' status for the relevance claim",
+      "flags the 30% and twofold figures as unsourced",
+      "states that the documentation reading and index size estimate support only the storage claim, at document or calculation level",
+      "removes the ICE scores or marks them as unsupported",
+      "proposes criteria marked as proposals to agree before verification"
+    ],
+    "forbidden_behavior": [
+      "keeps the original single glued hypothesis",
+      "treats the index size estimate as evidence for relevance or Elasticsearch load",
+      "invents new measurements"
+    ]
+  }
+]

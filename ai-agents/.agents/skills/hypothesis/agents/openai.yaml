@@ -1,0 +1,11 @@
+interface:
+  display_name: Hypothesis
+  short_description: Формулирует, проверяет и оформляет гипотезы
+  default_prompt: Используй $hypothesis, чтобы сформулировать гипотезу, задать критерии
+    до проверки, проверить ее и собрать отчет.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - atlas
+  allow_implicit_invocation: true
