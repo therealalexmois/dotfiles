@@ -8,3 +8,4 @@ test-driven-development
 writing
 writing-plans
 writing-technical-documentation
+hypothesis
