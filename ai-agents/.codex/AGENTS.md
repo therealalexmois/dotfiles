@@ -18,6 +18,7 @@
 
 - Read the relevant instructions, source files, contracts, and tests before changing behavior.
 - Keep changes within the requested scope and preserve unrelated files, user changes, and dirty working-tree state, including unrelated formatting and naming.
+- Preserve public APIs unless the requested change requires modifying them.
 - Reuse local patterns and choose the simplest implementation that satisfies the current contract. Do not add features, configuration, compatibility layers, or infrastructure for hypothetical needs.
 - Add abstractions only to remove meaningful current duplication or clarify an existing contract.
 - Do not change architecture to solve a local problem unless the current architecture prevents a correct solution.
@@ -33,23 +34,11 @@
 - For generic concepts, repository-local behavior, and local reviews, use repository evidence without unnecessary external lookups.
 - Do not invent APIs, commands, configuration options, or platform behavior. If current behavior cannot be verified, state the limitation.
 
-## Code and Tests
-
-- Do not suppress lint, type-check, or validation failures without a narrow documented reason.
-- Preserve public APIs unless the requested change requires modifying them.
-- Write or modify tests only when requested or needed to verify the requested behavior change, including important failure cases.
-- Follow the project's test conventions. Test observable behavior with focused, isolated, reproducible cases; distinguish production defects from test defects and never mask them in tests.
-
-## Python
-
-- When writing, editing, or reviewing Python code, docstrings, or tests, use the `python-code-style` skill for detailed conventions. The following scope limits override its defaults.
-- Write docstrings in the project's documentation language; if unspecified, match the surrounding code.
-- Improve production docstrings only for touched public modules, classes, functions, and methods with missing or unclear contracts. Do not change runtime behavior, identifiers, or tests solely to improve documentation.
-- Add module and test docstrings when required by project style; otherwise, use them for non-obvious scenarios and regression cases.
-
 ## Verification and Completion
 
-- Use documented repository commands and run the smallest relevant checks, proportionate to the change.
+- Do not run tests or checks when the user explicitly forbids them.
+- Add or update tests when existing coverage is insufficient to verify correctness.
+- Do not mask production defects or suppress lint, type-check, or validation failures without a narrow documented reason.
 - Do not invent commands or claim checks that were not run. If a relevant check cannot run, state why.
 - Do not treat a pre-existing unrelated failure as caused by the current change.
 - Stop and report if a new conflict, unexpected scope expansion, or unrelated material change appears.
