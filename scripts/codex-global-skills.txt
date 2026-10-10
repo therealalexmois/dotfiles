@@ -1,5 +1,6 @@
 # Skills available globally to Codex. Claude keeps the complete source catalog.
 anthropic-skill-creator
+ci-cd-pipeline-builder
 create-prompt
 draft-in-alex-style
 git-worktree
