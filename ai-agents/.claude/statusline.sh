@@ -26,9 +26,37 @@ reset_7d="$(jq -r '.rate_limits.seven_day.resets_at // empty' <<< "$input")"
 # (team-lead skill: scripts/claude-quota.py). Best effort: never break the status line.
 if rate_limits="$(jq -ce '.rate_limits // empty' <<< "$input" 2>/dev/null)"; then
   rl_dir="${XDG_CACHE_HOME:-$HOME/.cache}/claude-code"
-  { mkdir -p "$rl_dir" \
-    && printf '{"at":%s,"rate_limits":%s}\n' "$(date +%s)" "$rate_limits" > "$rl_dir/rate-limits.json.$$" \
-    && mv -f "$rl_dir/rate-limits.json.$$" "$rl_dir/rate-limits.json"; } 2>/dev/null || true
+  (
+    # A short lock makes the completeness check and replacement one operation.
+    mkdir -p "$rl_dir" || exit 0
+    rl_now="$(date +%s)"
+    # macOS stat: recover an abandoned lock after an interrupted status line.
+    if [[ -d "$rl_dir/rate-limits.lock" ]]; then
+      rl_lock_at="$(stat -f %m "$rl_dir/rate-limits.lock")" || exit 0
+      if [[ "$rl_lock_at" =~ ^[0-9]+$ ]] && (( rl_now - rl_lock_at > 30 )); then
+        rmdir "$rl_dir/rate-limits.lock" || exit 0
+      fi
+    fi
+    mkdir "$rl_dir/rate-limits.lock" || exit 0
+    trap 'rm -f "$rl_dir/rate-limits.json.$$"; rmdir "$rl_dir/rate-limits.lock"' EXIT
+    rl_now="$(date +%s)"
+    complete_filter='def complete:
+      all(.rate_limits.five_hour, .rate_limits.seven_day;
+        type == "object" and (.used_percentage | type == "number")
+        and (.resets_at | type == "number"));'
+
+    if ! jq -e "$complete_filter complete" <<< "{\"rate_limits\":$rate_limits}" >/dev/null \
+      && jq -e --argjson now "$rl_now" "$complete_filter
+        complete and (.at | type == \"number\") and (.at <= \$now) and (\$now - .at < 600)" \
+        "$rl_dir/rate-limits.json" >/dev/null 2>&1; then
+      exit 0
+    fi
+
+    jq -c --argjson at "$rl_now" \
+      '{at: $at, session_id: (.session_id // null), rate_limits: .rate_limits}' \
+      <<< "$input" > "$rl_dir/rate-limits.json.$$" \
+      && mv -f "$rl_dir/rate-limits.json.$$" "$rl_dir/rate-limits.json"
+  ) 2>/dev/null || true
 fi
 
 # Format seconds-until-reset as "Xh Ym" or "Ym" when under one hour.
