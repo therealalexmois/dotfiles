@@ -1,8 +1,8 @@
 ---
 name: python-code-style
-description: Generic Python conventions - naming, imports, type annotations, formatting, vertical spacing, Google-style docstrings, and pytest test-writing rules. Use whenever writing, editing, or reviewing Python code, adding or improving docstrings, or writing, modifying, or reviewing Python tests, even if the user does not mention conventions explicitly. Project AGENTS.md/CLAUDE.md and pyproject.toml override these defaults.
+description: Generic Python conventions - naming, imports, type annotations, enums, data class invariants and Pydantic constrained types, duplication, formatting, vertical spacing, Google-style docstrings, and pytest test-writing rules (test classes, markers, Given/When/Then docstrings, pytest-mock doubles). Use whenever writing, editing, or reviewing Python code, adding or improving docstrings, or writing, modifying, or reviewing Python tests, even if the user does not mention conventions explicitly. Project AGENTS.md/CLAUDE.md and pyproject.toml override these defaults.
 metadata:
-  version: "1.0"
+  version: "1.1"
   origin: first-party
 ---
 
@@ -65,6 +65,17 @@ Use modern, precise syntax: `str | None`, `list[str]`, `dict[str, Any]`, `tuple[
 - Avoid bare collection annotations when the element type is known.
 - Avoid `Any` and `cast` unless they are necessary and localized.
 - Add or change annotations only when the type is obvious and the change is safe, or when explicitly requested - do not change runtime behavior for the sake of typing.
+
+## Enums, data classes, and models
+
+- Decorate every `Enum` subclass (including `StrEnum`, `IntEnum`, `Flag`) with `@enum.unique`. An intentional alias is the rare exception and needs a comment.
+- A data class that carries domain meaning enforces its invariants in `__post_init__` and raises a precise error: amounts that cannot be negative, non-empty identifiers, ordered date ranges, values from a closed set. Derive each invariant from how the data is produced, not from wishful thinking: a quantity that can be negative (a short position) gets no "positive" check. Plain transport records without rules need no checks.
+- Pydantic fields use the built-in constrained types instead of bare primitives plus manual validators: `PositiveInt`, `NonNegativeInt`, `PositiveFloat`, `NonNegativeFloat`, `conint`/`Field(gt=..., le=...)`, `constr`/`Field(min_length=...)`, `AnyUrl`/`HttpUrl`, `SecretStr`, `FilePath`/`DirectoryPath`. Tightening a field of a public schema changes its contract, so treat it as an API change.
+- Every invariant and every constrained field has a test for the rejected value at the boundary.
+
+## Duplication
+
+One concept lives in one module. Do not keep a second copy of a helper, constant, mapping, or calculation in another module or package, and do not smear one module's responsibility across several places. Before adding a helper, search for an existing one; when two copies exist, keep the one in the lower layer and import it. Test helpers repeated across test modules move to the nearest shared `conftest.py` or test support module.
 
 ## Formatting and line length
 
@@ -151,7 +162,7 @@ When editing Python code, improve docstrings without changing runtime behavior.
 - Keep section headers in English: `Args`, `Returns`, `Raises`, `Yields`, `Attributes`, `Examples`.
 - Write docstring content in the project's documentation language (declared in its `AGENTS.md`/`CLAUDE.md`); match the surrounding code when it is not declared. Do not impose a language the project does not use.
 - Add module, class, function, and method docstrings when they are missing or weak.
-- Keep docstrings concise: explain purpose, contract, important constraints, and non-obvious behavior. Do not restate the name or obvious implementation details.
+- Keep docstrings short and clear, following the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings): a one-line summary that fits the line limit and ends with a period, then a blank line and details only when they add information. Explain purpose, contract, important constraints, and non-obvious behavior. Do not restate the name, the signature, or obvious implementation details; a docstring longer than the code it describes is a smell.
 - Add `Attributes` for dataclasses, Pydantic models, DTOs, and classes with meaningful public fields.
 - Add `Args`, `Returns`, and `Raises` only when they add useful information. Do not document exceptions that are not visible from the code or an explicit contract.
 - Preserve technical identifiers, API names, field names, enum values, and established project terms.
@@ -216,15 +227,39 @@ Prefer clear test names; follow the existing project style if it differs:
 test_<what_is_tested>__<expected_behavior>
 ```
 
-For pytest projects, use markers as an organization rule and follow the project's marker policy (the set of allowed markers and what they mean is project-specific - see the project's `pyproject.toml`/`AGENTS.md`). Do not mark a test as heavier than necessary.
+Group tests into classes named `Test<Subject>`, one class per subject (the unit, behavior, or command under test); module-level test functions are not used. Tests are plain methods taking `self` (no `@staticmethod`); classes carry no state: fixtures and helpers stay functions.
+
+For pytest projects, a test module has one test type and declares it once at module level (`pytestmark = pytest.mark.<type>`); a module that mixes types is split. Use the project's marker policy (the set of allowed markers and what they mean is project-specific - see the project's `pytest.ini`/`pyproject.toml`/`AGENTS.md`); a common taxonomy is `unit`, `integration`, `system`, `scenario`. Do not mark a test as heavier than necessary and do not repeat the module marker on classes or tests.
 
 ### Docstrings
 
-Every test module has a module docstring. Every test has a docstring unless the project styleguide says otherwise. A test docstring should describe input conditions, the key action, the expected observable result, and whether it is an error path or regression case. Do not repeat the test name verbatim or describe the implementation line by line.
+Every test module has a module docstring: a one-line summary of what the module covers, then an unnumbered list of the checks it performs, one short line per check (or per class when the module is large).
+
+Every test has a docstring in the Given/When/Then form: a one-line scenario summary, a blank line, then three short lines `Given:`, `When:`, `Then:` (translated to the project's documentation language). `Given` names the input conditions that matter, `When` the key action, `Then` the expected observable result; mark an error path or a regression (`Regression: #123`) in the summary or in `Then`. Do not repeat the test name verbatim or describe the implementation line by line.
+
+```python
+"""Bond limit checks for a single issuer.
+
+- rejects a purchase above the issuer cap;
+- allows a purchase exactly at the cap.
+"""
+
+pytestmark = pytest.mark.unit
+
+
+class TestIssuerLimit:
+    def test_check__rejects_purchase_over_cap(self) -> None:
+        """Purchase above the issuer cap is rejected.
+
+        Given: cap 100 000, current position 90 000.
+        When: a purchase of 20 000 is checked.
+        Then: LimitExceededError is raised and the position is unchanged.
+        """
+```
 
 ### Assertions
 
-Assertions must verify the contract. Avoid:
+Assertions must verify the contract, that is behavior, not a snapshot. Comparing a whole rendered text, JSON document, dict, or golden file is a snapshot unless that exact output is itself the published contract; keep one contract test per published schema and assert only the relevant properties everywhere else. Avoid:
 
 - checking everything blindly;
 - overfitting to unstable strings, timestamps, random order, or internal call chains;
@@ -251,9 +286,11 @@ Do not use mocks, stubs, or fakes if the same scenario can be tested more simply
 
 1. real typed object;
 2. real object built through a small helper or fixture;
-3. `mocker.Mock` / `mocker.AsyncMock`;
-4. `spy` when interaction with real code must be observed;
+3. `mocker.Mock` / `mocker.AsyncMock` with `spec` (or `mocker.create_autospec`);
+4. `mocker.spy` when interaction with real code must be observed;
 5. handwritten `stub` / `fake` only when it is clearly the best option.
+
+Create doubles only through the pytest-mock `mocker` fixture (`mocker.patch`, `mocker.patch.object`, `mocker.Mock`, `mocker.spy`); do not import `unittest.mock` in tests. Give every mock a `spec`/`spec_set` or use `autospec=True` so a renamed method or wrong signature fails the test. Use `MagicMock` only when the double must support magic methods. Observe a real call with `mocker.spy`, not with `patch(..., wraps=...)`.
 
 Use `Mock` / `AsyncMock` when replacing an external dependency, controlling `return_value`/`side_effect`, or verifying a meaningful interaction. Avoid long fragile mock chains, asserting every internal call, and mock assertions that do not affect the tested contract. Handwritten fakes are allowed only when they are reused, naturally hold state, represent the dependency contract better than mocks, and improve readability and typing.
 
@@ -263,7 +300,7 @@ Use `async def` where appropriate and test the async contract directly; avoid un
 
 ### Parameterization
 
-Use `@pytest.mark.parametrize` when the scenario is the same and only inputs and expected outputs differ, and duplication is reduced without hurting readability. Do not parameterize when cases are conceptually different or the scenario becomes harder to understand.
+Use `@pytest.mark.parametrize` (with readable `ids`) when the scenario is the same and only inputs and expected outputs differ, and duplication is reduced without hurting readability. Do not parameterize when cases are conceptually different or the scenario becomes harder to understand.
 
 ### Typing in tests
 
