@@ -38,7 +38,7 @@ Load detailed guidance based on context:
 | REST Patterns | `references/rest-patterns.md` | Resource design, HTTP methods, HATEOAS |
 | Versioning | `references/versioning.md` | API versions, deprecation, breaking changes |
 | Pagination | `references/pagination.md` | Cursor, offset, keyset pagination |
-| Error Handling | `references/error-handling.md` | Error responses, RFC 7807, status codes |
+| Error Handling | `references/error-handling.md` | Error responses, RFC 9457 (obsoletes RFC 7807), status codes |
 | OpenAPI | `references/openapi.md` | OpenAPI 3.1, documentation, code generation |
 
 ## Constraints
@@ -47,7 +47,7 @@ Load detailed guidance based on context:
 - Follow REST principles (resource-oriented, proper HTTP methods)
 - Use consistent naming conventions (snake_case or camelCase — pick one, apply everywhere)
 - Include comprehensive OpenAPI 3.1 specification
-- Design proper error responses with actionable messages (RFC 7807)
+- Design proper error responses with actionable messages (RFC 9457 Problem Details)
 - Implement pagination for all collection endpoints
 - Version APIs with clear deprecation policies
 - Document authentication and authorization
@@ -139,15 +139,16 @@ components:
         next_cursor: { type: string, nullable: true }
         has_more:    { type: boolean }
 
-    Problem:                       # RFC 7807 Problem Details
+    Problem:                       # RFC 9457 Problem Details (obsoletes RFC 7807)
       type: object
-      required: [type, title, status]
+      required: [type, title, status] # RFC 9457 makes every member optional; this API requires them
       properties:
-        type:     { type: string, format: uri, example: "https://api.example.com/errors/validation-error" }
+        type:     { type: string, format: uri-reference, default: "about:blank", example: "https://api.example.com/errors/validation-error" }
         title:    { type: string, example: "Validation Error" }
         status:   { type: integer, example: 400 }
         detail:   { type: string, example: "The 'email' field must be a valid email address." }
-        instance: { type: string, format: uri, example: "/users/req-abc123" }
+        instance: { type: string, format: uri-reference, example: "/users/req-abc123" }
+      additionalProperties: true   # extension members are allowed
 
   responses:
     BadRequest:
@@ -183,25 +184,37 @@ security:
   - BearerAuth: []
 ```
 
-### RFC 7807 Error Response (copy-paste)
+### RFC 9457 Error Response (copy-paste)
+
+RFC 9457 (July 2023) obsoletes RFC 7807. The wire format and the `application/problem+json` media type are unchanged, so a
+valid RFC 7807 body is a valid RFC 9457 body. RFC 9457 adds three things: a registry of common problem types,
+rules for multiple problems, and guidance for `type` URIs that cannot be dereferenced.
 
 ```json
 {
   "type": "https://api.example.com/errors/validation-error",
   "title": "Validation Error",
   "status": 422,
-  "detail": "The 'email' field must be a valid email address.",
+  "detail": "The request body has 2 invalid fields.",
   "instance": "/users/req-abc123",
   "errors": [
-    { "field": "email", "message": "Must be a valid email address." }
+    { "detail": "must be a valid email address", "pointer": "#/email" },
+    { "detail": "must be a positive integer", "pointer": "#/age" }
   ]
 }
 ```
 
 - Always use `Content-Type: application/problem+json` for error responses.
-- `type` must be a stable, documented URI — never a generic string.
-- `detail` must be human-readable and actionable.
-- Extend with `errors[]` for field-level validation failures.
+- `type` must be a stable, documented URI – never a generic string. Prefer an absolute URI; a relative one resolves
+  against the request URI and differs per endpoint, so if you use one, give the full path (`/errors/validation-error`).
+  The URI does not have to resolve, but it should point to documentation when it can.
+- An absent `type` means `about:blank`: the problem has no meaning beyond the HTTP status, and `title` should be the
+  status phrase.
+- Reuse a type from the IANA "HTTP Problem Types" registry when one fits; only vendor-neutral types are registered there.
+- `detail` must be human-readable and actionable. Clients branch on `type` and extension members, never by parsing `detail`.
+- Several problems of the same type go into one extension array, as in `errors[]` above: one `detail` per entry, and a
+  JSON Pointer (`pointer`) to the offending field. If the problems have different types, return the most relevant
+  or urgent one instead of inventing a generic "batch" type.
 
 ## Output Checklist
 
@@ -217,6 +230,6 @@ When delivering an API design, provide:
 
 ## Knowledge Reference
 
-REST architecture, OpenAPI 3.1, GraphQL, HTTP semantics, JSON:API, HATEOAS, OAuth 2.0, JWT, RFC 7807 Problem Details, API versioning patterns, pagination strategies, rate limiting, webhook design, SDK generation
+REST architecture, OpenAPI 3.1, GraphQL, HTTP semantics, JSON:API, HATEOAS, OAuth 2.0, JWT, RFC 9457 Problem Details (obsoletes RFC 7807), API versioning patterns, pagination strategies, rate limiting, webhook design, SDK generation
 
 [Documentation](https://jeffallan.github.io/claude-skills/skills/api-architecture/api-designer/)

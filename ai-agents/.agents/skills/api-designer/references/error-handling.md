@@ -18,9 +18,10 @@ Consistent, informative error responses are critical for API usability.
 }
 ```
 
-### RFC 7807 Problem Details
+### RFC 9457 Problem Details
 
-Standardized error format (application/problem+json):
+Standardized error format (`application/problem+json`). RFC 9457 (July 2023) obsoletes RFC 7807 but keeps the same
+members and media type, so existing RFC 7807 bodies stay valid.
 
 ```http
 HTTP/1.1 404 Not Found
@@ -35,12 +36,37 @@ Content-Type: application/problem+json
 }
 ```
 
-**Fields:**
-- `type` - URI reference identifying error type
-- `title` - Short, human-readable summary
-- `status` - HTTP status code
-- `detail` - Human-readable explanation specific to this occurrence
+**Fields** (all optional in the RFC; an API may require some of them):
+- `type` - URI reference identifying the problem type. Absent means `about:blank`: no meaning beyond the HTTP status.
+  Prefer an absolute URI; a relative one must carry the full path (`/errors/not-found`), because it resolves against
+  the request URI. It does not have to resolve.
+- `title` - Short, human-readable summary of the type; the same for every occurrence
+- `status` - HTTP status code, advisory copy of the response status
+- `detail` - Human-readable explanation of this occurrence; clients must not parse it
 - `instance` - URI reference for this specific occurrence
+- Extension members - any additional fields; clients ignore unknown ones
+
+**What RFC 9457 adds over RFC 7807:**
+- The IANA "HTTP Problem Types" registry of common types; reuse a registered type when one fits. Vendor- and
+  application-specific types are not registered.
+- Multiple problems: several problems of the same type go into one extension array; for problems of different types,
+  return the most relevant or urgent one. Generic "batch" types map poorly onto HTTP semantics.
+- Guidance for `type` URIs that cannot be dereferenced, including relative URIs.
+
+```http
+HTTP/1.1 422 Unprocessable Content
+Content-Type: application/problem+json
+
+{
+  "type": "https://api.example.com/errors/validation-error",
+  "title": "Your request is not valid.",
+  "status": 422,
+  "errors": [
+    { "detail": "must be a positive integer", "pointer": "#/age" },
+    { "detail": "must be 'green', 'red' or 'blue'", "pointer": "#/profile/color" }
+  ]
+}
+```
 
 ### Extended Error Response
 
