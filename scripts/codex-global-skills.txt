@@ -11,3 +11,5 @@ writing
 writing-plans
 writing-technical-documentation
 hypothesis
+adversarial-advisor
+six-thinking-hats
