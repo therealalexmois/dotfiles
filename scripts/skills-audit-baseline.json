@@ -560,26 +560,6 @@
   }
  },
  {
-  "skill": "grill-me",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "grill-with-docs",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "handoff",
   "verdict": "PASS",
   "counts": {

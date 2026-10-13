@@ -364,7 +364,6 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | brainstorm a small or medium engineering decision | `brainstorm-lite` | yes |
 | design a complex or materially uncertain change before implementation | `brainstorming` | yes |
 | structured brainstorm | `six-thinking-hats` | manual |
-| challenge and stress-test ideas | `grill-me` | manual |
 | productivity coaching | `productivity-coach` | manual |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
