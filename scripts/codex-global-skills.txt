@@ -14,3 +14,4 @@ hypothesis
 adversarial-advisor
 six-thinking-hats
 rfc-authoring
+observability-designer
