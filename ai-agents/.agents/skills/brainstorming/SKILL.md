@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Design complex or materially uncertain changes before implementation: architecture redesigns, multi-service work, security-sensitive changes, database migrations, and public API contracts. Explore requirements and trade-offs, then record a proportionate design. For small or medium engineering decisions, use brainstorm-lite instead."
+description: "Design complex or materially uncertain changes before implementation: architecture redesigns, multi-service work, security-sensitive changes, database migrations, and public API contracts. Explore requirements and trade-offs, then record a proportionate design. Do not use for small or medium engineering decisions."
 metadata:
   origin: derived
   upstream: https://github.com/obra/superpowers/tree/main/skills/brainstorming
@@ -92,8 +92,8 @@ one-way: hidden complexity discovered mid-task upgrades the path —
 stop, say so, and step up. Nothing downgrades mid-task.
 
 A request that is already small or medium and does not need this path's
-approval ceremony is `brainstorm-lite`'s job, not this skill's Bounded
-path — see that skill's own description for the boundary.
+approval ceremony is outside this skill, including its Bounded path:
+proceed without it.
 
 ## Anti-Pattern: "Too Simple To Need Approval"
 

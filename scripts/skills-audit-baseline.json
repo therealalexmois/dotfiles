@@ -150,16 +150,6 @@
   }
  },
  {
-  "skill": "brainstorm-lite",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "brainstorming",
   "verdict": "FAIL",
   "counts": {

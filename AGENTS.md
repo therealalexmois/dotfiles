@@ -361,7 +361,6 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
 | set up or audit analytics tracking (GA4, GTM, events) | `analytics-tracking` | manual |
 | TDD, test-first development, red-green-refactor | `test-driven-development` | yes |
-| brainstorm a small or medium engineering decision | `brainstorm-lite` | yes |
 | design a complex or materially uncertain change before implementation | `brainstorming` | yes |
 | structured brainstorm | `six-thinking-hats` | manual |
 | productivity coaching | `productivity-coach` | manual |

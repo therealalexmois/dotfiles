@@ -16,9 +16,9 @@
     },
     {
       "id": 2,
-      "name": "small-change-routes-to-lite",
+      "name": "small-change-skips-design",
       "prompt": "В существующем CLI добавь флаг --quiet, который выключает progress output. Контракт ясен, реализуй и проверь.",
-      "expected_output": "The full design workflow is not applied to a small scoped implementation; brainstorm-lite is sufficient if comparison is useful, otherwise the agent proceeds.",
+      "expected_output": "The full design workflow is not applied to a small scoped implementation; the agent proceeds directly.",
       "files": [],
       "expectations": [
         "Agent does not demand a formal design document for the small change",
