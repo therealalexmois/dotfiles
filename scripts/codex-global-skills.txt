@@ -15,3 +15,16 @@ adversarial-advisor
 six-thinking-hats
 rfc-authoring
 observability-designer
+python-anti-patterns
+python-configuration
+python-design-patterns
+python-error-handling
+python-observability
+python-packaging
+python-patterns
+python-performance-optimization
+python-project-structure
+python-resilience
+python-resource-management
+python-testing-patterns
+python-type-safety
