@@ -1,6 +1,6 @@
 ---
 id: LB-0001
-title: "<Short topic title, understandable without the original dialogue>"
+title: "<Question that makes sense outside the project>"
 status: open
 created_at: 2026-01-01T12:00:00+03:00
 updated_at: 2026-01-01T12:00:00+03:00
@@ -8,32 +8,34 @@ project: "<optional: project or repository name>"
 tags: ["<optional>", "<tags>"]
 ---
 
-# <Short topic title, understandable without the original dialogue>
+# <Question that makes sense outside the project>
 
 ## What I want to understand
 
-<A specific question or gap in understanding, in one or two sentences.>
+<State the question in one or two sentences. Do not answer it here.>
 
-> Original wording: "<the user's words, if there were any>"
+> Original wording: "<Preserve the user's question, if provided.>"
 
 ## Context
 
-<What task was being solved and when the question came up: implementation, review, bug diagnosis.>
+<Name the task and where the question arose: implementation, review, or debugging.>
 
 ## Example
 
-<A short illustrative code fragment, error text, or sequence of actions, up to ~20 lines.>
+<Include code, an error, or steps. Aim for no more than 20 lines.>
 
 Source: `<path/to/file>`, symbol `<Name.symbol>`, commit `<short hash>`.
 
+<Omit unknown source details.>
+
 ## Decision and alternatives
 
-<What was chosen now and why; which options were discussed. Only what was said in the session.>
+<Record the choice, reasons, and alternatives discussed in the session.>
 
 ## Agent assumptions
 
-<Optional section: the agent's guesses not confirmed by the session.>
+<Optional: label ideas that the session did not confirm.>
 
 ## Analysis results
 
-<Optional section: conclusions after the analysis, added via `update --section "Analysis results" --stamp`.>
+<Optional: save agreed conclusions via `update --section "Analysis results" --stamp`.>

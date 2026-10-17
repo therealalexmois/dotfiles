@@ -1,34 +1,8 @@
 #!/usr/bin/env python3
-"""Deterministic storage CLI for the learning-backlog skill.
+"""Manage learning topics as Markdown files with YAML frontmatter.
 
-One entry is one Markdown file with YAML frontmatter in the data directory
-(default ~/.local/share/learning-backlog; override with LEARNING_BACKLOG_DIR or
---dir). The files are the only source of truth: list and filters re-read the
-directory on every call, there is no index. The data directory is separate from
-the skill, so reinstalling the skill never touches stored entries.
-
-Entry layout (the canonical form lives in assets/entry-template.md):
-
-    ---
-    id: LB-0001
-    title: "..."
-    status: open | learned | archived
-    created_at: 2026-10-16T16:20:05+03:00
-    updated_at: 2026-10-16T16:20:05+03:00
-    project: "..."          # optional
-    tags: ["...", "..."]    # optional
-    ---
-
-    # <title>
-
-    ## What I want to understand
-    ## Context
-    ## Example
-    ## Decision and alternatives
-    (optional extra sections follow)
-
-Body input for `add` and `update --section` is read from stdin or --body-file.
-Exit codes: 0 = success, 1 = data or validation error, 2 = usage error.
+Read entry bodies from stdin or --body-file. See SKILL.md for the CLI contract
+and assets/entry-template.md for the entry format.
 """
 
 from __future__ import annotations
@@ -185,7 +159,7 @@ def check_timestamp(value: object, key: str, source: str) -> str:
 
 
 def iter_lines_with_fence(text: str) -> list[tuple[str, bool]]:
-    """Pairs every line with a flag telling whether it sits inside a code fence."""
+    """Pair each line with a flag marking code fences and their contents."""
     result: list[tuple[str, bool]] = []
     fence: str | None = None
 
@@ -210,7 +184,7 @@ def iter_lines_with_fence(text: str) -> list[tuple[str, bool]]:
 
 
 def split_sections(body: str, source: str, allow_title: bool) -> list[tuple[str, str]]:
-    """Splits a Markdown body into `## ` sections, ignoring headings inside code fences."""
+    """Split Markdown into level-two sections, ignoring fenced code."""
     sections: list[tuple[str, str]] = []
     current: str | None = None
     buffer: list[str] = []
@@ -246,7 +220,7 @@ def split_sections(body: str, source: str, allow_title: bool) -> list[tuple[str,
 
 
 def normalize_sections(sections: list[tuple[str, str]], source: str) -> list[tuple[str, str]]:
-    """Puts required sections first in canonical order and fills the empty ones."""
+    """Order required sections and fill missing context with placeholders."""
     seen: dict[str, str] = {}
     order: list[str] = []
     for heading, text in sections:
@@ -433,7 +407,7 @@ def write_temp(directory: Path, content: str) -> Path:
 
 
 def create_entry(directory: Path, entry: Entry) -> Entry:
-    """Allocates the next free ID and publishes the file atomically, never overwriting."""
+    """Assign a free ID and publish the entry atomically without overwriting."""
     directory.mkdir(parents=True, exist_ok=True)
     numbers = [int(match.group(1)) for path in directory.iterdir() if (match := ENTRY_FILE_RE.match(path.name))]
     number = max(numbers, default=0) + 1
