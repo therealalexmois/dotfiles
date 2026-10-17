@@ -78,7 +78,8 @@ Everything else:
   `skills-audit-baseline.json`), `skill-usage-report.py` (counts real skill activations
   in Claude Code transcripts and Codex sessions by path: slash, named, auto, nested,
   subagent; flags candidates for `disable-model-invocation` and Claude/Codex policy
-  mismatches), and `dry-run-install.sh` (validates Stow-package and zsh
+  mismatches), `mcp-call-report.py` (MCP call failures by class and schema state, tool
+  search usage in Claude Code transcripts and Codex sessions), and `dry-run-install.sh` (validates Stow-package and zsh
   startup symlinks against a throwaway fake `$HOME`; see README.md "Verifying the
   install").
 - `.gitignore` - Ignore rules for machine state, plugin caches, and local-only tools.
