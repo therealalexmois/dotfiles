@@ -105,6 +105,9 @@
     }
   },
   "permissions": {
+    "allow": [
+      "Bash(python3 */learning-backlog/scripts/learning_backlog.py *)"
+    ],
     "deny": [
       "Read(~/.ssh/**)",
       "Read(~/Library/Keychains/**)",
