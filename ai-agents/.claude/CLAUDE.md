@@ -19,6 +19,7 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 ## Working Style
 
 - Read the relevant files, contracts, and tests before changing behavior.
+- Do not re-read files whose current content is already in context. Mandatory readbacks (a published MR, a Jira issue, an external write) are exempt.
 - Keep changes scoped to the requested task and avoid unrelated rewrites.
 - Prefer existing local patterns and abstractions when their contract fits.
 - Avoid new dependencies unless they remove meaningful complexity or are explicitly required.
@@ -70,6 +71,7 @@ When the task is ambiguous, underspecified, or has multiple valid implementation
 - Do not start editing files immediately.
 - First inspect the repository context if needed.
 - Use AskUserQuestion to ask 1–4 blocking clarification questions.
+- Collect all blocking design questions into one AskUserQuestion call before implementation; do not ask what project instructions, workflow docs, or memory already decide.
 - Prefer multiple-choice options.
 - Include a recommended/default option when reasonable.
 - If a question is non-blocking, state the assumption and continue.

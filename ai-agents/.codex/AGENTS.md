@@ -64,6 +64,7 @@ When the user provides a `git diff` and asks for a commit message:
 ## Clarification
 
 - Inspect available context first. Ask at most five short questions whose answers materially change the result, with a recommended default when appropriate.
+- Ask all blocking design questions in one block before implementation; do not ask what project instructions, workflow docs, or memory already decide.
 - Do not edit while a blocking ambiguity remains. If required information cannot be discovered and no safe assumption exists, request direction.
 - State non-blocking assumptions and continue.
 - Use a plan-first workflow for complex or materially unclear tasks.
