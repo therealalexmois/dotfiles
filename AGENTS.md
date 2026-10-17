@@ -63,6 +63,9 @@ Everything else:
 - `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
 - `scripts/` - Repo tooling: `install-ai-cli-dotfiles.sh` (Stow + skill/profile symlinks),
   `render-codex-config.py` (merge shared + local Codex TOML into `~/.codex/config.toml`),
+  `render-codex-agents.py` (build untracked `~/.codex/AGENTS.override.md` from the tracked
+  global `AGENTS.md` plus untracked `~/Workspace/AGENTS.md` work rules; Codex reads only
+  the override, so rerun it after editing either file; `--check` reports a stale override),
   `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `check-skills.sh` (validates
   the skill invariants: SKILL.md presence, directory name equal to the frontmatter
   `name`, supported Codex skill products, no stray nested SKILL.md, no dangling links

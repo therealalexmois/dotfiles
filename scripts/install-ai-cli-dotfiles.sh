@@ -284,6 +284,9 @@ main() {
   stow --ignore='^\.agents$' --target "$HOME" bootstrap ai-agents
 
   "${repo_dir}/scripts/render-codex-config.py"
+  if [[ -f "${HOME}/Workspace/AGENTS.md" ]]; then
+    "${repo_dir}/scripts/render-codex-agents.py"
+  fi
 
   install_skill_links
 
