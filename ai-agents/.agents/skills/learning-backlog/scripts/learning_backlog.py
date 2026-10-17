@@ -21,10 +21,10 @@ Entry layout (the canonical form lives in assets/entry-template.md):
 
     # <title>
 
-    ## Что хочу понять
-    ## Контекст
-    ## Пример
-    ## Решение и альтернативы
+    ## What I want to understand
+    ## Context
+    ## Example
+    ## Decision and alternatives
     (optional extra sections follow)
 
 Body input for `add` and `update --section` is read from stdin or --body-file.
@@ -53,9 +53,9 @@ ENTRY_FILE_RE = re.compile(r"^LB-(\d{4,})\.md$")
 ID_ARG_RE = re.compile(r"^(?:lb-?)?(\d+)$", re.IGNORECASE)
 
 STATUSES = ("open", "learned", "archived")
-QUESTION = "Что хочу понять"
-REQUIRED_SECTIONS = (QUESTION, "Контекст", "Пример", "Решение и альтернативы")
-EMPTY_SECTION = "Не зафиксировано."
+QUESTION = "What I want to understand"
+REQUIRED_SECTIONS = (QUESTION, "Context", "Example", "Decision and alternatives")
+EMPTY_SECTION = "Not recorded."
 
 TAG_RE = re.compile(r"^[\w.+#-]+$")
 MAX_TITLE_LENGTH = 200
@@ -116,7 +116,7 @@ def format_id(number: int) -> str:
 def resolve_id(raw: str) -> str:
     match = ID_ARG_RE.match(raw.strip())
     if not match:
-        raise CliError(f"некорректный ID {raw!r}: ожидается LB-0012, LB-12 или 12")
+        raise CliError(f"invalid ID {raw!r}: expected LB-0012, LB-12 or 12")
 
     return format_id(int(match.group(1)))
 
@@ -127,13 +127,13 @@ def resolve_id(raw: str) -> str:
 def clean_title(raw: str) -> str:
     title = raw.strip()
     if not title:
-        raise CliError("title не может быть пустым")
+        raise CliError("title must not be empty")
 
     if "\n" in title or "\r" in title:
-        raise CliError("title должен быть одной строкой")
+        raise CliError("title must be a single line")
 
     if len(title) > MAX_TITLE_LENGTH:
-        raise CliError(f"title длиннее {MAX_TITLE_LENGTH} символов")
+        raise CliError(f"title is longer than {MAX_TITLE_LENGTH} characters")
 
     return title
 
@@ -147,7 +147,7 @@ def clean_project(raw: str | None) -> str | None:
         return None
 
     if "\n" in project:
-        raise CliError("project должен быть одной строкой")
+        raise CliError("project must be a single line")
 
     return project
 
@@ -161,7 +161,7 @@ def clean_tags(raw_tags: list[str]) -> list[str]:
                 continue
 
             if not TAG_RE.match(tag):
-                raise CliError(f"некорректный тег {tag!r}: без пробелов, допустимы буквы, цифры и . + # - _")
+                raise CliError(f"invalid tag {tag!r}: no spaces; letters, digits and . + # - _ are allowed")
 
             if tag not in tags:
                 tags.append(tag)
@@ -171,12 +171,12 @@ def clean_tags(raw_tags: list[str]) -> list[str]:
 
 def check_timestamp(value: object, key: str, source: str) -> str:
     if not isinstance(value, str):
-        raise CliError(f"{source}: поле {key} должно быть датой ISO 8601")
+        raise CliError(f"{source}: field {key} must be an ISO 8601 date")
 
     try:
         datetime.fromisoformat(value)
     except ValueError as error:
-        raise CliError(f"{source}: поле {key} не является датой ISO 8601: {value!r}") from error
+        raise CliError(f"{source}: field {key} is not an ISO 8601 date: {value!r}") from error
 
     return value
 
@@ -223,7 +223,7 @@ def split_sections(body: str, source: str, allow_title: bool) -> list[tuple[str,
             current = line[3:].strip()
             buffer = []
             if not current:
-                raise CliError(f"{source}: пустой заголовок раздела")
+                raise CliError(f"{source}: empty section heading")
 
             continue
 
@@ -237,7 +237,7 @@ def split_sections(body: str, source: str, allow_title: bool) -> list[tuple[str,
         if allow_title and line.startswith("# "):
             continue
 
-        raise CliError(f"{source}: текст до первого раздела `## `: {line.strip()[:60]!r}")
+        raise CliError(f"{source}: text before the first `## ` section: {line.strip()[:60]!r}")
 
     if current is not None:
         sections.append((current, "\n".join(buffer).strip()))
@@ -251,14 +251,14 @@ def normalize_sections(sections: list[tuple[str, str]], source: str) -> list[tup
     order: list[str] = []
     for heading, text in sections:
         if heading in seen:
-            raise CliError(f"{source}: раздел {heading!r} встречается дважды")
+            raise CliError(f"{source}: section {heading!r} appears twice")
 
         seen[heading] = text
         order.append(heading)
 
     question = seen.get(QUESTION, "").strip()
     if not question or question == EMPTY_SECTION:
-        raise CliError(f"{source}: раздел «{QUESTION}» обязателен и не может быть пустым")
+        raise CliError(f"{source}: section {QUESTION!r} is required and must not be empty")
 
     normalized = [(heading, seen.get(heading, "").strip() or EMPTY_SECTION) for heading in REQUIRED_SECTIONS]
     extras = [(heading, seen[heading].strip() or EMPTY_SECTION) for heading in order if heading not in REQUIRED_SECTIONS]
@@ -289,17 +289,17 @@ def parse_scalar(raw: str) -> object:
         try:
             return json.loads(value)
         except json.JSONDecodeError as error:
-            raise ValueError(f"некорректная строка в кавычках: {value!r}") from error
+            raise ValueError(f"invalid quoted string: {value!r}") from error
 
     if value.startswith("'"):
         if len(value) < 2 or not value.endswith("'"):
-            raise ValueError(f"незакрытая строка в кавычках: {value!r}")
+            raise ValueError(f"unclosed quoted string: {value!r}")
 
         return value[1:-1].replace("''", "'")
 
     if value.startswith("["):
         if not value.endswith("]"):
-            raise ValueError(f"незакрытый список: {value!r}")
+            raise ValueError(f"unclosed list: {value!r}")
 
         try:
             return json.loads(value)
@@ -313,11 +313,11 @@ def parse_scalar(raw: str) -> object:
 def parse_frontmatter(text: str, source: str) -> tuple[dict[str, object], str]:
     lines = text.split("\n")
     if not lines or lines[0].strip() != "---":
-        raise CliError(f"{source}: файл не начинается с YAML frontmatter")
+        raise CliError(f"{source}: file does not start with YAML frontmatter")
 
     end = next((index for index in range(1, len(lines)) if lines[index].strip() == "---"), None)
     if end is None:
-        raise CliError(f"{source}: frontmatter не закрыт строкой ---")
+        raise CliError(f"{source}: frontmatter is not closed by a --- line")
 
     meta: dict[str, object] = {}
     list_key: str | None = None
@@ -335,13 +335,13 @@ def parse_frontmatter(text: str, source: str) -> tuple[dict[str, object], str]:
 
         pair = re.match(r"^([A-Za-z_][\w-]*):(?:\s+(.*))?$", raw)
         if not pair:
-            raise CliError(f"{source}: неподдерживаемая строка frontmatter: {raw!r}")
+            raise CliError(f"{source}: unsupported frontmatter line: {raw!r}")
 
         key, value = pair.group(1), pair.group(2) or ""
         try:
             meta[key] = parse_scalar(value)
         except ValueError as error:
-            raise CliError(f"{source}: поле {key}: {error}") from error
+            raise CliError(f"{source}: field {key}: {error}") from error
 
         list_key = key if not value.strip() else None
 
@@ -354,15 +354,15 @@ def entry_from_text(text: str, path: Path) -> Entry:
 
     for key in ("id", "title", "status", "created_at", "updated_at"):
         if meta.get(key) in (None, ""):
-            raise CliError(f"{source}: нет обязательного поля {key}")
+            raise CliError(f"{source}: missing required field {key}")
 
     entry_id = str(meta["id"])
     if f"{entry_id}.md" != path.name:
-        raise CliError(f"{source}: id {entry_id!r} не совпадает с именем файла")
+        raise CliError(f"{source}: id {entry_id!r} does not match the file name")
 
     status = str(meta["status"])
     if status not in STATUSES:
-        raise CliError(f"{source}: недопустимый status {status!r}, ожидается один из {', '.join(STATUSES)}")
+        raise CliError(f"{source}: invalid status {status!r}, expected one of {', '.join(STATUSES)}")
 
     tags = meta.get("tags") or []
     if not isinstance(tags, list):
@@ -456,7 +456,7 @@ def create_entry(directory: Path, entry: Entry) -> Entry:
 
 def save_entry(entry: Entry) -> None:
     if entry.path is None:
-        raise CliError(f"{entry.id}: путь записи неизвестен")
+        raise CliError(f"{entry.id}: entry path is unknown")
 
     temp = write_temp(entry.path.parent, render_entry(entry))
     try:
@@ -470,7 +470,7 @@ def load_entry(directory: Path, raw_id: str) -> Entry:
     entry_id = resolve_id(raw_id)
     path = directory / f"{entry_id}.md"
     if not path.is_file():
-        raise CliError(f"запись {entry_id} не найдена в {directory}")
+        raise CliError(f"entry {entry_id} not found in {directory}")
 
     return entry_from_text(path.read_text(encoding="utf-8"), path)
 
@@ -499,7 +499,7 @@ def read_body(body_file: str | None) -> str:
         return Path(body_file).expanduser().read_text(encoding="utf-8")
 
     if sys.stdin.isatty():
-        raise CliError("текст не передан: подайте Markdown через stdin или --body-file")
+        raise CliError("no text provided: pass Markdown via stdin or --body-file")
 
     return sys.stdin.read()
 
@@ -508,7 +508,7 @@ def read_body(body_file: str | None) -> str:
 
 
 def cmd_add(args: argparse.Namespace) -> int:
-    source = "текст записи"
+    source = "entry text"
     sections = normalize_sections(split_sections(read_body(args.body_file), source, allow_title=False), source)
     timestamp = now_iso()
     entry = Entry(
@@ -554,17 +554,17 @@ def cmd_list(args: argparse.Namespace) -> int:
     if args.format == "json":
         print(json.dumps([entry.as_dict() for entry in selected], ensure_ascii=False, indent=2))
     elif not selected:
-        print("Нет записей по заданному фильтру." if entries else f"Записей нет: {directory}")
+        print("No entries match the filter." if entries else f"No entries: {directory}")
     else:
         for entry in selected:
             tags = f"[{', '.join(entry.tags)}]" if entry.tags else "-"
             columns = [entry.id, entry.status, entry.updated_at[:10], entry.project or "-", tags, entry.title]
             print("  ".join(columns))
 
-        print(f"Записей: {len(selected)}")
+        print(f"Entries: {len(selected)}")
 
     for error in errors:
-        print(f"learning-backlog: пропущен некорректный файл: {error}", file=sys.stderr)
+        print(f"learning-backlog: skipped invalid file: {error}", file=sys.stderr)
 
     return 1 if errors else 0
 
@@ -610,10 +610,10 @@ def cmd_update(args: argparse.Namespace) -> int:
         update_section(entry, args)
         changed = True
     elif args.mode or args.stamp or args.body_file:
-        raise CliError("--mode, --stamp и --body-file работают только вместе с --section")
+        raise CliError("--mode, --stamp and --body-file only work together with --section")
 
     if not changed:
-        raise CliError("нечего обновлять: укажите --title, --project, --add-tag, --remove-tag или --section")
+        raise CliError("nothing to update: pass --title, --project, --add-tag, --remove-tag or --section")
 
     entry.updated_at = now_iso()
     save_entry(entry)
@@ -626,17 +626,17 @@ def update_section(entry: Entry, args: argparse.Namespace) -> None:
     heading = args.section.strip()
     mode = args.mode or "append"
     if not heading or "\n" in heading:
-        raise CliError("--section должен быть непустым названием раздела в одну строку")
+        raise CliError("--section must be a non-empty single-line section name")
 
     if heading == QUESTION and mode == "replace":
-        raise CliError(f"раздел «{QUESTION}» хранит исходный вопрос: его можно только дополнять (--mode append)")
+        raise CliError(f"section {QUESTION!r} stores the original question: it can only be appended to (--mode append)")
 
     text = read_body(args.body_file).strip()
     if not text:
-        raise CliError("текст для раздела пустой")
+        raise CliError("section text is empty")
 
     if any(not in_fence and line.startswith("## ") for line, in_fence in iter_lines_with_fence(text)):
-        raise CliError("текст раздела не должен содержать заголовков `## `; используйте `###` и ниже")
+        raise CliError("section text must not contain `## ` headings; use `###` and below")
 
     if args.stamp:
         text = f"### {now_iso()[:10]}\n\n{text}"
@@ -658,10 +658,10 @@ def update_section(entry: Entry, args: argparse.Namespace) -> None:
 def cmd_set_status(args: argparse.Namespace) -> int:
     entry = load_entry(data_dir(args.dir), args.id)
     if args.status == "learned" and not args.user_confirmed:
-        raise CliError("status learned ставится только по явному слову пользователя: добавьте --user-confirmed")
+        raise CliError("status learned is set only on the user's explicit word: add --user-confirmed")
 
     if entry.status == args.status:
-        print(f"{entry.id} уже в статусе {entry.status}")
+        print(f"{entry.id} is already {entry.status}")
         return 0
 
     entry.status = args.status
@@ -686,14 +686,14 @@ def cmd_export(args: argparse.Namespace) -> int:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0
 
-    lines = ["# Темы для плана обучения", ""]
+    lines = ["# Topics for the study plan", ""]
     for entry in entries:
-        meta = [f"статус: {entry.status}", f"создано: {entry.created_at[:10]}"]
+        meta = [f"status: {entry.status}", f"created: {entry.created_at[:10]}"]
         if entry.project:
-            meta.append(f"проект: {entry.project}")
+            meta.append(f"project: {entry.project}")
 
         if entry.tags:
-            meta.append(f"теги: {', '.join(entry.tags)}")
+            meta.append(f"tags: {', '.join(entry.tags)}")
 
         lines += [f"## {entry.id}. {entry.title}", "", "; ".join(meta), ""]
         for heading, text in entry.sections:
@@ -719,59 +719,59 @@ def cmd_dir(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="learning_backlog.py",
-        description="Бэклог тем для изучения: Markdown-файлы с YAML frontmatter.",
+        description="Backlog of topics to study later: Markdown files with YAML frontmatter.",
     )
-    parser.add_argument("--dir", help=f"каталог данных (по умолчанию ${DIR_ENV} или {DEFAULT_DIR})")
+    parser.add_argument("--dir", help=f"data directory (default ${DIR_ENV} or {DEFAULT_DIR})")
     commands = parser.add_subparsers(dest="command", required=True)
 
-    add = commands.add_parser("add", help="создать запись; разделы `## ` читаются из stdin")
+    add = commands.add_parser("add", help="create an entry; `## ` sections are read from stdin")
     add.add_argument("--title", required=True)
     add.add_argument("--project")
-    add.add_argument("--tag", action="append", default=[], help="можно повторять или перечислить через запятую")
-    add.add_argument("--body-file", help="файл с разделами вместо stdin")
+    add.add_argument("--tag", action="append", default=[], help="may be repeated or comma-separated")
+    add.add_argument("--body-file", help="file with sections instead of stdin")
     add.set_defaults(handler=cmd_add)
 
-    listing = commands.add_parser("list", help="показать записи с фильтрами")
+    listing = commands.add_parser("list", help="list entries with filters")
     listing.add_argument("--status", choices=(*STATUSES, "all"), default="open")
     listing.add_argument("--project")
-    listing.add_argument("--tag", action="append", default=[], help="все указанные теги должны совпасть")
-    listing.add_argument("--query", help="подстрока в названии или тексте, без учета регистра")
+    listing.add_argument("--tag", action="append", default=[], help="all given tags must match")
+    listing.add_argument("--query", help="substring in the title or text, case-insensitive")
     listing.add_argument("--format", choices=("table", "json"), default="table")
     listing.set_defaults(handler=cmd_list)
 
-    show = commands.add_parser("show", help="показать запись целиком")
+    show = commands.add_parser("show", help="show the whole entry")
     show.add_argument("id")
     show.add_argument("--format", choices=("markdown", "json"), default="markdown")
     show.set_defaults(handler=cmd_show)
 
-    update = commands.add_parser("update", help="изменить метаданные или раздел")
+    update = commands.add_parser("update", help="change metadata or a section")
     update.add_argument("id")
     update.add_argument("--title")
     update.add_argument("--project")
     update.add_argument("--clear-project", action="store_true")
     update.add_argument("--add-tag", action="append", default=[])
     update.add_argument("--remove-tag", action="append", default=[])
-    update.add_argument("--section", help="название раздела; текст читается из stdin или --body-file")
-    update.add_argument("--mode", choices=("append", "replace"), help="по умолчанию append")
-    update.add_argument("--stamp", action="store_true", help="начать добавляемый текст заголовком ### с датой")
+    update.add_argument("--section", help="section name; text is read from stdin or --body-file")
+    update.add_argument("--mode", choices=("append", "replace"), help="append by default")
+    update.add_argument("--stamp", action="store_true", help="start the added text with a ### heading carrying the date")
     update.add_argument("--body-file")
     update.set_defaults(handler=cmd_update)
 
-    status = commands.add_parser("set-status", help="сменить статус")
+    status = commands.add_parser("set-status", help="change the status")
     status.add_argument("id")
     status.add_argument("status", choices=STATUSES)
-    status.add_argument("--user-confirmed", action="store_true", help="обязателен для learned")
+    status.add_argument("--user-confirmed", action="store_true", help="required for learned")
     status.set_defaults(handler=cmd_set_status)
 
-    export = commands.add_parser("export", help="выгрузить выбранные записи для плана обучения")
+    export = commands.add_parser("export", help="export selected entries for a study plan")
     export.add_argument("ids", nargs="+")
     export.add_argument("--format", choices=("markdown", "json"), default="markdown")
     export.set_defaults(handler=cmd_export)
 
-    template = commands.add_parser("template", help="показать шаблон записи")
+    template = commands.add_parser("template", help="show the entry template")
     template.set_defaults(handler=cmd_template)
 
-    directory = commands.add_parser("dir", help="показать каталог данных")
+    directory = commands.add_parser("dir", help="show the data directory")
     directory.set_defaults(handler=cmd_dir)
 
     return parser
@@ -785,7 +785,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"learning-backlog: {error}", file=sys.stderr)
         return 1
     except OSError as error:
-        print(f"learning-backlog: ошибка файловой системы: {error}", file=sys.stderr)
+        print(f"learning-backlog: filesystem error: {error}", file=sys.stderr)
         return 1
 
 

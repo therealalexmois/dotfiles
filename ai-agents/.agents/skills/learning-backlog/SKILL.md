@@ -1,16 +1,16 @@
 ---
 name: learning-backlog
 description: >-
-  Ведет личный бэклог тем для изучения: быстро сохраняет из текущей сессии
-  незнакомый механизм языка или библиотеки, архитектурное решение, инженерный
-  паттерн или случай диагностики бага, чтобы разобраться позже; показывает
-  открытые темы с фильтром по проекту и тегам, открывает тему для разбора в
-  диалоге, дополняет запись, меняет статус и выгружает выбранные темы для плана
-  обучения. Используй для «запиши в бэклог: хочу потом разобраться…», «отложи
-  тему на изучение», «что у меня в learning backlog», «разберем LB-12»,
-  «дополни запись», «отметь тему изученной», «подготовь темы для плана
-  обучения». Не используй для рабочего бэклога задач и Planning/Backlog.md,
-  Jira, построения учебного roadmap или программы обучения.
+  Maintains a personal backlog of topics to study later: quickly saves an
+  unfamiliar language or library mechanism, architectural decision, engineering
+  pattern, or bug-diagnosis case from the current session; lists open topics
+  filtered by project and tags, opens a topic for study in dialogue, amends an
+  entry, changes its status, and exports selected topics for a study plan. Use
+  for "add to backlog: I want to figure this out later", "park this topic for
+  study", "what's in my learning backlog", "let's go through LB-12", "amend the
+  entry", "mark the topic as learned", "prepare topics for a study plan". Do not
+  use for the work task backlog and Planning/Backlog.md, Jira, or building a
+  learning roadmap or curriculum.
 metadata:
   version: "1.0"
   origin: first-party
@@ -18,93 +18,93 @@ metadata:
 
 # Learning Backlog
 
-Сохранять отложенные вопросы для изучения так, чтобы через месяц запись была понятна без исходного диалога, и возвращаться к ним по запросу.
+Save deferred study questions so that an entry is understandable a month later without the original dialogue, and return to them on request.
 
-## Хранилище и CLI
+## Storage and CLI
 
-Все операции с записями выполнять только через CLI. Не создавать, не править и не удалять файлы записей напрямую.
+Perform all entry operations through the CLI only. Do not create, edit, or delete entry files directly.
 
 ```sh
 python3 <skill-dir>/scripts/learning_backlog.py <command> ...
 ```
 
-`<skill-dir>` – каталог этого скилла. Каталог данных по умолчанию `~/.local/share/learning-backlog`, переопределяется переменной `LEARNING_BACKLOG_DIR` или глобальным `--dir`. Одна тема – один файл `LB-NNNN.md`; файлы – единственный источник данных, индекса нет.
+`<skill-dir>` is this skill's directory. The default data directory is `~/.local/share/learning-backlog`; override it with the `LEARNING_BACKLOG_DIR` variable or the global `--dir`. One topic is one `LB-NNNN.md` file; the files are the only source of data, there is no index.
 
-| Команда | Назначение |
+| Command | Purpose |
 | --- | --- |
-| `add --title T [--project P] [--tag t]...` | Создать запись; разделы `## ` читаются из stdin. ID и даты ставит CLI |
-| `list [--status open\|learned\|archived\|all] [--project P] [--tag t]... [--query Q] [--format json]` | Список; по умолчанию `open`. Несколько `--tag` означают «все сразу» |
-| `show ID [--format json]` | Запись целиком |
-| `update ID [--title] [--project \| --clear-project] [--add-tag] [--remove-tag] [--section S [--mode append\|replace] [--stamp]]` | Изменить метаданные или раздел; текст раздела из stdin |
-| `set-status ID open\|learned\|archived [--user-confirmed]` | Сменить статус |
-| `export ID...` | Markdown-выгрузка выбранных записей для плана обучения |
-| `template` | Шаблон записи |
+| `add --title T [--project P] [--tag t]...` | Create an entry; `## ` sections are read from stdin. The CLI sets the ID and dates |
+| `list [--status open\|learned\|archived\|all] [--project P] [--tag t]... [--query Q] [--format json]` | List entries; `open` by default. Several `--tag` options mean "all at once" |
+| `show ID [--format json]` | The whole entry |
+| `update ID [--title] [--project \| --clear-project] [--add-tag] [--remove-tag] [--section S [--mode append\|replace] [--stamp]]` | Change metadata or a section; the section text comes from stdin |
+| `set-status ID open\|learned\|archived [--user-confirmed]` | Change the status |
+| `export ID...` | Markdown export of the selected entries for a study plan |
+| `template` | The entry template |
 
-ID принимается в виде `LB-0012`, `LB-12` или `12`. Ненулевой код выхода означает, что операция не выполнена: показать пользователю сообщение CLI, не обходить его ручной правкой файла.
+An ID is accepted as `LB-0012`, `LB-12`, or `12`. A non-zero exit code means the operation failed: show the CLI message to the user and do not work around it by editing a file by hand.
 
-## Формат записи
+## Entry format
 
-Формат закреплен в `assets/entry-template.md` (`template` выводит его). Frontmatter и заголовок `#` CLI строит сам; на stdin передаются только разделы:
+The format is fixed in `assets/entry-template.md` (`template` prints it). The CLI builds the frontmatter and the `#` heading itself; only the sections are passed on stdin:
 
-1. `## Что хочу понять` – обязателен: конкретный вопрос или пробел в понимании.
-2. `## Контекст` – какая задача решалась и где возник вопрос.
-3. `## Пример` – короткий показательный фрагмент кода, ошибка или последовательность действий.
-4. `## Решение и альтернативы` – что выбрали, почему и какие варианты обсуждались.
+1. `## What I want to understand` – required: a specific question or gap in understanding.
+2. `## Context` – what task was being solved and where the question came up.
+3. `## Example` – a short illustrative code fragment, error, or sequence of actions.
+4. `## Decision and alternatives` – what was chosen, why, and which options were discussed.
 
-Пустой или пропущенный раздел из 2–4 CLI заполняет текстом `Не зафиксировано.`. Дополнительные разделы, например `## Предположения агента` и `## Результаты разбора`, идут после обязательных. Внутри разделов использовать заголовки не выше `###`.
+The CLI fills an empty or omitted section from 2–4 with the text `Not recorded.`. Extra sections, for example `## Agent assumptions` and `## Analysis results`, go after the required ones. Inside sections use headings no higher than `###`.
 
-## Достоверность
+## Reliability
 
-- Записывать только то, что есть в сессии, коде или выводе команд. Не придумывать причины решений, альтернативы, ссылки на материалы и объяснения.
-- Собственные догадки выносить в раздел `## Предположения агента`, а не смешивать с подтвержденным контекстом.
-- Сохранять исходный вопрос пользователя, даже если ответ кажется известным: цитатой `> Исходная формулировка: «…»` в разделе «Что хочу понять». Не отвечать на вопрос внутри записи.
-- Путь к файлу, имя символа и commit добавлять в «Пример» строкой `Источник: …`, только когда они известны. Commit брать из `git rev-parse --short HEAD`, если пример взят из закоммиченного кода. Ссылки дополняют пример, но не заменяют его: код может измениться.
+- Record only what is in the session, the code, or command output. Do not invent reasons for decisions, alternatives, links to materials, or explanations.
+- Put your own guesses in the `## Agent assumptions` section instead of mixing them with confirmed context.
+- Preserve the user's original question even if the answer seems known: as a quote `> Original wording: "…"` in the "What I want to understand" section. Do not answer the question inside the entry.
+- Add the file path, symbol name, and commit to "Example" as a `Source: …` line, only when they are known. Take the commit from `git rev-parse --short HEAD` if the example comes from committed code. References complement the example but do not replace it: the code may change.
 
-## Сохранить тему
+## Save a topic
 
-1. Выделить вопрос и существенный контекст из текущей сессии. Не задавать вопросов, если тему можно понять из контекста; анкету не заполнять. Если непонятно даже, о чем тема, задать один вопрос.
-2. Выбрать пример: минимальный фрагмент, по которому вопрос понятен без репозитория, обычно до 20 строк.
-3. Определить метаданные: `--project` – имя текущего репозитория (basename `git rev-parse --show-toplevel`), если пользователь не назвал другое; 1–4 коротких тега в нижнем регистре (`python`, `asyncio`, `architecture`).
-4. Проверить смысловые дубликаты: `list --status all --format json` и сравнить `title` и `question`. При заметном каталоге сузить выборку через `--project`, `--tag` или `--query`. Если похожая запись есть, предложить дополнить ее (`update --section`) или создать новую и дождаться выбора. Автоматически не объединять.
-5. Сохранить:
+1. Extract the question and the essential context from the current session. Do not ask questions if the topic can be understood from the context; do not fill in a questionnaire. If even the subject of the topic is unclear, ask one question.
+2. Pick an example: a minimal fragment that makes the question clear without the repository, usually up to 20 lines.
+3. Determine the metadata: `--project` is the current repository name (basename of `git rev-parse --show-toplevel`) unless the user named another; 1–4 short lowercase tags (`python`, `asyncio`, `architecture`).
+4. Check for semantic duplicates: `list --status all --format json` and compare `title` and `question`. With a sizable catalog, narrow the selection through `--project`, `--tag`, or `--query`. If a similar entry exists, offer to extend it (`update --section`) or to create a new one, and wait for the choice. Do not merge automatically.
+5. Save:
 
    ```sh
    python3 <skill-dir>/scripts/learning_backlog.py add \
-     --title "Зачем здесь asyncio.shield" --project finsight --tag python --tag asyncio <<'EOF'
-   ## Что хочу понять
+     --title "Why asyncio.shield here" --project finsight --tag python --tag asyncio <<'EOF'
+   ## What I want to understand
    ...
-   ## Контекст
+   ## Context
    ...
-   ## Пример
+   ## Example
    ...
-   ## Решение и альтернативы
+   ## Decision and alternatives
    ...
    EOF
    ```
 
-6. Ответить одной строкой: ID и название. Не пересказывать запись.
+6. Reply with one line: the ID and the title. Do not retell the entry.
 
-Название – короткая формулировка вопроса, понятная вне проекта: «Зачем asyncio.shield вокруг commit в обработчике отмены», а не «shield».
+The title is a short formulation of the question, understandable outside the project: "Why asyncio.shield around commit in a cancellation handler", not "shield".
 
-## Посмотреть темы
+## View topics
 
-Выполнить `list` с фильтрами из запроса и показать результат компактно. Статус `all` использовать, только если пользователь просит изученные или архивные темы.
+Run `list` with the filters from the request and show the result compactly. Use status `all` only if the user asks for learned or archived topics.
 
-## Разобрать тему
+## Work through a topic
 
-1. Открыть запись через `show ID`.
-2. Кратко напомнить вопрос и контекст из записи, затем начать объяснение в текущем диалоге с исходного вопроса. Если пример ссылается на код текущего репозитория, сверить его с актуальной версией и сказать о расхождении.
-3. Если пользователь хочет учиться через наводящие вопросы, предложить `teach-through-dialogue`.
-4. Открытие записи и объяснение не меняют статус.
-5. Когда разбор дошел до выводов, предложить сохранить их. После согласия добавить раздел через `update ID --section "Результаты разбора" --stamp`. Записывать выводы, к которым пришли в диалоге, и материалы, которые реально использовались.
+1. Open the entry with `show ID`.
+2. Briefly recall the question and context from the entry, then start the explanation in the current dialogue from the original question. If the example refers to code in the current repository, compare it with the current version and mention any discrepancy.
+3. If the user wants to learn through guiding questions, suggest `teach-through-dialogue`.
+4. Opening an entry and explaining it do not change the status.
+5. When the analysis reaches conclusions, offer to save them. After agreement, add a section with `update ID --section "Analysis results" --stamp`. Record the conclusions reached in the dialogue and the materials that were actually used.
 
-## Обновить запись
+## Update an entry
 
-- Дополнить раздел: `update ID --section "<раздел>"`, текст через stdin; по умолчанию текст добавляется к разделу. `--mode replace` заменяет раздел целиком; раздел «Что хочу понять» CLI разрешает только дополнять.
-- Метаданные: `--title`, `--project`, `--clear-project`, `--add-tag`, `--remove-tag`.
-- `learned` ставить только по явному слову пользователя, что тема изучена: `set-status ID learned --user-confirmed`. Собственная оценка агента или завершенное объяснение не являются таким подтверждением.
-- `archived` – по просьбе пользователя убрать тему без изучения; `open` – вернуть тему в работу.
+- Extend a section: `update ID --section "<section>"`, text via stdin; by default the text is appended to the section. `--mode replace` replaces the whole section; the CLI allows only appending to the "What I want to understand" section.
+- Metadata: `--title`, `--project`, `--clear-project`, `--add-tag`, `--remove-tag`.
+- Set `learned` only when the user explicitly says the topic is learned: `set-status ID learned --user-confirmed`. The agent's own judgment or a completed explanation is not such a confirmation.
+- `archived` – when the user asks to drop a topic without studying it; `open` – to put a topic back into work.
 
-## Подготовить темы для плана обучения
+## Prepare topics for a study plan
 
-Получить ID выбранных тем (по названию пользователя или через `list`) и выполнить `export ID...`. Вернуть выгрузку как есть: вопросы, контекст, примеры и результаты разбора. Не строить программу обучения, порядок изучения или roadmap; для этого есть отдельные инструменты, если пользователь попросит.
+Get the IDs of the selected topics (by the user's naming or through `list`) and run `export ID...`. Return the export as is: questions, context, examples, and analysis results. Do not build a curriculum, a study order, or a roadmap; separate tools exist for that if the user asks.

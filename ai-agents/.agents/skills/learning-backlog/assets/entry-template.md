@@ -1,39 +1,39 @@
 ---
 id: LB-0001
-title: "<Короткое название темы, понятное без исходного диалога>"
+title: "<Short topic title, understandable without the original dialogue>"
 status: open
 created_at: 2026-01-01T12:00:00+03:00
 updated_at: 2026-01-01T12:00:00+03:00
-project: "<необязательно: имя проекта или репозитория>"
-tags: ["<необязательно>", "<теги>"]
+project: "<optional: project or repository name>"
+tags: ["<optional>", "<tags>"]
 ---
 
-# <Короткое название темы, понятное без исходного диалога>
+# <Short topic title, understandable without the original dialogue>
 
-## Что хочу понять
+## What I want to understand
 
-<Конкретный вопрос или пробел в понимании, одним-двумя предложениями.>
+<A specific question or gap in understanding, in one or two sentences.>
 
-> Исходная формулировка: «<слова пользователя, если они были>»
+> Original wording: "<the user's words, if there were any>"
 
-## Контекст
+## Context
 
-<Какая задача решалась и в какой момент возник вопрос: реализация, ревью, диагностика бага.>
+<What task was being solved and when the question came up: implementation, review, bug diagnosis.>
 
-## Пример
+## Example
 
-<Короткий показательный фрагмент кода, текст ошибки или последовательность действий, до ~20 строк.>
+<A short illustrative code fragment, error text, or sequence of actions, up to ~20 lines.>
 
-Источник: `<путь/к/файлу>`, символ `<Имя.символа>`, commit `<короткий hash>`.
+Source: `<path/to/file>`, symbol `<Name.symbol>`, commit `<short hash>`.
 
-## Решение и альтернативы
+## Decision and alternatives
 
-<Что выбрали сейчас и почему; какие варианты обсуждались. Только то, что прозвучало в сессии.>
+<What was chosen now and why; which options were discussed. Only what was said in the session.>
 
-## Предположения агента
+## Agent assumptions
 
-<Необязательный раздел: догадки агента, не подтвержденные сессией.>
+<Optional section: the agent's guesses not confirmed by the session.>
 
-## Результаты разбора
+## Analysis results
 
-<Необязательный раздел: выводы после разбора, добавляется через `update --section "Результаты разбора" --stamp`.>
+<Optional section: conclusions after the analysis, added via `update --section "Analysis results" --stamp`.>
