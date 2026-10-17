@@ -1,0 +1,6 @@
+interface:
+  display_name: "Learning Backlog"
+  short_description: "Отложенные темы для изучения: сохранить, найти, разобрать"
+  default_prompt: "Используй $learning-backlog, чтобы сохранить тему для изучения из текущей сессии или вернуться к сохраненной."
+policy:
+  allow_implicit_invocation: true
