@@ -78,7 +78,6 @@ latent-briefing
 autoresearch-agent
 comprehensive-research-agent
 llm-cost-optimizer
-llm-wiki
 prompt-design
 prompt-review
 distill-thoughts
