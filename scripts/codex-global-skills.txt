@@ -87,3 +87,5 @@ uml
 mermaid-diagram
 xlsx
 learning-backlog
+arxiv-doc-builder
+arxiv-search

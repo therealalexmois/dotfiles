@@ -242,13 +242,14 @@ old repository-managed links under `~/.codex/skills/`, preserving `.system` and
 unrelated live links. Restart Claude Code and Codex after changing skill links.
 
 Keep domain-specific source skills in the relevant project's `.agents/skills/`
-when Codex needs them. The current placement decisions are:
+when Codex needs them (`arxiv-doc-builder` and `arxiv-search` are the exception:
+they are in the global Codex selection so every repository under `~/Workspace` sees them). The current placement decisions are:
 
 | Project | Skills from this repository to make project-local when needed |
 | --- | --- |
 | `.dotfiles` | `agent-instruction`, `audit-repository-documentation`, `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester` |
 | `life-os` | `close-my-day`, `morning-briefing`, `whats-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` |
-| `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` |
+| `knowledge-base` | `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` |
 | `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica` |
 | `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python`; add database or spreadsheet skills only where the workflow uses them |
 
