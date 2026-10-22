@@ -8,8 +8,6 @@
 # some machines), do not list it here for that purpose alone: run
 # scripts/link-project-skill.sh <skill-name> <path-to-repo> there, and add it
 # here only if it should also stop being linked into ~/.claude/skills/ globally.
-agent-instruction
-audit-repository-documentation
 claude-automation-recommender
 skill-param-auditor
 skill-quality-reviewer

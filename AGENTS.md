@@ -280,11 +280,12 @@ so the installer stops linking it globally. The current placement decisions are:
 
 | Project | Placement |
 | --- | --- |
-| `.dotfiles` | `agent-instruction`, `audit-repository-documentation`, `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester`; enforced for Claude by `scripts/claude-project-only-skills.txt`, not available to Codex here |
+| `.dotfiles` | `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester`; enforced for Claude by `scripts/claude-project-only-skills.txt`, not available to Codex here |
 | `life-os` | `close-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` moved into that repo's `.agents/skills/`; no longer managed here |
 | `knowledge-base` | `arxiv-doc-builder`, `arxiv-search`, `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` moved into that repo's `.agents/skills/`; no longer managed here |
-| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica`; listed in `scripts/claude-external-project-skills.txt`, linked per machine with `link-project-skill.sh` |
+| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `yandex-metrica`; listed in `scripts/claude-external-project-skills.txt`, linked per machine with `link-project-skill.sh` |
 | work repository (work machine only) | `build-engineering-self-presentation`; listed in `scripts/claude-external-project-skills.txt`, linked there with `link-project-skill.sh` |
+| any project (Claude and Codex) | `agent-instruction`, `audit-repository-documentation`, `distill-thoughts`, `prompt-design`, `rfc-authoring`, `writing-technical-marketing-content`; global for Claude (in no exclusion list) and listed in `scripts/codex-global-skills.txt` for Codex; `agent-instruction`, `audit-repository-documentation` and `writing-technical-marketing-content` left the project-only and external-project lists |
 | `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python` stay global and manual-only, since both repos and any FastAPI project use them |
 
 Run `link-project-skill.sh` for the `markova.studio` and work-repository rows on

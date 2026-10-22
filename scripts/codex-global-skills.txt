@@ -1,10 +1,18 @@
 # Skills available globally to Codex. Claude keeps the complete source catalog.
+agent-instruction
 anthropic-skill-creator
+audit-repository-documentation
 create-prompt
+distill-thoughts
+draft-in-alex-style
 git-worktree
+prompt-design
 python-code-style
+rfc-authoring
 security-guidance
+team-lead
 test-driven-development
 writing
 writing-plans
 writing-technical-documentation
+writing-technical-marketing-content

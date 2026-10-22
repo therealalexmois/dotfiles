@@ -13,7 +13,6 @@ analytics-tracking
 customer-research
 seo
 seo-audit
-writing-technical-marketing-content
 yandex-metrica
 
 # work repository (exists only on the work machine)
