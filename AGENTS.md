@@ -325,7 +325,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | Prefix | Domain |
 | --- | --- |
 | `work-` | planning, reflection, and work processes |
-| `writing` / `writing-` | Russian writing, text editing, and long-form documents (technical documentation, marketing content, plans, PRD) |
+| `writing` / `writing-` | Russian writing, text editing, and long-form documents (technical documentation, marketing content, plans) |
 | `anthropic-` | skills imported from or based on Anthropic workflows |
 | `python-` | Python coding conventions |
 | `jira-` | Jira workflows |
@@ -351,7 +351,6 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | write in Alex's style when explicitly requested, alongside the task-specific skill | `draft-in-alex-style` | yes |
 | distill raw thoughts or a voice-to-text transcript into clear text | `distill-thoughts` | yes |
 | write a plan or design document | `writing-plans` | yes |
-| write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
 | compare Python idioms or consult worked examples, explicitly | `python-patterns` | manual |
 | inspect, create, reuse, sync, or clean up Git worktrees | `git-worktree` | yes |
@@ -412,8 +411,7 @@ current context.
 Vault skills (`~/Workspace/vault/.claude/skills/`) are not listed here; they have their own routing in the vault's CLAUDE.md.
 
 > TODO: Rename the unprefixed first-party skills to follow the convention: `wiki`,
-> `daas-k8s-debug`, `incident-triage`, `time-messenger`. (`to-prd` renamed to
-> `writing-prd-draft`.)
+> `daas-k8s-debug`, `incident-triage`, `time-messenger`.
 
 ### Skill Provenance
 
