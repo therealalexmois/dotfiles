@@ -38,3 +38,6 @@ startup_timeout_sec = 60
 # Чтобы вернуть: раскомментировать и выполнить `codex mcp login singularity`.
 # [mcp_servers.singularity]
 # url = "https://mcp.singularity-app.com/mcp?toolsets=tasks,projects,meta"
+
+[plugins."wiki@llm-wiki"]
+enabled = true
