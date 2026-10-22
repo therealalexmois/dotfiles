@@ -117,8 +117,8 @@ zsh zsh/bootstrap.zsh
 bootstrap/install-alacritty.sh
 
 # Install AI CLI agent dotfiles: backup, Stow `bootstrap`+`ai-agents` (folds
-# ~/.claude/agents), render Codex config, and link all skills to Claude plus the curated
-# global set to Codex. --skills-only changes skill links without syncing MCP or config.
+# ~/.claude/agents), render Codex config, and link all skills to Claude plus the same set to Codex (minus
+# project-only and external-project names). --skills-only changes skill links without syncing MCP or config.
 # Idempotent; moves real-file conflicts to a timestamped backup and never touches
 # ~/.codex/skills/.system.
 scripts/install-ai-cli-dotfiles.sh
@@ -245,7 +245,8 @@ only for sessions started inside that repository, so leaving these names out of
 `~/.claude/skills/` hides them from every other project without disabling them
 here. Do not rely on the project copy to override a global one: for the same name,
 Claude Code runs the personal `~/.claude/skills/` skill over the project skill.
-Codex gets only the curated global selection; repository-local skills remain
+Codex gets the same set via `scripts/codex-global-skills.txt` (every source skill
+except the project-only and external-project names); repository-local skills remain
 available from each project's `.agents/skills/`.
 
 ```
@@ -287,8 +288,9 @@ so the installer stops linking it globally. The current placement decisions are:
 | work repository (work machine only) | `build-engineering-self-presentation`; listed in `scripts/claude-external-project-skills.txt`, linked there with `link-project-skill.sh` |
 | any project (Claude and Codex) | `agent-instruction`, `audit-repository-documentation`, `distill-thoughts`, `prompt-design`, `rfc-authoring`, `writing-technical-marketing-content`; global for Claude (in no exclusion list) and listed in `scripts/codex-global-skills.txt` for Codex; `agent-instruction`, `audit-repository-documentation` and `writing-technical-marketing-content` left the project-only and external-project lists |
 | `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python` stay global and manual-only, since both repos and any FastAPI project use them |
+| `finsight` (Codex and other agents) | `database-designer`, `sql-database-assistant`, `migration-architect`, `python-anti-patterns`, `python-configuration`, `python-design-patterns`, `python-error-handling`, `python-observability`, `python-resilience`, `python-resource-management`, `python-type-safety`, `python-performance-optimization`, `python-project-structure`, `python-testing-patterns`, `async-python-patterns`, `fastapi-python`, `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `error-handling-patterns`, `failure-handling-patterns`, `performance-profiler`, `tech-debt-tracker`, `improve-codebase-architecture`, `observability-designer`, `human-architect-mindset`, `six-thinking-hats`; stay global for Claude (not in the external-project list) and are in the Codex global selection too; the per-machine `link-project-skill.sh <skill> <path> --agent both` link is optional and only needed because finsight's `just skills-sync` mirrors `.agents/skills/` into `.claude/skills/` |
 
-Run `link-project-skill.sh` for the `markova.studio` and work-repository rows on
+Run `link-project-skill.sh` for the `markova.studio`, work-repository and `finsight` rows on
 each machine where that repository exists. Other specialized skills remain in the source catalog
 and can be linked into a project when a concrete workflow calls for them.
 
