@@ -229,7 +229,7 @@ AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all except claude-proje
 ```
 
 - `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600), including Codex MCP servers declared under `[mcp_servers.*]` in `config.shared.toml`.
-- `scripts/install-ai-cli-dotfiles.sh` syncs Claude Code's user-scope MCP servers from `ai-agents/.claude/mcp-servers.json` via `claude mcp remove`/`claude mcp add-json -s user` (idempotent; Claude has no declarative config file for MCP servers, so this JSON is the tracked source of truth). Restart `claude`/`codex` after adding or changing an MCP server for the new server to load.
+- `scripts/install-ai-cli-dotfiles.sh` syncs Claude Code's user-scope MCP servers from `ai-agents/.claude/mcp-servers.json` via `claude mcp remove`/`claude mcp add-json -s user` (idempotent; Claude has no declarative config file for MCP servers, so this JSON is the tracked source of truth). Servers that must exist on one machine only go into the gitignored `ai-agents/.claude/mcp-servers.local.json` (same format, synced after the tracked file); the Codex counterpart is `[mcp_servers.*]` in `~/.codex/config.local.toml`. Restart `claude`/`codex` after adding or changing an MCP server for the new server to load.
 - `ai-agents/.claude/settings.json` and the tracked `ai-agents/.codex/*.config.toml` profiles use `--skip-worktree`, so runtime rewrites (model, theme, effort, project trust, TUI NUX) do not churn the tracked defaults; to edit them, temporarily `--no-skip-worktree`.
 - CodeCompanion `claude` profile requires the `claude-code-acp` bridge; `claudecode.nvim` needs only the `claude` CLI.
 - `~/.codex/skills/.system` is never replaced by the install script.
@@ -602,6 +602,7 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |
 | Codex MCP server | `ai-agents/.codex/config.shared.toml` `[mcp_servers.<name>]` | Rendered by `render-codex-config.py` |
 | Claude MCP server | `ai-agents/.claude/mcp-servers.json` | Synced to user scope by `scripts/install-ai-cli-dotfiles.sh` |
+| Machine-local MCP server | `ai-agents/.claude/mcp-servers.local.json` (Claude), `~/.codex/config.local.toml` (Codex) | Gitignored / outside the repo; not present on other machines |
 | CodeCompanion AI profile | `nvim/lua/config/ai/codecompanion_profiles.lua` | |
 | Neovim plugin | `nvim/lua/plugins/` domain subdir | AstroCommunity in `community.lua` |
 | tmux plugin | `tmux/tmux.conf` | `set -g @plugin ...` |

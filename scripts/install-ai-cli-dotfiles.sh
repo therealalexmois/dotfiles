@@ -204,19 +204,23 @@ ensure_correct_profile_link() {
 }
 
 sync_claude_mcp_servers() {
-  local mcp_file="${repo_dir}/ai-agents/.claude/mcp-servers.json"
-  [[ -f "$mcp_file" ]] || return 0
+  local mcp_dir="${repo_dir}/ai-agents/.claude"
   command -v claude >/dev/null 2>&1 || {
     echo "claude CLI not found; skipping MCP server sync" >&2
     return 0
   }
 
-  local name desired
-  for name in $(jq -r 'keys[]' "$mcp_file"); do
-    desired="$(jq -c --arg n "$name" '.[$n]' "$mcp_file")"
-    claude mcp remove "$name" -s user >/dev/null 2>&1 || true
-    claude mcp add-json "$name" "$desired" -s user >/dev/null
-    echo "synced Claude MCP server: $name"
+  # The local file is gitignored and holds servers for this machine only; it is
+  # synced after the tracked one, so a same-named local entry wins.
+  local mcp_file name desired
+  for mcp_file in "${mcp_dir}/mcp-servers.json" "${mcp_dir}/mcp-servers.local.json"; do
+    [[ -f "$mcp_file" ]] || continue
+    for name in $(jq -r 'keys[]' "$mcp_file"); do
+      desired="$(jq -c --arg n "$name" '.[$n]' "$mcp_file")"
+      claude mcp remove "$name" -s user >/dev/null 2>&1 || true
+      claude mcp add-json "$name" "$desired" -s user >/dev/null
+      echo "synced Claude MCP server: $name (${mcp_file##*/})"
+    done
   done
 }
 
