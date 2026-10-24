@@ -1,89 +1,67 @@
-# AstroNvim Template
+# Neovim configuration
 
-**NOTE:** This is for AstroNvim v5+
+This directory configures Neovim with AstroNvim v6.
+Install it as part of the [dotfiles setup](../docs/how-to/install.md).
+Do not clone it separately into `~/.config/nvim`.
 
-A template for getting started with [AstroNvim](https://github.com/AstroNvim/AstroNvim)
+## Start Neovim
 
-## 🛠️ Installation
+Requirements:
 
-#### Make a backup of your current nvim and shared folder
+- Neovim 0.11 or later.
+- A configured shell with `XDG_CONFIG_HOME=$HOME/.dotfiles`.
+- A Nerd Font and a clipboard provider. See `:help clipboard-tool`.
+- Network access for the first lazy.nvim/plugin bootstrap.
 
-```shell
-mv ~/.config/nvim ~/.config/nvim.bak
-mv ~/.local/share/nvim ~/.local/share/nvim.bak
-mv ~/.local/state/nvim ~/.local/state/nvim.bak
-mv ~/.cache/nvim ~/.cache/nvim.bak
-```
+From a configured terminal:
 
-#### Create a new user repository from this template
-
-Press the "Use this template" button above to create a new repository to store your user configuration.
-
-You can also just clone this repository directly if you do not want to track your user configuration in GitHub.
-
-#### Clone the repository
-
-```shell
-git clone https://github.com/<your_user>/<your_repository> ~/.config/nvim
-```
-
-#### Start Neovim
-
-```shell
+```sh
 nvim
 ```
 
-## 🤖 AI integration
+The leader key is Space. The local leader is comma.
 
-Two independent surfaces live side by side:
+## Verify config loading
 
-- **CodeCompanion** (`<leader>A`) — multi-model code operations (chat, inline edits,
-  prompt library). Switchable adapters: local Ollama, an HTTP work proxy, and Claude over
-  ACP on a subscription.
-- **claudecode.nvim** (`<leader>C`) — the `claude` CLI over the official IDE protocol for
-  agentic and research work with native accept/reject diffs. It inherits the CLI's MCP
-  servers, subagents, skills, and rules; nothing extra to configure in Neovim.
+Inside Neovim:
 
-### Profiles and model switching
+```vim
+:echo stdpath('config')
+```
 
-`NVIM_AI_PROFILE` selects the default CodeCompanion adapter:
+The result should be your home path followed by `/.dotfiles/nvim`.
+A GUI launcher without the shell environment may load `~/.config/nvim` instead.
 
-| Value | Default chat adapter | Inline / cmd adapter |
-| --- | --- | --- |
-| `home` (default) | Ollama (local) | Ollama (local) |
-| `work` | work proxy (HTTP) | work proxy (HTTP) |
-| `claude` | `claude_code` (ACP) | Ollama/work proxy |
+## Find a workflow
 
-Inline edits always stay on the HTTP adapters; only chat routes to ACP under the `claude`
-profile. Run `:AIProfileStatus` to see the active profile and preflight result. Claude
-chat is also reachable from any profile with `<leader>Al`, and `<leader>Cm` selects the
-model inside `claudecode.nvim`.
-
-### Key maps
-
-| Keys | Action |
+| Task | Document or keys |
 | --- | --- |
-| `<leader>AA` | CodeCompanion action palette |
-| `<leader>Ac` | CodeCompanion chat toggle |
-| `<leader>Aq` | Add selection to chat (visual) |
-| `<leader>Al` | Claude chat over ACP |
-| `<leader>Cc` | Toggle Claude Code |
-| `<leader>Cs` | Send selection to Claude (visual) |
-| `<leader>Ca` / `<leader>Cd` | Accept / deny the proposed diff |
-| `<leader>CR` | Seed a research-report prompt (`:ClaudeResearch`) |
-| `<leader>Cm` | Select Claude model |
+| AI chat, code edits, and background jobs | [AI reference](AI.md) |
+| Python debugging | [DAP guide](DAP.md) |
+| Reusable AI prompts | [Prompt library](../llm/README.md) |
+| Find text | `<leader>fw`, with ripgrep |
+| Git UI | `<leader>tl` or `<leader>gg`, with lazygit |
+| Disk usage | `<leader>tu`, with gdu |
+| Process viewer | `<leader>tt`, with bottom |
+| Python or Node REPL | `<leader>tp` or `<leader>tn` |
 
-### Prompt library
+## Configuration files
 
-Reusable prompts load from `~/.dotfiles/llm/prompts/` into the action palette and as
-`/alias` slash commands in chat: `explain`, `fix`, `lsp`, `review`, `refactor`,
-`unit-tests`, `commit`, and more. See `llm/PROMPT_POLICY.md` for the contract.
+```text
+init.lua
+└── lua/lazy_setup.lua
+    ├── AstroNvim v6
+    ├── lua/community.lua
+    └── lua/plugins/
+        ├── ai/
+        ├── debugging/
+        ├── editing/
+        └── ui/
+```
 
-### One-time setup
+Keep plugin revisions in `lazy-lock.json`. Update it through the plugin manager.
+Language servers and debugging tools use Mason.
+Python/Node Neovim host packages are optional unless a plugin needs them.
+Tree-sitter auto-install may require the Tree-sitter CLI.
 
-- `claudecode.nvim` works as soon as the `claude` CLI is installed and logged in.
-- The CodeCompanion `claude` profile needs the ACP bridge:
-  `npm install -g @zed-industries/claude-code-acp`.
-- Optional, for seamless ACP auth: `claude setup-token`, then export
-  `CLAUDE_CODE_OAUTH_TOKEN` from your local shell env. Treat it as a secret; never commit
-  it. ACP still works without it on an interactive subscription.
+For changes to this directory, follow [the local instructions](AGENTS.md).

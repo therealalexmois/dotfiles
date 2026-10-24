@@ -2,7 +2,14 @@
 
 ## Selection policy
 
-Create cards for mechanisms and causal models, meaningful distinctions, decision criteria and constraints, common misconceptions, stable interfaces or formulas that must be recalled, and predictions derived from a model.
+Create cards for:
+
+- mechanisms and causal models;
+- meaningful distinctions;
+- decision criteria and constraints;
+- common misconceptions;
+- stable interfaces or formulas that require recall;
+- predictions derived from a model.
 
 Do not create cards for navigation, transient versions, long lists, tutorial steps, or facts better retrieved from documentation.
 
@@ -18,7 +25,15 @@ Do not create cards for navigation, transient versions, long lists, tutorial ste
 
 ## Atomicity checks
 
-Each card must test one retrievable unit, have an unambiguous prompt, avoid yes/no wording when explanation matters, keep the answer short enough to grade consistently, contain the minimum standalone context, cite a source, and include roadmap and node tags.
+Each card must:
+
+- test one retrievable unit;
+- ask an unambiguous question;
+- avoid yes/no wording when explanation matters;
+- keep the answer short enough for consistent grading;
+- provide minimum standalone context;
+- cite a source;
+- include roadmap and node tags.
 
 Split cards that contain "and" when each clause can be independently right or wrong.
 

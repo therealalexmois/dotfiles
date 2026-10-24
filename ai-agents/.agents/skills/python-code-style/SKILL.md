@@ -8,17 +8,18 @@ metadata:
 
 # Python Code Style
 
-Generic, language-agnostic defaults for writing Python. The goal is code that reads like prose and stays maintainable across projects.
+Project-independent Python conventions.
 
 ## Precedence
 
-These are project-independent defaults. Anything project-specific wins over them, in this order:
+Follow project-specific conventions in this order:
 
-1. The project's `AGENTS.md` / `CLAUDE.md` / styleguide (conventions, documentation language, test marker policy).
-2. The project's `pyproject.toml` (line length, target version, lint rule selection, type-checker strictness).
-3. The existing style of the surrounding code.
+1. `AGENTS.md`, `CLAUDE.md`, or the project style guide.
+2. `pyproject.toml` settings: line length, Python version, lint rules, and type checks.
+3. The surrounding code's style.
 
-So this skill never hardcodes concrete config values or a fixed documentation language - it carries the principles, and the project supplies the specifics. When a project file and this skill disagree, follow the project.
+These sources define documentation language, test markers, and configuration values.
+When they conflict with this skill, follow the project.
 
 ## When to use
 
@@ -75,7 +76,11 @@ Use modern, precise syntax: `str | None`, `list[str]`, `dict[str, Any]`, `tuple[
 
 ## Duplication
 
-One concept lives in one module. Do not keep a second copy of a helper, constant, mapping, or calculation in another module or package, and do not smear one module's responsibility across several places. Before adding a helper, search for an existing one; when two copies exist, keep the one in the lower layer and import it. Test helpers repeated across test modules move to the nearest shared `conftest.py` or test support module.
+- Keep each concept in one module. Avoid duplicate helpers, constants, mappings, and calculations.
+- Search before adding a helper.
+- If two copies exist, keep the lower-layer copy and import it.
+- Keep one module's responsibility together.
+- Move repeated test helpers to the nearest shared `conftest.py` or test support module.
 
 ## Formatting and line length
 
@@ -111,11 +116,11 @@ error_message = (
 
 ## Vertical spacing (logical paragraphs)
 
-Inside a function or method body, separate logical blocks with a single blank line. Read code like prose: a wall of statements packed line-to-line forces the reader to parse every line to find where one idea ends and the next begins. Blank lines turn a body into paragraphs of intent - setup, the core step, the result - so the structure is visible at a glance.
-
-Formatters normalize blank lines *around* functions and classes, but they do not insert semantic blank lines *inside* a body. This is a judgment call you make by hand.
-
-Group by intent, not by line count: a tight block that forms one idea stays together; a blank line goes between distinct steps (guard checks, the main computation, logging, the return). Avoid double blank lines inside a body and a blank line right after the `def`/docstring - one separator between ideas is enough.
+- Separate logical blocks inside functions and methods with one blank line.
+- Keep one idea together. Separate guards, computation, logging, and return steps when their intent differs.
+- Do not add double blank lines inside a body or a blank line immediately after `def`/the docstring.
+- Apply these boundaries by hand. Formatters normalize spacing around definitions,
+  but do not insert semantic spacing inside them.
 
 ```python
 # Avoid: statements packed wall-to-wall - hard to scan
@@ -152,7 +157,9 @@ ruff format .        # format
 mypy .               # type check
 ```
 
-Concrete configuration - line length, target version, the selected lint rule set, type-checker strictness - lives in the project's `pyproject.toml`, not here. Follow the project's values. For a new project with no config, enable strict type checking and a sensible rule set, then record the choice in `pyproject.toml` so it becomes project-owned.
+- Use the project's `pyproject.toml` for line length, target version, lint rules, and type-checker strictness.
+For a new project without configuration, choose strict type checks and a suitable lint rule set.
+Record those choices in `pyproject.toml`.
 
 ## Docstrings
 
@@ -162,7 +169,11 @@ When editing Python code, improve docstrings without changing runtime behavior.
 - Keep section headers in English: `Args`, `Returns`, `Raises`, `Yields`, `Attributes`, `Examples`.
 - Write docstring content in the project's documentation language (declared in its `AGENTS.md`/`CLAUDE.md`); match the surrounding code when it is not declared. Do not impose a language the project does not use.
 - Add module, class, function, and method docstrings when they are missing or weak.
-- Keep docstrings short and clear, following the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings): a one-line summary that fits the line limit and ends with a period, then a blank line and details only when they add information. Explain purpose, contract, important constraints, and non-obvious behavior. Do not restate the name, the signature, or obvious implementation details; a docstring longer than the code it describes is a smell.
+- Follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings).
+- Start with a one-line summary within the line limit, ending with a period.
+- Add a blank line and details only for useful contract, constraints, or non-obvious behavior.
+- Do not restate names, signatures, or obvious implementation details.
+  Recheck a docstring longer than its code for unnecessary text.
 - Add `Attributes` for dataclasses, Pydantic models, DTOs, and classes with meaningful public fields.
 - Add `Args`, `Returns`, and `Raises` only when they add useful information. Do not document exceptions that are not visible from the code or an explicit contract.
 - Preserve technical identifiers, API names, field names, enum values, and established project terms.
@@ -227,15 +238,33 @@ Prefer clear test names; follow the existing project style if it differs:
 test_<what_is_tested>__<expected_behavior>
 ```
 
-Group tests into classes named `Test<Subject>`, one class per subject (the unit, behavior, or command under test); module-level test functions are not used. Tests are plain methods taking `self` (no `@staticmethod`); classes carry no state: fixtures and helpers stay functions.
-
-For pytest projects, a test module has one test type and declares it once at module level (`pytestmark = pytest.mark.<type>`); a module that mixes types is split. Use the project's marker policy (the set of allowed markers and what they mean is project-specific - see the project's `pytest.ini`/`pyproject.toml`/`AGENTS.md`); a common taxonomy is `unit`, `integration`, `system`, `scenario`. Do not mark a test as heavier than necessary and do not repeat the module marker on classes or tests.
+- Group tests into `Test<Subject>` classes, one class per unit, behavior, or command.
+- Do not use module-level test functions.
+- Use plain methods with `self`, without `@staticmethod`.
+- Keep classes stateless. Fixtures and helpers remain functions.
+- Give each pytest module one test type. Declare it once as `pytestmark = pytest.mark.<type>`.
+- Split modules that mix test types.
+- Follow the marker policy in `pytest.ini`, `pyproject.toml`, or `AGENTS.md`.
+  Common types are `unit`, `integration`, `system`, and `scenario`.
+- Use the lightest applicable type. Do not repeat the module marker on classes or tests.
 
 ### Docstrings
 
-Every test module has a module docstring: a one-line summary of what the module covers, then an unnumbered list of the checks it performs, one short line per check (or per class when the module is large).
+For each test module, write:
 
-Every test has a docstring in the Given/When/Then form: a one-line scenario summary, a blank line, then three short lines `Given:`, `When:`, `Then:` (translated to the project's documentation language). `Given` names the input conditions that matter, `When` the key action, `Then` the expected observable result; mark an error path or a regression (`Regression: #123`) in the summary or in `Then`. Do not repeat the test name verbatim or describe the implementation line by line.
+1. A one-line summary.
+2. An unnumbered list of checks, one short line per check or per class for large modules.
+
+For each test, write:
+
+1. A one-line scenario summary.
+2. A blank line.
+3. Three short lines: `Given:`, `When:`, and `Then:`, translated into the project's language.
+
+`Given` names important input conditions. `When` names the action.
+`Then` names the observable result.
+Mark error paths or regressions (`Regression: #123`) in the summary or `Then`.
+Do not repeat the test name or describe implementation steps.
 
 ```python
 """Bond limit checks for a single issuer.
@@ -259,7 +288,11 @@ class TestIssuerLimit:
 
 ### Assertions
 
-Assertions must verify the contract, that is behavior, not a snapshot. Comparing a whole rendered text, JSON document, dict, or golden file is a snapshot unless that exact output is itself the published contract; keep one contract test per published schema and assert only the relevant properties everywhere else. Avoid:
+- Assert behavior, not snapshots.
+Full rendered text, JSON, dict, or golden-file comparisons are snapshots unless the exact output is a published contract.
+Keep one contract test per published schema. Elsewhere, assert relevant properties only.
+
+Avoid:
 
 - checking everything blindly;
 - overfitting to unstable strings, timestamps, random order, or internal call chains;
@@ -278,7 +311,12 @@ Use fixtures only when they make the test clearer or reduce meaningful duplicati
 4. local `conftest.py` fixture for neighboring modules;
 5. shared `conftest.py` fixture only for stable, genuinely shared setup.
 
-Do not introduce a fixture when the object is used in one test, setup is 1-3 clear lines, or it hides key scenario conditions. Fixture names describe the returned object, not the action - avoid vague names like `data`, `obj`, `payload`, `result`, `mocked`. Use the smallest necessary scope; a wider scope that leaks state between tests is a defect. Use a `yield` fixture only when there is real cleanup to run.
+- Avoid fixtures when the object appears in one test, setup takes 1-3 clear lines,
+or the fixture hides important input conditions.
+
+- Name the returned object, not the action. Avoid `data`, `obj`, `payload`, `result`, and `mocked`.
+- Use the smallest scope. Wider scopes must not leak state between tests.
+- Use `yield` only for real cleanup.
 
 ### Test doubles
 
@@ -290,17 +328,33 @@ Do not use mocks, stubs, or fakes if the same scenario can be tested more simply
 4. `mocker.spy` when interaction with real code must be observed;
 5. handwritten `stub` / `fake` only when it is clearly the best option.
 
-Create doubles only through the pytest-mock `mocker` fixture (`mocker.patch`, `mocker.patch.object`, `mocker.Mock`, `mocker.spy`); do not import `unittest.mock` in tests. Give every mock a `spec`/`spec_set` or use `autospec=True` so a renamed method or wrong signature fails the test. Use `MagicMock` only when the double must support magic methods. Observe a real call with `mocker.spy`, not with `patch(..., wraps=...)`.
+- Create doubles through pytest-mock's `mocker` fixture:
+`mocker.patch`, `mocker.patch.object`, `mocker.Mock`, and `mocker.spy`.
 
-Use `Mock` / `AsyncMock` when replacing an external dependency, controlling `return_value`/`side_effect`, or verifying a meaningful interaction. Avoid long fragile mock chains, asserting every internal call, and mock assertions that do not affect the tested contract. Handwritten fakes are allowed only when they are reused, naturally hold state, represent the dependency contract better than mocks, and improve readability and typing.
+- Do not import `unittest.mock` in tests.
+- Use `spec`/`spec_set` or `autospec=True` to catch renamed methods and wrong signatures.
+- Use `MagicMock` only for magic-method support.
+- Observe real calls with `mocker.spy`, not `patch(..., wraps=...)`.
+- Use `Mock`/`AsyncMock` for external dependencies, controlled results or errors, and meaningful interactions.
+- Avoid long mock chains and assertions about irrelevant internal calls.
+- Use handwritten fakes only when reused, stateful, clearer than mocks,
+  faithful to the dependency contract, and better for readability and typing.
 
 ### Async tests
 
-Use `async def` where appropriate and test the async contract directly; avoid unnecessary sync wrappers. Cover relevant lifecycle behavior: `await`, async context managers, async iterators, shutdown, cleanup, and error paths. Use `AsyncMock` only when a mock is actually needed.
+Test async contracts with `async def`. Avoid unnecessary sync wrappers.
+Cover relevant `await`, context managers, iterators, shutdown, cleanup, and errors.
+Use `AsyncMock` only when a mock is needed.
 
 ### Parameterization
 
-Use `@pytest.mark.parametrize` (with readable `ids`) when the scenario is the same and only inputs and expected outputs differ, and duplication is reduced without hurting readability. Do not parameterize when cases are conceptually different or the scenario becomes harder to understand.
+Use `@pytest.mark.parametrize` with readable `ids` when:
+
+- the scenario stays the same;
+- only inputs and expected outputs differ;
+- it reduces duplication without hurting readability.
+
+Keep conceptually different or harder-to-read scenarios separate.
 
 ### Typing in tests
 
@@ -308,8 +362,16 @@ Prefer real typed objects where production code already defines types. Avoid unt
 
 ### Logs, metrics, observability
 
-Assert logs or metrics only when they are part of the expected behavior or required to diagnose a meaningful scenario. Use `caplog` for standard logging when appropriate; if `caplog` is flaky due to logging adapters, prefer a patched logger or spy. Do not turn business logic tests into tests of telemetry internals.
+- Assert logs or metrics only when they are part of the expected behavior or required to
+  diagnose a meaningful scenario.
+- Use `caplog` for standard logging when appropriate; if `caplog` is flaky due to logging
+  adapters, prefer a patched logger or spy.
+- Do not turn business logic tests into tests of telemetry internals.
 
 ### Production defect vs test defect
 
-If a test reveals a production bug, state that explicitly. Separate: test defect, production defect, missing context, mismatch with requirements, mismatch with styleguide. If production code violates the contract, suggest the minimal correction direction without rewriting the module.
+- If a test reveals a production bug, state that explicitly.
+- Separate: test defect, production defect, missing context, mismatch with requirements,
+  mismatch with styleguide.
+- If production code violates the contract, suggest the minimal correction direction without
+  rewriting the module.

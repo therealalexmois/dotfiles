@@ -1,18 +1,25 @@
 # Neovim Python DAP Implementation Plan
 
+План от 2026-09-06. Чекбоксы и примеры ниже не подтверждают текущее состояние.
+Рабочие сценарии описаны в [Python DAP](../../nvim/DAP.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development
 > (recommended) or executing-plans to implement this plan task-by-task. Steps use
 > checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** довести Python debugging в Neovim до практического 80/20-паритета с
-PyCharm: сохраненные DAP-конфигурации, удобные breakpoints, debug теста под
-курсором и надежный attach к debugpy socket.
+**Цель:** добавить рабочие сценарии отладки Python в Neovim:
 
-**Architecture:** сохранить текущую связку AstroNvim, `nvim-dap`,
-`nvim-dap-python`, `nvim-dap-ui` и Mason `debugpy`. Добавить один локальный
-Python DAP-модуль и одну plugin spec без новых зависимостей. Проектные параметры
-хранить в `.vscode/launch.json`, который текущий `nvim-dap` уже читает
-автоматически при `dap.continue()`.
+- сохраненные DAP-конфигурации;
+- точки останова;
+- отладку теста под курсором;
+- подключение к сокету debugpy.
+
+**Архитектура:**
+
+- Сохранить AstroNvim, `nvim-dap`, `nvim-dap-python`, `nvim-dap-ui` и Mason `debugpy`.
+- Добавить один локальный Python DAP-модуль и одну plugin spec без новых зависимостей.
+- Хранить проектные параметры в `.vscode/launch.json`.
+- В версии, принятой для плана, `dap.continue()` читает этот файл автоматически.
 
 **Tech Stack:** Neovim 0.12, Lua, AstroNvim, nvim-dap, nvim-dap-python,
 debugpy, plain headless Lua assertions, StyLua, Selene.

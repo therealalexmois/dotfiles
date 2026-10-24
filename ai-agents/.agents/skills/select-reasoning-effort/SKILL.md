@@ -80,4 +80,8 @@ Reconsider:
 - Lower to medium once the cause is confirmed and only a local patch remains.
 ```
 
-If current effort is known, also say `keep`, `raise`, or `lower`. If the target model does not support the recommended label, choose the nearest supported level and name the fallback. Do not claim that invoking this skill changes the effort of the response already in progress; apply the recommendation at the next available control point.
+- If current effort is known, also say `keep`, `raise`, or `lower`.
+- If the target model does not support the recommended label, choose the nearest supported level
+  and name the fallback.
+- Do not claim that invoking this skill changes the effort of the response already in progress;
+  apply the recommendation at the next available control point.

@@ -14,7 +14,14 @@ metadata:
 
 Use this skill for the query layer: write or debug a SQL statement, interpret a query plan, or inspect a schema or ORM mapping needed for that query. Ask for the target dialect and actual table definitions when they materially affect correctness. Do not infer a live schema from the examples below.
 
-Route a new relational schema or ERD, or a cross-engine architecture or physical-design choice, to `database-designer`, PostgreSQL-specific operational work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. Migration and backup examples in this file are reference material, not a primary trigger or deployment workflow.
+| Task outside this skill | Route |
+| --- | --- |
+| New relational schema or ERD; cross-engine architecture or physical design | `database-designer` |
+| PostgreSQL-specific operations | `postgres-engineer` |
+| High-risk or multi-step migration | `migration-architect` |
+
+Migration and backup examples are reference material.
+They do not trigger this skill or authorize deployment.
 
 ### Core Capabilities
 

@@ -28,8 +28,15 @@ Work as a provider-neutral PostgreSQL engineer. Prefer evidence and reversible c
 
 ## Safety gates
 
-- Obtain explicit confirmation immediately before destructive or difficult-to-reverse actions: dropping/truncating data, detaching partitions, dropping replication slots, resetting statistics, terminating backends, promotion/failover, restore, filesystem replacement, or disabling durability/safety controls.
-- For backend intervention, prefer `pg_cancel_backend()` before `pg_terminate_backend()`. Use termination only when cancellation cannot resolve the blocker (for example, an idle transaction must end) or incident urgency justifies it; identify the session, explain rollback impact, and confirm immediately before termination.
+- Obtain explicit confirmation immediately before destructive or hard-to-reverse actions:
+  - dropping/truncating data, detaching partitions, or dropping replication slots;
+  - resetting statistics or terminating backends;
+  - promotion/failover, restore, or filesystem replacement;
+  - disabling durability or safety controls.
+- Prefer `pg_cancel_backend()` before `pg_terminate_backend()`.
+  Terminate only if cancellation cannot resolve the blocker, such as an idle transaction,
+  or incident urgency justifies it. Identify the session and explain rollback impact.
+  Confirm immediately before termination.
 - For production DDL or configuration changes, present the exact target, lock and availability impact, rollout, and rollback before execution.
 - Never emit or execute broad unresolved deletion commands, especially recursive deletion of a data directory. Resolve and validate exact paths, backups, ownership, and recovery procedure first.
 - Never put plaintext passwords, tokens, or private keys in SQL, configuration, commands, or examples. Use secret references and protected credential mechanisms.
@@ -47,7 +54,12 @@ Restate the symptom, affected scope, success metric, and safety boundary. Distin
 
 ### 2. Collect evidence
 
-Request or inspect only relevant artifacts: schema and indexes, normalized query, parameters/selectivity, `EXPLAIN` plan, table/statistics sizes, `pg_stat_*`, locks/waits, logs, configuration, host metrics, and topology.
+Inspect or request only relevant evidence:
+
+- schema, indexes, and table/statistics sizes;
+- normalized query, parameters/selectivity, and `EXPLAIN` plan;
+- `pg_stat_*`, locks/waits, and logs;
+- configuration, host metrics, and topology.
 
 Prefer machine-readable `EXPLAIN (FORMAT JSON)` for automated analysis. Do not invent plans, row counts, configuration, or workload facts.
 

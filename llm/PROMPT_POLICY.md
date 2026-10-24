@@ -2,189 +2,133 @@
 
 ## Purpose
 
-Этот документ фиксирует правила для prompt system в Neovim AI architecture.
+Правила для библиотеки prompts в Neovim:
 
-Цели:
-- держать prompts управляемыми и предсказуемыми;
-- разделять global и project-specific prompts;
-- не смешивать prompts, repo-rules и plugin config;
-- задавать единый контракт для prompt metadata;
-- поддерживать один prompt layer для `home_local` и `work_proxy`.
-
----
+- хранить общие prompts отдельно от проектных;
+- отделять prompts от правил репозитория, настроек плагинов и секретов;
+- задавать единый контракт метаданных;
+- использовать одну библиотеку для `home_local` и `work_proxy`.
 
 ## Scope
 
-Эта политика применяется к:
-- global prompts в `~/.dotfiles/llm/prompts`
-- project prompts в `<repo>/.prompts`
-
-Эта политика **не** описывает:
-- plugin setup
-- keymaps
-- backend adapters
-- repo-rules implementation
-
----
+| Входит в политику | Не входит в политику |
+| --- | --- |
+| Общие prompts: `~/.dotfiles/llm/prompts` | Настройка плагинов и keymaps |
+| Проектные prompts: `<repo>/.prompts` | Backend adapters и загрузка repo-rules |
 
 ## Design principles
 
-1. **Prompt-first UX**  
-   AI в редакторе рассматривается как слой prompts/workflows, а не просто как чат.
-
-2. **One prompt identity**  
-   Один и тот же сценарий должен иметь одну логическую identity независимо от profile.  
-   Пример: `commit` остаётся `commit`, а не превращается в `commit-home` и `commit-work`.
-
-3. **Global first, project override when needed**  
-   Общие сценарии живут в global library.  
-   Project prompt создаётся только если он реально зависит от конкретного репозитория.
-
-4. **Review before apply**  
-   Всё, что меняет код, должно идти через reviewable surface.
-
-5. **Git-tracked prompts**  
-   Prompts должны жить в git и быть читаемыми как обычные markdown-файлы.
-
----
+1. **Prompt-first UX.** AI в редакторе выполняет prompts и workflows.
+2. **One prompt identity.** Один сценарий сохраняет имя при смене профиля:
+   `commit`, а не `commit-home` и `commit-work`.
+3. **Global first, project override when needed.** Общие сценарии хранятся глобально.
+   Проектный вариант нужен только для локальных требований.
+4. **Review before apply.** Изменения кода проходят через интерфейс проверки.
+5. **Git-tracked prompts.** Храни prompts в Git как Markdown-файлы.
 
 ## Storage model
 
-### Global prompts
-Хранятся в:
-
-```text
-~/.dotfiles/llm/prompts
-```
-
-Назначение:
-- reusable daily workflows
-- prompts общего назначения
-- stable prompt pack для всех проектов
-
-### Project prompts
-Хранятся в:
-
-```text
-<repo>/.prompts
-```
-
-Назначение:
-- project-specific test prompts
-- project-specific refactor prompts
-- prompts, завязанные на локальные соглашения проекта
-
----
+| Библиотека | Путь | Что хранить |
+| --- | --- | --- |
+| Общая | `~/.dotfiles/llm/prompts` | Повседневные сценарии, пригодные для разных проектов |
+| Проектная | `<repo>/.prompts` | Тесты, рефакторинг и другие сценарии с локальными соглашениями |
 
 ## Prompt precedence
 
-Если существует и global, и project prompt для одного и того же logical purpose:
+Для одного назначения:
 
-1. используется **project prompt**
-2. если project prompt отсутствует — используется **global prompt**
-3. prompt не должен silently fallback на другой semantic prompt
-
----
+1. Используй проектный prompt, если он существует.
+2. Иначе используй общий prompt.
+3. Не подменяй отсутствующий prompt другим по смыслу без уведомления.
 
 ## Prompt taxonomy
 
 ### Operational prompts
-Стабильные повседневные сценарии, которые сейчас реально есть в `prompts/`:
 
-- `commit` (`commit.md` + `commit.lua`)
-- `branch-name` (`branch-name.md`)
-- `branch-from-diff` (`branch-from-diff.md` + `branch.lua`)
-- `explain` (`explain.md`)
-- `fix` (`fix.md`)
-- `lsp` (`lsp.md` + `lsp.lua`)
-- `review` (`review.md`, chat)
-- `refactor` (`refactor.md`, inline + `placement: replace`)
-- `docstring` (`docstring.md`)
-- `unit-tests` (`unit-tests.md`)
-- `inline-prompt` (`inline-prompt.md`)
-- `code-workflow` (`code-workflow.md`, `interaction: workflow`)
+Текущая общая библиотека:
+
+| Prompt | Файлы и выполнение |
+| --- | --- |
+| `commit` | `commit.md` + `commit.lua` |
+| `branch-name` | `branch-name.md` |
+| `branch-from-diff` | `branch-from-diff.md` + `branch.lua` |
+| `explain` | `explain.md` |
+| `fix` | `fix.md` |
+| `lsp` | `lsp.md` + `lsp.lua` |
+| `review` | `review.md`, chat |
+| `refactor` | `refactor.md`, inline, `placement: replace` |
+| `docstring` | `docstring.md` |
+| `unit-tests` | `unit-tests.md` |
+| `inline-prompt` | `inline-prompt.md` |
+| `code-workflow` | `code-workflow.md`, `interaction: workflow` |
 
 ### Project prompts
-Специализации под конкретный репозиторий:
 
-- `tests-python-project`
-- `refactor-clean-architecture`
-- `docstring-google-style`
-- `commit-message-project-convention`
+Проектный prompt специализирует категорию, но не заменяет ее.
+Примеры назначений:
 
-Project prompt не заменяет category, а специализирует её.
-
----
+- `tests-python-project`;
+- `refactor-clean-architecture`;
+- `docstring-google-style`;
+- `commit-message-project-convention`.
 
 ## Prompt vs repo-rules
 
-### Prompt
-Prompt — это действие.
+| Слой | Вопрос | Примеры |
+| --- | --- | --- |
+| Prompt | Что сделать? | Объяснить код, написать commit message, предложить имя, создать тесты |
+| Repo-rule | По каким постоянным правилам? | Стиль docstrings, структура тестов, архитектурные ограничения, запрещенные приемы |
 
-Примеры:
-- explain this code
-- generate commit message
-- suggest better variable name
-- generate tests
-
-### Repo-rule
-Repo-rule — это постоянный контекст проекта.
-
-Примеры:
-- preferred docstring style
-- preferred test structure
-- architecture constraints
-- anti-patterns to avoid
-
-### Rule
-Prompts и repo-rules нельзя смешивать в один слой.
-
-- prompt отвечает на вопрос **"что сделать?"**
-- repo-rule отвечает на вопрос **"по каким постоянным правилам это делать?"**
-
----
+Не смешивай эти слои.
 
 ## Metadata contract
 
-Каждый prompt — это markdown-файл нативного формата CodeCompanion: YAML frontmatter +
-тело с ролями `## system` / `## user`. Загрузчик
-`codecompanion/prompt_library/markdown.lua` читает frontmatter и требует как минимум
-`name` и `interaction` (иначе prompt игнорируется с предупреждением).
+Формат CodeCompanion: YAML frontmatter и секции ролей `## system` / `## user`.
+Загрузчик `codecompanion/prompt_library/markdown.lua` проверяет `name` и `interaction`.
+При нехватке обязательных данных prompt игнорируется с предупреждением.
 
 ### Frontmatter fields
 
-- `name` — отображаемое имя в action palette; единственное обязательное поле идентификации.
-  Если не задано, CodeCompanion берёт имя файла, но мы всегда задаём `name` явно
-- `description` — короткое описание; видно в палитре и помогает понять назначение
-- `interaction` — UX-поверхность выполнения: `chat | inline | workflow`
-- `opts` — поведение prompt’а:
-  - `alias` — короткое имя для slash-команды и палитры (`commit`, `branch`, `explain`)
-  - `is_slash_cmd` — регистрировать ли как `/alias` slash-команду
-  - `auto_submit` — отправлять ли запрос сразу, без ручного редактирования
-  - `modes` — режимы, в которых prompt доступен, например `[v]` (visual)
-  - `placement` — для `inline`: куда писать ответ (`replace | new | add | before | chat`)
-  - `user_prompt` — запросить ввод у пользователя (`true`) или строка-подсказка
-  - `ignore_system_prompt` — не подмешивать глобальный system prompt адаптера
-  - `stop_context_insertion` — не автодобавлять контекст буфера
-  - `is_workflow` — пометить prompt как multi-turn workflow
-- `tools` — доступные tools (`none`, если не нужны)
-- `mcp_servers` — доступные MCP-серверы (`none`, если не нужны)
+| Поле | Назначение |
+| --- | --- |
+| `name` | Имя в action palette. Всегда задавай явно. Загрузчик также может взять имя файла. |
+| `description` | Краткое описание для палитры. |
+| `interaction` | `chat`, `inline` или `workflow`. |
+| `opts` | Параметры выполнения, перечисленные ниже. |
+| `tools` | Доступные tools; `none`, если они не нужны. |
+| `mcp_servers` | Доступные MCP-серверы; `none`, если они не нужны. |
+
+Параметры `opts`:
+
+| Параметр | Назначение |
+| --- | --- |
+| `alias` | Короткое имя команды и записи палитры: `commit`, `branch`, `explain`. |
+| `is_slash_cmd` | Зарегистрировать `/alias`. |
+| `auto_submit` | Отправить запрос без ручного редактирования. |
+| `modes` | Режимы доступности, например `[v]` для visual. |
+| `placement` | Куда поместить inline-ответ: `replace`, `new`, `add`, `before`, `chat`. |
+| `user_prompt` | Запросить ввод: `true` или строка-подсказка. |
+| `ignore_system_prompt` | Не добавлять общий system prompt адаптера. |
+| `stop_context_insertion` | Не добавлять контекст буфера автоматически. |
+| `is_workflow` | Пометить сценарий из нескольких ходов. |
 
 ### Body and variables
 
-- Тело состоит из секций `## system` и `## user` (роли чата CodeCompanion).
-- Переменные `${...}` подставляются при выполнении:
-  - `${context.*}` — встроенный контекст CodeCompanion (`code`, `filetype`, `bufnr`,
-    `start_line`, `end_line` и т.д.)
-  - `${ns.fn}` — значение из соседнего резолвера `ns.lua` (по namespace, не по имени
-    `.md`). Файл `ns.lua` возвращает таблицу функций; например `${commit.input}` →
-    `commit.lua`, `${branch.status}` → `branch.lua`, `${lsp.diagnostics}` → `lsp.lua`.
+- Роли чата задаются заголовками `## system` и `## user`.
+- `${context.*}` подставляет контекст CodeCompanion: `code`, `filetype`, `bufnr`,
+  `start_line`, `end_line` и другие поля.
+- `${ns.fn}` вызывает функцию из соседнего `ns.lua`. Namespace задает имя Lua-файла,
+  а не имя `.md`. Lua-файл возвращает таблицу функций.
 
----
+| Переменная | Резолвер |
+| --- | --- |
+| `${commit.input}` | `commit.lua` |
+| `${branch.status}` | `branch.lua` |
+| `${lsp.diagnostics}` | `lsp.lua` |
 
 ## Metadata example
 
-Реальный frontmatter из `prompts/commit.md`:
+Frontmatter из `prompts/commit.md`:
 
 ```yaml
 ---
@@ -202,178 +146,113 @@ mcp_servers: none
 ---
 ```
 
----
-
 ## Planned / not yet implemented
 
-Поля ниже описывались в ранних версиях этой политики, но **не используются**
-загрузчиком CodeCompanion и отсутствуют в реальных промптах. Оставлены как ориентир на
-будущее; вводить их в frontmatter имеет смысл только вместе с кодом, который их читает.
+Эти поля были предложены ранее. Загрузчик их не использует; в текущих prompts их нет.
+Добавляй поле только вместе с кодом, который его читает.
 
-- `kind` — тип сценария (`ask | explain | refactor | tests | commit | ...`) для классификации
-- `scope` — `global | project` для разделения общих и проектных промптов
-- `requires` — требуемый входной контекст (`selection | diff | staged_git | ...`) для валидации
-- `profiles` — допустимые профили (`home_local | work_proxy | both`)
-- `review_mode` — режим review результата (`none | diff | replace`)
-
-Сейчас эти аспекты выражаются иначе: `scope` — расположением файла (global vs `<repo>/.prompts`),
-входной контекст — переменными `${...}`, профиль-независимость — самим устройством адаптеров,
-а review — поведением `interaction`/`placement` (см. Execution rules).
-
----
+| Поле | Предложенное значение | Чем выражено сейчас |
+| --- | --- | --- |
+| `kind` | `ask`, `explain`, `refactor`, `tests`, `commit`, ... | Назначением prompt |
+| `scope` | `global`, `project` | Расположением файла |
+| `requires` | `selection`, `diff`, `staged_git`, ... | Переменными `${...}` |
+| `profiles` | `home_local`, `work_proxy`, `both` | Общей библиотекой и адаптерами |
+| `review_mode` | `none`, `diff`, `replace` | `interaction` и `placement` |
 
 ## Naming rules
 
-### File names
-Использовать короткие, предсказуемые имена в kebab-case.
-
-Примеры (реальные файлы):
-- `commit.md`
-- `branch-name.md`
-- `branch-from-diff.md`
-- `docstring.md`
-- `explain.md`
-- `unit-tests.md`
-
-### Prompt names
-Frontmatter `name` (отображаемое имя в палитре) должен:
-- быть стабильным
-- быть уникальным в пределах библиотеки
-- совпадать по смыслу с файлом и с `opts.alias`
-
----
+- Имя файла: короткое, стабильное, kebab-case.
+- Примеры: `commit.md`, `branch-name.md`, `branch-from-diff.md`, `docstring.md`,
+  `explain.md`, `unit-tests.md`.
+- Frontmatter `name`: стабильное и уникальное в библиотеке.
+- Согласуй смысл `name`, имени файла и `opts.alias`.
 
 ## Authoring rules
 
-### Global prompt создавать, если
-- сценарий полезен в большинстве проектов
-- prompt не зависит от локальных правил конкретного репозитория
-- prompt можно переиспользовать без project context
+| Создавать | Условия |
+| --- | --- |
+| Общий prompt | Полезен большинству проектов. Не требует локальных правил или проектного контекста. |
+| Проектный prompt | Зависит от локальных требований к тестам, архитектуре или стилю. Нужен только одному репозиторию. |
 
-### Project prompt создавать, если
-- сценарий зависит от тестовых/архитектурных/стилистических требований проекта
-- есть локальные ограничения, которые нельзя зашивать в global prompt
-- prompt имеет смысл только внутри одного репозитория
-
-### Не создавать отдельный prompt, если
-- различие только в модели или backend
-- различие только в home/work profile
-- различие можно решить metadata или входным контекстом
-
----
+Не создавай отдельный prompt из-за смены модели, backend или home/work profile.
+Если различие выражается метаданными или входным контекстом, используй их.
 
 ## Execution rules
 
-Безопасность определяется связкой `interaction` + `opts.placement`, а не отдельным полем
-`review_mode`.
+Безопасность определяется `interaction` и `opts.placement`.
+Отдельного рабочего поля `review_mode` нет.
 
 ### Chat prompts (non-destructive)
-`interaction: chat` пишет ответ в chat-буфер и ничего не меняет в коде. Здесь `auto_submit: true`
-безопасен:
 
-- `commit` (`commit.md`)
-- `branch-name`, `branch-from-diff`
-- `explain`
-- `fix`
-- `lsp`
-- `review`
+`interaction: chat` пишет ответ в чат-буфер и не меняет код.
+Для таких prompts допустим `auto_submit: true`:
+
+- `commit`;
+- `branch-name`, `branch-from-diff`;
+- `explain`, `fix`, `lsp`, `review`.
 
 ### Inline prompts (через reviewable surface)
-`interaction: inline` управляется `opts.placement`:
 
-- `placement: replace` (`docstring.md`, `refactor.md`) перезаписывает выделение, но при
-  `display.diff.enabled` (включено по умолчанию) CodeCompanion открывает diff-UI с
-  accept/reject. Diff-UI и есть reviewable surface: применение требует явного accept.
-  `docstring` использует `auto_submit: true`; `refactor` — `auto_submit: false`, чтобы
-  запрос можно было отредактировать перед отправкой.
-- `placement: new` (`unit-tests.md`) пишет результат в новый буфер и не трогает
-  существующий код — неразрушающе по построению.
+| Placement | Текущие prompts | Проверка и применение |
+| --- | --- | --- |
+| `replace` | `docstring.md`, `refactor.md` | Заменяет выделение через diff-UI с accept/reject при `display.diff.enabled`. Этот режим включен по умолчанию; требуется явный accept. |
+| `new` | `unit-tests.md` | Создает новый буфер. Существующий код не меняется. |
+
+- `docstring`: `auto_submit: true`.
+- `refactor`: `auto_submit: false`, чтобы отредактировать запрос перед отправкой.
 
 ### Safety rule
-Inline-prompt не должен молча перезаписывать существующий код. Для destructive placement
-(`replace`) полагаемся на diff-UI CodeCompanion (accept/reject); отключать `display.diff`
-для таких промптов нельзя. Additive placement (`new`, `add`, `before`) допустим без diff,
-так как не уничтожает существующий код.
 
----
+- Не допускай молчаливой перезаписи кода inline-prompt.
+- Для `replace` сохраняй включенным `display.diff`: применение требует accept/reject.
+- `new`, `add` и `before` допустимы без diff, поскольку не уничтожают существующий код.
 
 ## Profile rules
 
-### Shared prompt library
-Prompt library общая для `home_local` и `work_proxy`.
+Библиотека общая для `home_local` и `work_proxy`.
+Profile выбирает:
 
-### Profile responsibility
-Profile влияет на:
-- backend execution
-- auth/env requirements
-- model selection
-- latency/capability expectations
+- backend выполнения;
+- требования auth/env;
+- модель;
+- ожидаемые задержки и возможности.
 
-Profile **не влияет** на logical identity prompt’а.
-
----
+Profile не меняет логическое назначение или имя prompt.
 
 ## Current prompt pack
 
-### Global (реально существуют)
-- `commit`
-- `branch-name`
-- `branch-from-diff`
-- `explain`
-- `fix`
-- `lsp`
-- `review`
-- `refactor`
-- `docstring`
-- `unit-tests`
-- `inline-prompt`
-- `code-workflow`
+Текущие общие prompts перечислены в [Prompt taxonomy](#prompt-taxonomy).
 
-### Planned (пока нет)
-- `ask-selected`
-- `better-name`
+Пока не реализованы:
 
-### Project (пока нет, создавать только при реальной необходимости)
-- `generate-tests`
-- `project-refactor`
-- `project-docstring`
-- `project-commit-style`
+- общие: `ask-selected`, `better-name`;
+- проектные: `generate-tests`, `project-refactor`, `project-docstring`,
+  `project-commit-style`.
 
----
+Создавай проектные варианты только при подтвержденной необходимости.
 
 ## Review checklist for new prompt
 
-Перед добавлением нового prompt проверь:
-
-- это новый сценарий, а не вариант существующего
-- prompt действительно нужен как global или как project
-- frontmatter заполнен: есть `name` и `interaction`, при необходимости `opts`
-- имя файла короткое, стабильное, в kebab-case
-- destructive inline-prompt использует `placement: replace` поверх diff-UI, а не молчаливую запись
-- prompt не дублирует repo-rules
-- prompt не split’ится на home/work без необходимости
-
----
+- [ ] Сценарий отличается от существующих.
+- [ ] Выбрана общая или проектная библиотека.
+- [ ] Заданы `name`, `interaction` и нужные `opts`.
+- [ ] Имя файла короткое, стабильное и в kebab-case.
+- [ ] Inline `replace` использует diff-UI, без молчаливой записи.
+- [ ] Prompt не дублирует repo-rules.
+- [ ] Нет лишнего разделения на home/work.
 
 ## Non-goals
 
-Этот документ сейчас не покрывает:
-- repo-rules autoload
-- prompt linting
-- prompt analytics
-- dynamic model discovery
-- shared sync beyond git
-- automatic prompt templating
+Политика не описывает:
 
----
+- автозагрузку repo-rules;
+- linting и аналитику prompts;
+- dynamic model discovery;
+- синхронизацию помимо Git;
+- автоматические шаблоны prompts.
 
 ## Change policy
 
-Изменения в `PROMPT_POLICY.md` делать только когда меняется:
-- taxonomy
-- metadata contract
-- storage model
-- precedence rules
-- execution rules
-
-Тексты конкретных prompts менять без обновления policy можно, если они не нарушают этот документ.
+Обновляй `PROMPT_POLICY.md` при изменении taxonomy, контракта метаданных,
+хранения, precedence или выполнения.
+Текст отдельного prompt можно менять без правки политики, если ее правила сохранены.

@@ -1,18 +1,23 @@
 # Neovim Headless AI Jobs Implementation Plan
 
+План от 2026-09-06. Чекбоксы и примеры ниже не подтверждают текущее состояние.
+Рабочие команды и ограничения описаны в [Neovim AI](../../nvim/AI.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development
 > (recommended) or executing-plans to implement this plan task-by-task. Steps use
 > checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** запускать Codex и Claude как фоновые задачи из Neovim, продолжать
-редактирование в основном checkout и открывать статус или результат без
-превращения Neovim в agent harness.
+**Цель:** запускать Codex и Claude в фоне из Neovim. Основной checkout остается
+доступен для редактирования. Статус и результат открываются из редактора.
 
-**Architecture:** Neovim владеет только dispatch, локальным job registry,
-status/open/cancel UI и scratch-буферами. Перед каждым запуском он создает
-отдельный worktree через существующий canonical wrapper. Codex работает как
-асинхронный `codex exec`, Claude делегирует lifecycle нативному `claude --bg`;
-никакие изменения не выполняются в основном checkout.
+**Границы архитектуры:**
+
+- Neovim запускает задачи, хранит локальный реестр и показывает status/open/cancel UI.
+- Результаты отображаются в scratch-буферах.
+- Перед запуском общий wrapper создает отдельный worktree.
+- Codex выполняется через асинхронный `codex exec`.
+- Claude управляет задачей через нативный `claude --bg`.
+- Основной checkout не изменяется. Neovim не заменяет agent harness.
 
 **Tech Stack:** Neovim 0.12 `vim.system()`, Lua, AstroNvim/astrocore,
 Codex CLI 0.153+, Claude Code 2.1+, canonical `git-worktree` wrapper, plain

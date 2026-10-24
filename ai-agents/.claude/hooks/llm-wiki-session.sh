@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-# Session-capture hook for the wiki@llm-wiki plugin. Records redacted Claude Code
-# session events into <HUB>/.sessions/ (HUB comes from ~/.config/llm-wiki/config.json)
-# and lets the helper inject rehydration context on SessionStart/UserPromptSubmit.
+# wiki@llm-wiki hook: record redacted events in <HUB>/.sessions/.
+# HUB comes from ~/.config/llm-wiki/config.json.
+# SessionStart/UserPromptSubmit may inject rehydration context.
 #
-# Plugin 0.25.0 ships the session helper only in its Codex build, so this runs the
-# highest installed version from either plugin cache (the Claude cache wins a tie).
-# The events wired in settings.json mirror the plugin's own Codex hooks.json; drop
-# this wiring once the Claude build ships hooks itself, or every event is captured
-# twice. Capture can be switched off without touching settings.json:
-# `python3 <helper> disable` (honored via --if-enabled); per-prompt rehydration is
-# the `rehydrate.user_prompt` key in <HUB>/.sessions/config.json.
+# Plugin 0.25.0 ships the helper only in its Codex build.
+# Use the highest cached version; Claude wins a version tie.
+# settings.json mirrors the plugin's Codex hooks.json. Remove this wiring when
+# Claude ships its own hooks, to avoid duplicate capture.
+# Disable capture: `python3 <helper> disable` (honored via --if-enabled).
+# Per-prompt rehydration: rehydrate.user_prompt in <HUB>/.sessions/config.json.
 #
 # Contract: hook JSON on stdin, optional additionalContext JSON on stdout. No helper
 # installed means no capture (exit 0); helper errors exit 1, which never blocks work.

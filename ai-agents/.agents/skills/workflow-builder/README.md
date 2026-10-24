@@ -1,6 +1,8 @@
 # workflow-builder (skill)
 
-Intake-first authoring of deterministic multi-agent **workflow `.js` files** for Claude Code's built-in Workflow tool (`/workflows`; runs on explicit user opt-in, e.g. `ultracode`). See the plugin root [README](../../README.md) for the full overview and attribution.
+Create deterministic multi-agent `.js` workflows for Claude Code.
+Start with intake. Run only with explicit user opt-in, such as `ultracode`.
+See [the skill instructions](SKILL.md) for authoring and approval rules.
 
 ## Tools (`scripts/`)
 

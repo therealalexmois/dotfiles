@@ -18,7 +18,16 @@ Use this skill in one of two modes:
 - **Relational schema or ERD**: turn requirements into entities, relationships, constraints, indexes, and an ERD. Follow the process in [references/relational-schema-design.md](references/relational-schema-design.md); [references/full-schema-examples.md](references/full-schema-examples.md) holds a complete worked example.
 - **Cross-engine decision**: choose an engine or physical design that needs trade-offs across engines. State the workload, constraints, and candidate engines before recommending a design.
 
-Do not use the examples in this skill as a production schema, executable migration plan, or reason to take over a narrower task. Route ordinary SQL writing and query optimization to `sql-database-assistant`, PostgreSQL-specific work to `postgres-engineer`, and a high-risk or multi-step migration to `migration-architect`. The sections on queries and migrations below are reference material only when they inform the design.
+Treat examples as design reference, not production schemas or executable migrations.
+Use query and migration sections only when they inform the design.
+
+| Task | Route |
+| --- | --- |
+| SQL writing or ordinary query optimization | `sql-database-assistant` |
+| PostgreSQL-specific work | `postgres-engineer` |
+| High-risk or multi-step migration | `migration-architect` |
+
+Do not expand a narrower task into database design.
 
 ## Bundled Reference Coverage
 

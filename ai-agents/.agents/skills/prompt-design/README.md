@@ -2,9 +2,20 @@
 
 ## What it is
 
-A staff-level prompt-engineering skill that builds a new prompt from a brief: it classifies the task, selects only justified modules, writes a self-contained final prompt, and supplies a testing checklist. It resists trend-chasing and over-engineering.
+Build a reusable prompt from a brief:
 
-On explicit request it switches to a review mode: it critiques a supplied prompt with findings tied to verbatim quotes and concrete failure mechanisms, returns a verdict (PASS / PARTIAL / FAIL / BLOCKED), an improved version and a changelog, without breaking the prompt's purpose.
+1. Classify the task.
+2. Select modules justified by the brief.
+3. Write a self-contained prompt.
+4. Provide a testing checklist.
+
+Exclude techniques and complexity that the task does not need.
+
+For an explicit review request, assess the supplied prompt without changing its purpose.
+Tie findings to verbatim quotes and concrete failure mechanisms.
+Return a verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`.
+For a completed review, include an improved version and changelog.
+For `BLOCKED`, return only the verdict, summary, and missing inputs.
 
 ## When to use
 

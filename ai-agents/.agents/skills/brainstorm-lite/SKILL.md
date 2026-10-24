@@ -35,7 +35,11 @@ Do not use this skill for:
 
 For these, use `brainstorming` and its proportionate design workflow.
 
-`brainstorming` also has its own internal "Bounded" path for well-scoped changes to existing code, with a hard approval gate before implementation. Use this skill (`brainstorm-lite`) instead when the task is already authorized and a formal stop-and-wait-for-yes gate is not needed - that is the deciding difference, not the size of the change alone.
+`brainstorming` has a "Bounded" path for scoped changes to existing code.
+It requires approval before implementation.
+
+Use `brainstorm-lite` when the task is already authorized and needs no formal approval gate.
+Choose by authorization needs, not size alone.
 
 ## Workflow
 

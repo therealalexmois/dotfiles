@@ -35,10 +35,9 @@ diag-lang() {
 }
 
 # --- Cached tool init ---
-# Каждый `eval "$(<tool> init)"` это отдельный exec, а на рабочем Mac каждый exec
-# облагается налогом EDR (~0.1-0.4с, см. memory slow-exec-edr-startup). Вывод init
-# стабилен и меняется только при обновлении бинарника, поэтому кэшируем его в файл и
-# регенерируем лишь когда бинарник новее кэша. На тёплом старте остаётся `source`, без exec.
+# На рабочем Mac EDR добавлял ~0.1-0.4 с к каждому exec (slow-exec-edr-startup).
+# Кешируем вывод init. Обновляем кеш, если он пуст или бинарник новее него.
+# Повторный запуск читает кеш через source без запуска команды init.
 _eval_cached() {
   local name=$1 bin=$2; shift 2
   local bin_path cache="${ZSH_CACHE_DIR:-$ZSH/cache}/init-$name.zsh"
@@ -93,18 +92,16 @@ export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS
 export MERMAID_OUTPUT_DIR="$HOME/Visuals/figures"
 
 # --- Машинно-локальный конфиг ---
-# Настройки и секреты, которые нужны только на конкретной машине (например рабочие) и не
-# должны попадать в репозиторий. Лежит в XDG_DATA_HOME, а не в XDG_CONFIG_HOME: последний
-# указывает внутрь ~/.dotfiles, то есть в git. На личной машине файла просто нет.
+# Локальные настройки и секреты храним в XDG_DATA_HOME.
+# XDG_CONFIG_HOME указывает внутрь Git-репозитория ~/.dotfiles.
+# На личной машине этот файл может отсутствовать.
 [[ -r "$XDG_DATA_HOME/zsh/local.zsh" ]] && source "$XDG_DATA_HOME/zsh/local.zsh"
 
-# --- tmux: не тащить в сервер маркеры сессии Claude Code ---
-# Claude Code выставляет каждому дочернему процессу CLAUDE_CODE_CHILD_SESSION и компанию.
-# Если tmux server стартует из такого процесса, он забирает их в свой global environment и
-# раздает всем будущим панелям, пока живет, а живет он неделями. Любой claude, запущенный в
-# такой панели, считает себя вложенной сессией и молча перестает сохранять транскрипт.
-# Чистим окружение на входе: заражение случается только при старте сервера, а лечится
-# уже лишь его перезапуском.
+# --- tmux: удалить маркеры сессии Claude Code перед запуском сервера ---
+# Сервер наследует CLAUDE_CODE_CHILD_SESSION и другие маркеры родителя.
+# Новые панели получают их из global environment. Claude в такой панели может
+# считать сессию вложенной и не сохранять транскрипт.
+# Удаляем маркеры при запуске; уже запущенный сервер требует перезапуска.
 tmux() {
   env -u CLAUDECODE -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID \
       -u CLAUDE_PID -u AI_AGENT -u CLAUDE_EFFORT -u CLAUDE_CODE_ENTRYPOINT \

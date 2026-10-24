@@ -83,7 +83,14 @@ metadata:
 Использовать только по явному запросу найти отсутствующую или слабую обработку отказов.
 
 1. Прочитать инструкции репозитория и определить язык, framework, entrypoints и границы компонентов.
-2. Проверить зоны риска: startup и configuration, authorization и policy gates, feature flags, remote clients, database и transactions, cache и defaults, queues и workers, orchestration и cancellation, exception middleware, health checks, deploy и preflight.
+2. Проверить зоны риска:
+   - startup и configuration;
+   - authorization, policy gates и feature flags;
+   - remote clients, database и transactions;
+   - cache и defaults;
+   - queues, workers, orchestration и cancellation;
+   - exception middleware и health checks;
+   - deploy и preflight.
 3. Использовать `rg` и файловую структуру для поиска error handling, timeout, retry, fallback, rollback, rate limiting и resource isolation.
 4. Исключить generated, vendor, build и dependency directories.
 5. Для каждого кандидата прочитать полный локальный call path до подтверждения вывода.
@@ -166,4 +173,8 @@ metadata:
 - Указать только вопросы и пробелы, способные изменить вывод.
 ```
 
-Не добавлять пустые секции. Если findings отсутствуют, прямо указать, что в проверенном scope проблем не найдено, и перечислить границы проверки. Не возвращать patch, готовый код или пошаговый implementation plan.
+Не добавлять пустые секции.
+Если findings нет, сообщить, что в проверенном scope проблем не найдено.
+Указать границы проверки.
+
+Не возвращать patch, готовый код или пошаговый implementation plan.

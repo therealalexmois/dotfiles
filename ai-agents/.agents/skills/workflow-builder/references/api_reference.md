@@ -46,15 +46,41 @@ agent(prompt, {
 })
 ```
 
-**Model resolution:** omitting `model` (the default) inherits the session's main-loop model — almost always correct. Set it only when you're highly confident a specific tier fits the stage; `haiku`/`sonnet`/`opus`/`fable` resolve to that family's current default, and a full model ID passes through unchanged. The same default-to-omit rule applies to `effort`: it inherits the session's reasoning effort unless a stage is cheap/mechanical (use `low`) or is a hard verify/judge pass that warrants more (`high`/`xhigh`/`max`).
+### Model and effort inheritance
 
-**Resume cache key** is the full `(prompt, opts)` pair — an identical call returns its cached result instantly on resume; changing anything in `opts` (including `schema`, `model`, `effort`, `isolation`, or `agentType`) counts as a new call and re-runs it live.
+- Omit `model` by default. It inherits the session's main-loop model.
+- Override it only when a specific tier fits the stage.
+- `haiku`, `sonnet`, `opus`, and `fable` resolve to current family defaults.
+- A full model ID passes through unchanged.
+- Omit `effort` to inherit session reasoning effort.
+- Use `low` for a cheap mechanical stage, or `high`/`xhigh`/`max` for a demanding
+  verification or judgment stage when justified.
+
+### Resume cache key
+
+The cache key is the full `(prompt, opts)` pair.
+An identical call returns its cached result on resume.
+Changing any option makes it a new live call, including `schema`, `model`,
+`effort`, `isolation`, or `agentType`.
 
 ## 4. `pipeline()` vs `parallel()`
 
-**`pipeline(items, stage1, stage2, …)`** — each item flows through every stage independently; there is no barrier between stages, so stage 2 starts for an item the moment stage 1 finishes for *that* item. Stage callbacks receive `(prevResult, originalItem, index)`. Wall-clock time ≈ the slowest single item's full chain, not the sum of slowest-per-stage. **Default choice for multi-stage work.**
+| Function | Flow | Use when |
+| --- | --- | --- |
+| `pipeline(items, stage1, stage2, …)` | Each item advances independently | Default for multi-stage work |
+| `parallel(thunks)` | Wait for all concurrent results | A later step needs the full result set |
 
-**`parallel(thunks)`** — runs an array of `() => Promise` thunks concurrently and waits for all (a barrier). Use only when the next step genuinely needs the entire prior result set — dedup, merge, or a count-based exit. Requires thunks, not bare promises: `parallel([() => agent(a), () => agent(b)])`.
+Pipeline callbacks receive `(prevResult, originalItem, index)`.
+Stage 2 starts for an item as soon as its stage 1 finishes.
+Wall time is approximately the slowest item's full chain, rather than the sum
+of the slowest item in each stage.
+
+Use a parallel barrier for deduplication, merging, or a count-based exit.
+Pass thunks rather than bare promises:
+
+```js
+parallel([() => agent(a), () => agent(b)])
+```
 
 ## 5. `budget` object
 
@@ -94,9 +120,24 @@ Throws `WorkflowBudgetExceededError` once `spent()` reaches `total`. Use `budget
 
 ## 9. Enabling the feature
 
-The Workflow tool needs no environment variable or setup step — it ships built in. What gates it is explicit user opt-in: the word `ultracode` in the request, a session with ultracode already on, a direct ask to run a workflow or use multi-agent orchestration, or a skill/slash command whose instructions call it. Without one of these, the right move is to describe what a workflow could do and ask, not to call it.
+No environment variable enables Workflow. It is built in, but requires opt-in:
 
-Save workflow files under `.claude/workflows/` in the project, then browse, launch, and monitor them with the `/workflows` slash command. In that view: `↑↓` selects an agent, `p` pauses/resumes the run, `x` stops the whole workflow, `esc` goes back, `s` saves the script as a named workflow.
+- `ultracode` in the request;
+- an ultracode-enabled session;
+- a direct request to run a workflow or use multi-agent orchestration;
+- a skill/slash command whose instructions call the tool.
+
+Without opt-in, describe the proposed workflow and ask before running it.
+
+Save scripts under `.claude/workflows/`. Open `/workflows` to browse and run them.
+
+| Key | Action |
+| --- | --- |
+| Up / Down | Select an agent |
+| `p` | Pause or resume |
+| `x` | Stop the workflow |
+| Escape | Go back |
+| `s` | Save as a named workflow |
 
 ---
 

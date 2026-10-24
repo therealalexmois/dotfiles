@@ -191,11 +191,12 @@ context.
 | `references/slo-discipline.md` | Defining one SLO, computing its error budget and burn-rate alerts, reviewing SLO documents, or running the quarterly SLO review |
 | `references/slo_principles.md`, `references/sli_design.md`, `references/error_budget.md`, `references/composition.md` | The SLO theory behind `slo-discipline.md`: SLI vs SLO vs SLA, SLI types, budget math, and how SLOs feed rollouts and chaos experiments |
 
-Capacity planning sits here rather than in a profiling skill because the inputs are the
-same metrics this skill already instruments: the forecast is only as good as the retention
-and cardinality decisions made in Cost Optimization above. Its linear-projection example
-pulls in pandas, numpy, and scikit-learn for a fit over twelve points - the PromQL trend
-queries and the resource formulas are the parts worth reusing.
+Capacity planning uses the metrics instrumented by this skill.
+Retention and cardinality choices limit the forecast.
+
+- Reuse the PromQL trend queries and resource formulas where they fit.
+- The linear-projection example fits twelve points with pandas, numpy, and
+  scikit-learn. Treat it as an example, not a required dependency set.
 
 ## Scripts Overview
 

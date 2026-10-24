@@ -104,7 +104,10 @@ Extract the target symbol, optional target file, direction, and max depth. If th
 
 ### 2. Locate the Target
 
-1. Find the definition. If the file is known, Read it. Otherwise use Grep for the definition (for example `func .*GetItem` in Go, `def get_item` in Python, `GetItem(` for a method) and Glob to narrow candidate files.
+1. Find the definition:
+   - If the file is known, Read it.
+   - Otherwise, narrow files with Glob and search definitions with Grep.
+   - Example patterns: Go `func .*GetItem`, Python `def get_item`, or method `GetItem(`.
 2. Identify the signature and, for methods, the receiver or owning type.
 3. Note whether the symbol satisfies an interface or abstract method; record this for interface resolution.
 

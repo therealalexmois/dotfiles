@@ -83,12 +83,13 @@ Post the release summary by calling the messenger API with bot ID `bot_8f31a` to
 channel `C0193ALERTS`, in thread `1718000000.001900`.
 ```
 
-**Problem.** The bot ID and channel ID are physical identifiers tied to one
-workspace; they change when the bot is recreated or the channel is renamed/rotated.
-The thread ID is even shorter-lived, it identifies one specific message and is
-meaningless on the next run. Hardcoding it means the skill posts into a stale thread
-or fails outright. Risk: Major (bot/channel IDs), and the thread ID is essentially a
-per-run value that must never be static.
+- **Problem.** The bot ID and channel ID are physical identifiers tied to one workspace; they
+  change when the bot is recreated or the channel is renamed/rotated.
+- The thread ID is even shorter-lived, it identifies one specific message and is meaningless on
+  the next run.
+- Hardcoding it means the skill posts into a stale thread or fails outright.
+- Risk: Major (bot/channel IDs), and the thread ID is essentially a per-run value that must
+  never be static.
 
 **After.**
 
@@ -113,11 +114,12 @@ Roll out the new image:
 If anything looks wrong, scale it down: `kubectl -n payments-prod scale deploy/api --replicas=0`.
 ```
 
-**Problem.** `payments-prod` is baked into commands that change and can take down a
-running service. The namespace differs per environment and per team; a second team
-copying this skill silently operates on the wrong namespace, or worse, on prod.
-Destructive commands (`set image`, `scale --replicas=0`) wired to a hardcoded prod
-namespace is a Critical finding.
+- **Problem.** `payments-prod` is baked into commands that change and can take down a running
+  service.
+- The namespace differs per environment and per team; a second team copying this skill silently
+  operates on the wrong namespace, or worse, on prod.
+- Destructive commands (`set image`, `scale --replicas=0`) wired to a hardcoded prod namespace
+  is a Critical finding.
 
 **After.**
 
@@ -164,14 +166,14 @@ Use only these Conventional Commits types:
 `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci`, `chore`.
 ```
 
-**Why this is NOT a finding.** This set is the skill's contract, the whole point of
-the skill is to enforce exactly these types. It is not environment-specific, not
-secret, and does not change when infra changes; if it changed, that would be a
-deliberate redefinition of the skill, not silent rot. Making it "configurable" would
-add a knob nobody needs and weaken the guarantee the skill exists to provide
-(KISS/YAGNI). 
+- **Why this is NOT a finding.** This set is the skill's contract, the whole point of the skill
+  is to enforce exactly these types.
+- It is not environment-specific, not secret, and does not change when infra changes; if it
+  changed, that would be a deliberate redefinition of the skill, not silent rot.
+- Making it "configurable" would add a knob nobody needs and weaken the guarantee the skill
+  exists to provide (KISS/YAGNI).
 
-Report it, if at all, only as an informational note ("intentional contract value,
-leave as-is"), never as a Major or Critical issue. The discipline of *not* flagging
-stable contract values is what keeps the audit trustworthy: an auditor that flags
-everything teaches people to ignore it.
+- Report it, if at all, only as an informational note ("intentional contract value, leave
+  as-is"), never as a Major or Critical issue.
+- The discipline of *not* flagging stable contract values is what keeps the audit trustworthy:
+  an auditor that flags everything teaches people to ignore it.

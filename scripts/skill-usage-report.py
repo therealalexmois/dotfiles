@@ -3,20 +3,12 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml"]
 # ///
-"""Считает реальные активации skills по транскриптам Claude Code и сессиям Codex.
+"""Считает вызовы skills по транскриптам Claude Code и сессиям Codex.
 
-Отчет разделяет пути вызова, потому что `disable-model-invocation` (Claude) и
-`policy.allow_implicit_invocation: false` (Codex) влияют на них по-разному:
-
-- slash: пользователь набрал `/name` в Claude или `$name` в Codex; продолжит работать;
-- named: модель вызвала скилл, потому что пользователь назвал его в тексте; сломается;
-- auto: модель выбрала скилл по description; ради этого описание держат в контексте;
-- nested, subagent: вызов из другого скилла или сабагента; сломается.
-
-Named определяется эвристически по имени скилла в тексте запроса, поэтому auto -
-оценка сверху. Claude Code удаляет транскрипты старше `cleanupPeriodDays`.
-Чтения SKILL.md в сессиях Codex внутри этого репозитория и чтения файлов, которые
-в той же сессии правились, считаются шумом: это работа над скиллом, а не его вызов.
+Разделяет явные, названные, автоматические и вложенные вызовы. Категория named
+определяется по имени в запросе, поэтому auto дает верхнюю оценку. История Claude
+ограничена cleanupPeriodDays. Чтение SKILL.md в Codex внутри этого репозитория
+или редактирование того же файла в сессии считается шумом.
 """
 
 from __future__ import annotations
@@ -63,7 +55,7 @@ VERDICT_ORDER = ("mismatch", "candidate", "candidate (named)", "check callers", 
 
 @dataclass
 class Scan:
-    """Счетчики активаций одного источника и период, который он покрывает.
+    """Счетчики вызовов одного источника за учтенный период.
 
     Attributes:
         counts: Счетчики по имени скилла и колонке из COLUMNS.
@@ -84,7 +76,7 @@ class Scan:
 
 @dataclass(frozen=True)
 class RepoSkill:
-    """Скилл из репозитория и его настройки неявного вызова.
+    """Настройки вызова скилла из репозитория.
 
     Attributes:
         name: Имя каталога скилла.
@@ -100,7 +92,7 @@ class RepoSkill:
 
 
 def mentions(text: str, name: str) -> bool:
-    """Проверяет, назван ли скилл в тексте: `name`, `/name`, `$name` или через пробелы вместо дефисов."""
+    """Ищет имя скилла, в том числе с префиксом / или $ и пробелами вместо дефисов."""
     short_name = name.rsplit(":", 1)[-1]
     variants = {short_name, short_name.replace("-", " ")}
 
@@ -128,10 +120,8 @@ def claude_prompt_text(record: dict[str, Any]) -> str | None:
 def scan_claude(root: Path, since: str) -> Scan:
     """Разбирает транскрипты Claude Code, включая сабагентов.
 
-    Вызов моделью – это tool_use `Skill`. Slash-вызов – `<command-name>` в сообщении
-    пользователя, за которым следует meta-сообщение с текстом скилла; у встроенных
-    команд вроде `/compact` его нет. Возобновленные сессии дублируют записи, поэтому
-    учет идет по id.
+    Считает tool_use Skill и команды с последующим meta-сообщением скилла.
+    Встроенные команды без такого сообщения исключает. Убирает дубли по id.
     """
     scan = Scan()
     seen: set[str] = set()
@@ -206,9 +196,8 @@ def codex_message_text(payload: dict[str, Any]) -> str:
 def scan_codex(root: Path, since: str) -> Scan:
     """Разбирает сессии Codex.
 
-    Явный вызов – блок `<skill>` в сообщении пользователя. Неявный – первое за ход
-    чтение `skills/<name>/SKILL.md` через exec. Форки сессий копируют историю,
-    поэтому учет идет по паре (метка времени, скилл).
+    Явный вызов задается блоком <skill> пользователя. Неявный - первым за ход
+    чтением skills/<name>/SKILL.md через exec. Убирает дубли скопированной истории.
     """
     scan = Scan()
     seen: set[tuple[str, str, str]] = set()
@@ -299,9 +288,8 @@ def load_repo_skills(skills_dir: Path) -> dict[str, RepoSkill]:
 def verdict(skill: RepoSkill | None, counts: Counter[str]) -> str:
     """Классифицирует скилл по правилу перевода на ручной вызов.
 
-    Кандидат – скилл без auto-активаций, который не вызывают другие скиллы и
-    сабагенты. `candidate (named)` означает, что после перевода придется набирать
-    `/name` или `$name` вместо упоминания в тексте.
+    Кандидат не имеет автоматических и вложенных вызовов. Для candidate (named)
+    переход потребует /name или $name вместо упоминания имени в тексте.
     """
     if skill is None:
         return "external"

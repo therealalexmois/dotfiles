@@ -1,28 +1,23 @@
 #!/usr/bin/env bash
-# WorktreeRemove hook. Fires when Claude Code removes a worktree at session
-# exit, when a subagent finishes, or when a background session is deleted.
-# It cannot block removal and its exit code is ignored (surfaced only with
-# --debug), so every failure here is logged instead of raised.
+# WorktreeRemove hook: clean up delegated worktrees after session removal.
+# Events include session exit, subagent completion, and background-session deletion.
+# Claude ignores the exit code except under --debug; log failures explicitly.
 #
-# Why it removes anything at all: WorktreeCreate is delegated to
-# ~/.agents/skills/git-worktree/scripts/create-worktree, which places worktrees
-# in <repo>/.worktrees/. Claude Code cleans up only the worktrees it creates
-# itself under .claude/worktrees/, so a delegated worktree survives the session
-# together with its task branch even though ExitWorktree reports removal. This
-# hook closes that gap and stays idempotent when the directory is already gone.
+# WorktreeCreate delegates to ~/.agents/skills/git-worktree/scripts/create-worktree.
+# It uses <repo>/.worktrees/, outside Claude's own .claude/worktrees/ cleanup.
+# This hook removes those worktrees and handles an already-absent directory.
 #
 # The event does not fire when the user keeps the worktree (verified against the
 # audit log on 2026-08-17), so reaching this script means removal was intended.
 #
 # stdin JSON: { worktree_path, cwd, session_id, transcript_path, ... }
 #
-# Note: cwd is the removed worktree directory and may already be gone, so do not
-# rely on filesystem access to it. Removal is deliberately non-destructive: no
-# --force, so a worktree with uncommitted work is kept, and the task branch is
-# force-deleted only when the merge is proven: a merged GitHub PR with the same
-# head SHA, or patches already in the base branch (the squash and rebase merge
-# case). Every deleted branch is logged with its SHA, so
-# `git branch <name> <sha>` restores it.
+# cwd may already be gone; do not require filesystem access to it.
+# Never force worktree removal: keep uncommitted work.
+# Force-delete a task branch only with merge proof:
+# - a merged GitHub PR with the same head SHA; or
+# - its patches already present in the base branch (squash/rebase case).
+# Log each deleted branch and SHA. Restore with `git branch <name> <sha>`.
 
 set -uo pipefail
 
