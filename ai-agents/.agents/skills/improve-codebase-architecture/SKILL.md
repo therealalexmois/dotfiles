@@ -58,7 +58,7 @@ Apply the **deletion test** to anything you suspect is shallow: would deleting i
 
 Write a self-contained HTML file to the OS temp directory so nothing lands in the repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/architecture-review-<timestamp>.html` so each run gets a fresh file. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
-The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams where a graph/flow/sequence reliably communicates the structure. Mix Mermaid with hand-crafted CSS/SVG visuals — use Mermaid when relationships are graph-shaped (call graphs, dependencies, sequences), and hand-built divs/SVG when you want something more editorial (mass diagrams, cross-sections, collapse animations). Each candidate gets a **before/after visualisation**. Be visual.
+The report's styling is **inline CSS**: copy [references/report.css](references/report.css) verbatim into the report's `<style>` and add report-specific rules after it. Do NOT load Tailwind (or any stylesheet) from a CDN – the Tailwind Play CDN builds CSS in the browser at load time, so a blocked or flaky network leaves the page unstyled. Diagrams are hand-built divs/inline SVG that need no scripts. **Mermaid via CDN** is optional, only where a graph/flow/sequence reliably communicates the structure (call graphs, dependencies, sequences); the report must stay fully readable if the Mermaid import fails. Each candidate gets a **before/after visualisation**. Be visual.
 
 For each candidate, the same template as before, but rendered as a card:
 
