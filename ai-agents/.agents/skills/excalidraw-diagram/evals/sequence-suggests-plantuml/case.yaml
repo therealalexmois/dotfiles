@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: sequence-suggests-plantuml
+expected_outcome: |
+  Распознает порядок вызовов как sequence и предлагает или строит PlantUML вместо Excalidraw; не рисует в активный файл без подтверждения нового файла.

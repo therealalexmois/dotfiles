@@ -300,6 +300,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | `spirit-deploy` | deploy (single-skill domain) |
 | `team-lead` | leading a task series through Codex and Claude executors (single-skill domain) |
 | `hypothesis` | formulating, verifying, and reporting hypotheses (single-skill domain) |
+| `excalidraw-diagram` | drawing diagrams on the ExcalidrawZ canvas via MCP (single-skill domain) |
 
 Third-party imported skills keep their upstream names and are exempt unless a provider
 prefix is needed to avoid a system-skill collision. The `obsidian-*` skills moved out of
@@ -363,6 +364,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | save a topic to study later, list, review, update, or export learning-backlog entries | `learning-backlog` | yes |
 | generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
 | create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
+| draw a diagram on the ExcalidrawZ canvas, or any `create_view` call of the excalidrawz MCP | `excalidraw-diagram` | yes |
 | changelog or release notes | `changelog-generator` | manual |
 | Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
 | set up or audit analytics tracking (GA4, GTM, events) | `analytics-tracking` | manual |
