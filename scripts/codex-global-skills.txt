@@ -88,3 +88,4 @@ xlsx
 learning-backlog
 arxiv-doc-builder
 arxiv-search
+improve-codebase-architecture
