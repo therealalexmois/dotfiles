@@ -24,7 +24,6 @@ brew "mermaid-cli"
 brew "minikube"
 brew "mise"
 brew "neovim"
-brew "nmap"
 # Pulled in as a mermaid-cli dependency; kept unlinked so it never shadows the
 # mise-managed Node. mmdc has an absolute shebang and works without the link.
 brew "node", link: false

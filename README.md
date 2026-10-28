@@ -33,7 +33,6 @@ the config (not needed just to install it), see [AGENTS.md](AGENTS.md).
 - [Web Tools](#web-tools)
 - [Documentation](#documentation)
 - [Testing tools](#testing-tools)
-- [Miscellaneous](#miscellaneous)
 - [Macos misc](#macos-misc)
 - [Content Creation](#content-creation)
 - [Improving the Launcher](#improving-the-launcher)
@@ -496,14 +495,6 @@ brew install tldr    # https://tldr.sh
 
 ```sh
 brew install wrk
-```
-
-## Miscellaneous
-
-[nmap](https://nmap.org/) – is an open source tool for network exploration and security auditing.
-
-```sh
-brew install nmap
 ```
 
 ## Macos misc
