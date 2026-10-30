@@ -38,7 +38,7 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 
 ## Python code style, docstrings, and tests
 
-When writing or editing Python code, docstrings, or tests, use the `python-code-style` skill. It is the single source of truth for generic conventions: naming, imports, type annotations, formatting, vertical spacing, Google-style docstrings (English section headers; docstring language follows the project), and all test-writing rules (structure, assertions, fixtures, test doubles, async, parameterization, typing, observability). It carries the language-agnostic principles; project `AGENTS.md`/`CLAUDE.md` and `pyproject.toml` supply the specifics (documentation language, config values, test marker policy) and override its defaults. Do not duplicate those rules here.
+When writing or editing Python code, docstrings, or tests, use the `python-code-style` skill. It is the single source of truth for generic conventions: naming, imports, type annotations, formatting, vertical spacing, Google-style docstrings (English section headers; docstring language follows the project), and all test-writing rules (structure, assertions, fixtures, test doubles, async, parameterization, typing, observability). It carries the generic principles; project `AGENTS.md`/`CLAUDE.md` and `pyproject.toml` supply the specifics (documentation language, config values, test marker policy) and override its defaults. Do not duplicate those rules here.
 
 Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
 

@@ -322,6 +322,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
 | compare Python idioms or consult worked examples, explicitly | `python-patterns` | manual |
+| plan a broad Python testing strategy, explicitly | `python-testing-patterns` | manual |
 | inspect, create, reuse, sync, or clean up Git worktrees | `git-worktree` | yes |
 | create, edit, or behaviorally evaluate a skill | `anthropic-skill-creator` | yes |
 | audit skill for security | `skill-security-auditor` | manual |

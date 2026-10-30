@@ -1,0 +1,106 @@
+[
+  {
+    "name": "new_function_in_dense_file",
+    "input": "Добавь в этот файл функцию deactivate_missing. Весь код файла написан плотно, без пустых строк внутри функций.",
+    "expected_behavior": [
+      "writes the new function in paragraphs with a blank line around compound statements and before the final return",
+      "leaves the other functions of the file unchanged"
+    ],
+    "forbidden_behavior": [
+      "copies the dense style of the surrounding code",
+      "reformats functions the task does not touch"
+    ]
+  },
+  {
+    "name": "project_rule_overrides_spacing",
+    "input": "Добавь функцию в модуль. В AGENTS.md проекта явно сказано: не использовать пустые строки внутри функций короче 10 строк.",
+    "expected_behavior": [
+      "follows the explicit project rule for functions shorter than 10 lines"
+    ],
+    "forbidden_behavior": [
+      "applies the vertical spacing section over the explicit project rule"
+    ]
+  },
+  {
+    "name": "patch_keeps_diff_small",
+    "input": "Исправь сообщение лога в одной строке длинной плотной функции sync_users.",
+    "expected_behavior": [
+      "changes the log line and applies spacing only to it and the statements directly around it",
+      "mentions a wider structural problem in the report instead of fixing it"
+    ],
+    "forbidden_behavior": [
+      "reformats the whole function",
+      "adds docstrings or annotations to untouched code"
+    ]
+  },
+  {
+    "name": "over_separation",
+    "input": "Напиши функцию load_endpoint: прочитать host и port из settings и вернуть Endpoint(host, port).",
+    "expected_behavior": [
+      "keeps the three simple statements together without blank lines"
+    ],
+    "forbidden_behavior": [
+      "puts a blank line after every statement"
+    ]
+  },
+  {
+    "name": "tooling_scope",
+    "input": "Я поправил src/app/users.py, прогони линтер и форматтер. В репозитории много старых файлов, не отформатированных ruff.",
+    "expected_behavior": [
+      "finds the project's way to run checks before running tools",
+      "limits direct ruff calls to the changed file",
+      "reports failures on unchanged lines without fixing them"
+    ],
+    "forbidden_behavior": [
+      "runs ruff format . or ruff check --fix . over the repository",
+      "installs or adds a tool to the project without a request"
+    ]
+  },
+  {
+    "name": "old_python_target",
+    "input": "Добавь функцию с необязательным параметром name. В pyproject.toml указано requires-python = \">=3.9\", модуль использует Pydantic.",
+    "expected_behavior": [
+      "checks requires-python before choosing the annotation",
+      "uses Optional[str] in the Pydantic-evaluated annotation"
+    ],
+    "forbidden_behavior": [
+      "writes str | None where Python 3.9 evaluates it at runtime"
+    ]
+  },
+  {
+    "name": "tests_load_reference",
+    "input": "Напиши pytest-тест для функции export_orders.",
+    "expected_behavior": [
+      "reads references/testing.md before writing the test",
+      "separates arrange, act, and assert with blank lines",
+      "uses a real typed object when it is enough"
+    ],
+    "forbidden_behavior": [
+      "uses mocker when the project does not depend on pytest-mock",
+      "adds a fixture for setup used by one test"
+    ]
+  },
+  {
+    "name": "review_output",
+    "input": "Отревьюй стиль этого diff на Python.",
+    "expected_behavior": [
+      "reports each finding as file:line, rule, and fix, most severe first",
+      "limits findings to changed lines",
+      "states explicitly when nothing violates the rules"
+    ],
+    "forbidden_behavior": [
+      "reports style problems on unchanged lines",
+      "rewrites the code when only a review was requested"
+    ]
+  },
+  {
+    "name": "routing_to_neighbor",
+    "input": "Спроектируй иерархию исключений для платежного сервиса.",
+    "expected_behavior": [
+      "uses python-error-handling for the exception design"
+    ],
+    "forbidden_behavior": [
+      "treats the Idioms section as a complete answer to the design question"
+    ]
+  }
+]

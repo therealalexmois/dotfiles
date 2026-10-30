@@ -1,14 +1,16 @@
 ---
 name: python-code-style
-description: Generic Python conventions - naming, imports, type annotations, formatting, vertical spacing, Google-style docstrings, and pytest test-writing rules. Use whenever writing, editing, or reviewing Python code, adding or improving docstrings, or writing, modifying, or reviewing Python tests, even if the user does not mention conventions explicitly. Project AGENTS.md/CLAUDE.md and pyproject.toml override these defaults.
+description: Generic Python conventions - naming, imports, type annotations, formatting, vertical spacing, comments, control flow, common idioms, Google-style docstrings, and pytest test-writing rules. Use whenever writing, editing, or reviewing Python code, adding or improving docstrings, or writing, modifying, or reviewing Python tests, even if the user does not mention conventions explicitly. Do not use for architecture, packaging, configuration, resilience, or async design, which have focused python-* skills. Project AGENTS.md/CLAUDE.md and pyproject.toml override these defaults.
 metadata:
-  version: "1.0"
+  version: "2.0"
   origin: first-party
 ---
 
 # Python Code Style
 
-Generic, language-agnostic defaults for writing Python. The goal is code that reads like prose and stays maintainable across projects.
+Generic, project-independent defaults for writing Python. The goal is code that reads like prose and stays maintainable across projects.
+
+Apply these rules to the code you write or change. Do not restyle untouched code unless the user asks for it.
 
 ## Precedence
 
@@ -16,9 +18,9 @@ These are project-independent defaults. Anything project-specific wins over them
 
 1. The project's `AGENTS.md` / `CLAUDE.md` / styleguide (conventions, documentation language, test marker policy).
 2. The project's `pyproject.toml` (line length, target version, lint rule selection, type-checker strictness).
-3. The existing style of the surrounding code.
+3. The existing style of the surrounding code, except for vertical spacing (see "Vertical spacing").
 
-So this skill never hardcodes concrete config values or a fixed documentation language - it carries the principles, and the project supplies the specifics. When a project file and this skill disagree, follow the project.
+So this skill carries the principles and default tool choices, and the project supplies config values and the documentation language. When a project file and this skill disagree, follow the project.
 
 ## When to use
 
@@ -28,6 +30,28 @@ So this skill never hardcodes concrete config values or a fixed documentation la
 - Writing, modifying, or reviewing pytest tests.
 - Setting up or configuring linting, formatting, and type checking.
 
+## When not to use
+
+Use the focused skill instead:
+
+| Task | Skill |
+| --- | --- |
+| Layering, abstractions, composition | `python-design-patterns` |
+| Module layout, public API, `__all__` | `python-project-structure` |
+| Generics, protocols, strict type-checker setup | `python-type-safety` |
+| Exception hierarchies, validation, partial failures | `python-error-handling` |
+| Retries, backoff, timeouts | `python-resilience` |
+| Context managers, cleanup, streaming | `python-resource-management` |
+| Logging, metrics, and tracing design | `python-observability` |
+| Settings and environment variables | `python-configuration` |
+| Packaging and publishing | `python-packaging` |
+| Profiling and optimization | `python-performance-optimization` |
+| asyncio architecture and concurrency | `async-python-patterns` |
+| Anti-pattern checklist for a review | `python-anti-patterns` |
+| Test-first development | `test-driven-development` |
+
+Two more skills run only on explicit request: `python-patterns` (worked examples of idioms) and `python-testing-patterns` (broad testing strategy).
+
 ## Naming
 
 Follow PEP 8 with clarity over brevity.
@@ -36,6 +60,10 @@ Follow PEP 8 with clarity over brevity.
 - Classes: `PascalCase`; keep acronyms uppercase (`HTTPClientFactory`).
 - Functions and variables: `snake_case`.
 - Module-level constants: `SCREAMING_SNAKE_CASE`.
+- Internal names: a leading underscore (`_parse_row`).
+- Booleans: a predicate form (`is_active`, `has_access`, `should_retry`).
+- Exceptions: the `Error` suffix (`PaymentError`).
+- Quantities: the unit in the name when the type does not carry it (`timeout_seconds`, `size_bytes`).
 
 Prefer a slightly longer descriptive name over an abbreviation a reader has to decode.
 
@@ -55,16 +83,19 @@ from myproject.models import User
 from myproject.services import UserService
 ```
 
-Use absolute imports; avoid relative imports (`from ..utils import x`) - they are harder to move and read.
+Use absolute imports by default. If the package already uses explicit relative imports (`from .utils import x`), follow it. Do not use wildcard imports.
 
 ## Type annotations
 
 Use modern, precise syntax: `str | None`, `list[str]`, `dict[str, Any]`, `tuple[str, ...]`.
 
-- Annotate public APIs (parameters and return types).
+- Check the project's `requires-python` first. `X | None` needs Python 3.10 at runtime. If the project supports an older version, use `Optional[X]` unless the module has `from __future__ import annotations` and nothing evaluates its annotations at runtime (Pydantic does).
+- Annotate parameters and return types of code you add and of public APIs you change.
+- Accept the narrowest abstract type the function needs (`Iterable[str]`, `Sequence[str]`, `Mapping[str, int]` from `collections.abc`). Return a concrete type (`list[str]`).
 - Avoid bare collection annotations when the element type is known.
 - Avoid `Any` and `cast` unless they are necessary and localized.
-- Add or change annotations only when the type is obvious and the change is safe, or when explicitly requested - do not change runtime behavior for the sake of typing.
+- Put an import used only in annotations under `if TYPE_CHECKING:` when it breaks an import cycle and nothing evaluates the annotation at runtime.
+- In existing code, add or change annotations only when the type is obvious and the change is safe, or when explicitly requested. Do not change runtime behavior for the sake of typing.
 
 ## Formatting and line length
 
@@ -100,11 +131,53 @@ error_message = (
 
 ## Vertical spacing (logical paragraphs)
 
-Inside a function or method body, separate logical blocks with a single blank line. Read code like prose: a wall of statements packed line-to-line forces the reader to parse every line to find where one idea ends and the next begins. Blank lines turn a body into paragraphs of intent - setup, the core step, the result - so the structure is visible at a glance.
+Write every function, method, test, and script body as paragraphs: groups of consecutive statements that perform one step, separated by one blank line. A wall of statements forces the reader to parse every line to find where one step ends and the next begins.
 
-Formatters normalize blank lines *around* functions and classes, but they do not insert semantic blank lines *inside* a body. This is a judgment call you make by hand.
+Apply these rules by hand. `ruff format` never inserts a blank line inside a body, and no linter requires one.
 
-Group by intent, not by line count: a tight block that forms one idea stays together; a blank line goes between distinct steps (guard checks, the main computation, logging, the return). Avoid double blank lines inside a body and a blank line right after the `def`/docstring - one separator between ideas is enough.
+**Scope**
+
+- Write new functions in paragraphs even when the surrounding code is packed wall-to-wall. Dense neighbors are not a style to match. Only an explicit project rule overrides this section.
+- If you rewrite most of a function, put the whole function in paragraphs.
+- If you only patch a function, apply the rules to the changed statements and the statement directly before and after them. Leave the rest as is.
+- Do not reformat functions the task does not touch.
+- In a review, report packed code only on changed lines.
+
+**Add one blank line**
+
+If a rule here and a "Keep together" case both apply, this list wins.
+
+1. Before `if`, `for`, `while`, `with`, `try`, or `match` when statements precede it at the same level.
+2. After a compound statement ends when code follows at the same level. Consecutive guard clauses therefore stand apart.
+3. Before the final `return`, `raise`, or `yield` of a function, unless "Keep together" covers the whole body.
+4. Between simple statements when the purpose changes, for example from validating to computing or from computing to persisting. Decide with the naming test in "Check". If still unsure, add no blank line.
+5. Before a comment that introduces a paragraph. Keep the comment attached to the code below it.
+6. Between arrange, act, and assert in a test, even in a three-statement test.
+
+**Keep together, no blank line**
+
+- A simple statement and the simple statement that consumes its result for the same step (`result = fetch()` then `log_if_error(result)`).
+- Runs of the same shape: related assignments, repeated `parser.add_argument(...)` calls.
+- The body of a short branch: a log call and the `return` that follows it inside an `if`.
+- A body of up to three simple statements that form one step.
+
+**Never**
+
+- Put a blank line right after a line that opens a block (`def`, `if`, `for`, `with`, `try`) or after a function docstring. Do not rely on `ruff format`: it leaves the blank line after `def` and after a docstring.
+- Put a blank line before `elif`, `else`, `except`, or `finally`. Do not rely on `ruff format`: it leaves this blank line too.
+- Put two blank lines in a row inside a body.
+- Put a blank line inside a multi-line call, literal, or comprehension.
+- Separate every statement. If every paragraph is one line, you split by line instead of by step: regroup.
+
+**Check**
+
+Before finishing, reread each function you wrote or changed:
+
+1. Confirm rules 1-3 hold for every compound statement and final `return`.
+2. Name each paragraph in two to four words. If a name needs "and", split the paragraph. If two neighbors share a name, merge them.
+3. Confirm none of the "Never" cases appear.
+
+If a paragraph needs a header comment to be understood, the function may do too much. Extract it when the task allows it; otherwise mention it in your report instead of expanding the scope.
 
 ```python
 # Avoid: statements packed wall-to-wall - hard to scan
@@ -129,28 +202,108 @@ def resolve(self, key: str) -> Value:
     self._log_if_error(result)
 
     return result.value
+
+# Good: each step is a paragraph, and a one-idea run stays together
+def export_orders(client: Client, path: Path, since: date) -> int:
+    orders = client.fetch_orders(since=since)
+
+    if not orders:
+        logger.info("no orders since %s", since)
+        return 0
+
+    rows = [order.to_row() for order in orders]
+    rows.sort()
+
+    # Write to a temp file first so a crash never leaves a partial export.
+    tmp_path = path.with_suffix(".tmp")
+
+    with tmp_path.open("w") as output:
+        csv.writer(output).writerows(rows)
+
+    tmp_path.replace(path)
+
+    return len(rows)
+
+# Good: arrange, act, assert
+def test_export_orders__returns_row_count(tmp_path: Path) -> None:
+    client = FakeClient(orders=[make_order(), make_order()])
+    target = tmp_path / "orders.csv"
+
+    exported = export_orders(client, target, since=date(2026, 1, 1))
+
+    assert exported == 2
+    assert target.exists()
+
+# Avoid: a blank line after every statement is noise, not paragraphs
+def load_endpoint(settings: Settings) -> Endpoint:
+    host = settings.host
+
+    port = settings.port
+
+    return Endpoint(host, port)
+
+# Good: three simple statements, one step
+def load_endpoint(settings: Settings) -> Endpoint:
+    host = settings.host
+    port = settings.port
+    return Endpoint(host, port)
 ```
+
+## Comments
+
+- Explain why: a constraint, a workaround, a non-obvious decision. Do not restate what the code does.
+- Update or delete a comment when you change the code it describes.
+- Do not leave commented-out code. Version control keeps it.
+- Link a `TODO` to a ticket or state its condition.
+
+## Control flow
+
+Apply these to code you write. In a patch, do not restructure existing code for them; mention the problem in your report instead.
+
+- Handle invalid and edge cases first with guard clauses, then write the main path without `else`.
+- Keep nesting to three levels inside a function body. Past that, invert a condition or extract a function.
+- Write a comprehension for one loop with at most one condition. Otherwise write a plain loop.
+
+## Idioms
+
+- Compare with `is None` and `is not None`. Do not compare with `== True`.
+- Do not use a mutable default argument. Default to `None` and create the object in the body.
+- Use `pathlib.Path` for paths in new code.
+- Use `Enum` or `Literal` instead of magic strings for a closed set of values.
+- Use `dataclass` or a Pydantic model instead of a dict with a fixed set of keys.
+- Open resources with `with`.
+- Catch the narrowest exception you can handle. Do not write a bare `except:`.
+- Use `raise NewError(...) from error` when translating an exception.
+- Pass log arguments lazily: `logger.info("user %s", user_id)`, not an f-string.
 
 ## Tooling
 
-Use `ruff` as the all-in-one linter and formatter (it replaces flake8, isort, black) and a type checker (`mypy` or `pyright`).
+The default tools are `ruff` as linter and formatter (it replaces flake8, isort, black) and a type checker (`mypy` or `pyright`).
+
+1. Find how the project runs its checks: `AGENTS.md`/`CLAUDE.md`, `Makefile` or task runner, CI config, `pyproject.toml`.
+2. Run those checks through the project's runner (`uv run`, `poetry run`). If the project has a lint task, use it.
+3. If you run the tools directly, limit them to the Python files you changed:
 
 ```bash
-ruff check --fix .   # lint and auto-fix
-ruff format .        # format
-mypy .               # type check
+uv run ruff check --fix path/to/changed.py
+uv run ruff format path/to/changed.py
+uv run mypy path/to/changed.py
 ```
 
-Concrete configuration - line length, target version, the selected lint rule set, type-checker strictness - lives in the project's `pyproject.toml`, not here. Follow the project's values. For a new project with no config, enable strict type checking and a sensible rule set, then record the choice in `pyproject.toml` so it becomes project-owned.
+- Do not run `ruff format .` or `ruff check --fix .` in an existing project: they rewrite files outside the task.
+- If a check fails on lines you did not change, report it and leave those lines alone.
+- If a tool is not available, report the check as skipped. Do not add a tool or a dependency to the project without a request.
+
+Concrete configuration (line length, target version, the selected lint rule set, type-checker strictness) lives in the project's `pyproject.toml`. If the user asks to set up a new project with no config, enable strict type checking and record the rule set in `pyproject.toml` so it becomes project-owned.
 
 ## Docstrings
 
-When editing Python code, improve docstrings without changing runtime behavior.
+Add or update docstrings for code you add and for code whose contract you change. Improve other docstrings only when the user asks. Do not change runtime behavior while editing a docstring.
 
 - Use Google Python Style docstrings.
 - Keep section headers in English: `Args`, `Returns`, `Raises`, `Yields`, `Attributes`, `Examples`.
 - Write docstring content in the project's documentation language (declared in its `AGENTS.md`/`CLAUDE.md`); match the surrounding code when it is not declared. Do not impose a language the project does not use.
-- Add module, class, function, and method docstrings when they are missing or weak.
+- Within that scope, add module, class, function, and method docstrings when they are missing or weak.
 - Keep docstrings concise: explain purpose, contract, important constraints, and non-obvious behavior. Do not restate the name or obvious implementation details.
 - Add `Attributes` for dataclasses, Pydantic models, DTOs, and classes with meaningful public fields.
 - Add `Args`, `Returns`, and `Raises` only when they add useful information. Do not document exceptions that are not visible from the code or an explicit contract.
@@ -189,90 +342,18 @@ def process_batch(
     ...
 ```
 
-## Test writing
+## Tests
 
-Use these rules when writing, modifying, or reviewing tests. Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
+Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
 
-### Principles
+Before writing, modifying, or reviewing tests, read [references/testing.md](references/testing.md).
 
-A test must verify observable behavior, not incidental implementation details. A good test:
+## Final check
 
-- fixes a real contract;
-- is isolated and reproducible;
-- covers one scenario or one clear behavior branch;
-- uses meaningful assertions only;
-- makes important input conditions visible;
-- does not mask production defects;
-- does not add unnecessary test-layer complexity;
-- can be understood on review without opening many helper layers.
+Before finishing a code change:
 
-First inspect the real source code and existing test style. Use real imports, real types, and real signatures.
+1. Confirm the diff contains only lines the task needs, with no restyled neighbors.
+2. Run the "Check" steps of "Vertical spacing" on each function you wrote or changed.
+3. Run the project's checks as described in "Tooling". Report each one as passed, failed, or skipped.
 
-### Structure
-
-Prefer clear test names; follow the existing project style if it differs:
-
-```python
-test_<what_is_tested>__<expected_behavior>
-```
-
-For pytest projects, use markers as an organization rule and follow the project's marker policy (the set of allowed markers and what they mean is project-specific - see the project's `pyproject.toml`/`AGENTS.md`). Do not mark a test as heavier than necessary.
-
-### Docstrings
-
-Every test module has a module docstring. Every test has a docstring unless the project styleguide says otherwise. A test docstring should describe input conditions, the key action, the expected observable result, and whether it is an error path or regression case. Do not repeat the test name verbatim or describe the implementation line by line.
-
-### Assertions
-
-Assertions must verify the contract. Avoid:
-
-- checking everything blindly;
-- overfitting to unstable strings, timestamps, random order, or internal call chains;
-- magic numbers that reduce readability (extract a named constant instead);
-- full-structure assertions when only a meaningful subset is part of the contract.
-
-For error tests, assert the error type; assert the message only if it is part of the user-facing or integration contract.
-
-### Fixtures
-
-Use fixtures only when they make the test clearer or reduce meaningful duplication. Preference order:
-
-1. explicit inline setup;
-2. local helper function;
-3. local fixture in the test module;
-4. local `conftest.py` fixture for neighboring modules;
-5. shared `conftest.py` fixture only for stable, genuinely shared setup.
-
-Do not introduce a fixture when the object is used in one test, setup is 1-3 clear lines, or it hides key scenario conditions. Fixture names describe the returned object, not the action - avoid vague names like `data`, `obj`, `payload`, `result`, `mocked`. Use the smallest necessary scope; a wider scope that leaks state between tests is a defect. Use a `yield` fixture only when there is real cleanup to run.
-
-### Test doubles
-
-Do not use mocks, stubs, or fakes if the same scenario can be tested more simply with a real typed object. Preference order:
-
-1. real typed object;
-2. real object built through a small helper or fixture;
-3. `mocker.Mock` / `mocker.AsyncMock`;
-4. `spy` when interaction with real code must be observed;
-5. handwritten `stub` / `fake` only when it is clearly the best option.
-
-Use `Mock` / `AsyncMock` when replacing an external dependency, controlling `return_value`/`side_effect`, or verifying a meaningful interaction. Avoid long fragile mock chains, asserting every internal call, and mock assertions that do not affect the tested contract. Handwritten fakes are allowed only when they are reused, naturally hold state, represent the dependency contract better than mocks, and improve readability and typing.
-
-### Async tests
-
-Use `async def` where appropriate and test the async contract directly; avoid unnecessary sync wrappers. Cover relevant lifecycle behavior: `await`, async context managers, async iterators, shutdown, cleanup, and error paths. Use `AsyncMock` only when a mock is actually needed.
-
-### Parameterization
-
-Use `@pytest.mark.parametrize` when the scenario is the same and only inputs and expected outputs differ, and duplication is reduced without hurting readability. Do not parameterize when cases are conceptually different or the scenario becomes harder to understand.
-
-### Typing in tests
-
-Prefer real typed objects where production code already defines types. Avoid untyped dictionaries when a DTO, schema, settings object, or domain model exists. Avoid `Any` and `cast` unless necessary and localized.
-
-### Logs, metrics, observability
-
-Assert logs or metrics only when they are part of the expected behavior or required to diagnose a meaningful scenario. Use `caplog` for standard logging when appropriate; if `caplog` is flaky due to logging adapters, prefer a patched logger or spy. Do not turn business logic tests into tests of telemetry internals.
-
-### Production defect vs test defect
-
-If a test reveals a production bug, state that explicitly. Separate: test defect, production defect, missing context, mismatch with requirements, mismatch with styleguide. If production code violates the contract, suggest the minimal correction direction without rewriting the module.
+When reviewing code, report each finding as `file:line`, the rule, and the fix, most severe first. Limit findings to changed lines. If nothing violates these rules, say so.
