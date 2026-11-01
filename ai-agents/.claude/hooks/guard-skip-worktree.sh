@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Edit|Write|MultiEdit). NON-BLOCKING reminder.
 #
-# The tracked skip-worktree defaults are held with `git update-index
-# --skip-worktree` so Codex/Claude runtime rewrites do not churn them:
+# `git update-index --skip-worktree` hides runtime rewrites of these defaults:
 #   - ai-agents/.claude/settings.json
 #   - ai-agents/.codex/*.config.toml   (the reasoning/mode profiles)
 #
-# Editing them is fine and expected. The catch is COMMITTING the change: it
-# needs a `--no-skip-worktree` / re-apply dance (see AGENTS.md). This hook injects
-# a one-line reminder via additionalContext and never blocks the edit.
+# Before committing edits, unset skip-worktree; reapply it afterward (AGENTS.md).
+# This hook adds that reminder through additionalContext. It never blocks edits.
 #
 # Contract: read JSON on stdin. Output JSON on stdout (additionalContext), exit 0.
 

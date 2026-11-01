@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
-"""Наблюдает за сессиями инженеров в tmux и печатает по строке на событие.
+"""Наблюдает за инженерами в tmux и печатает строку на событие.
 
-Режим наблюдения (для Monitor):
-  pane-watch.py <метка>=<pane_id>=<файл отчета>=<файл описания PR>[=codex|claude] ...
-  События: отчет обновлен, описание PR записано, вопрос или запрос разрешения, простой, pane закрыт.
+События: обновление отчета, запись описания PR, вопрос, запрос разрешения,
+простой и закрытие pane. Признаки работы и вопросов задает только PROFILES.
+Статус профиля `claude`: references/claude-cli.md.
 
-Режим проверки простоя (перед коммитом Team Lead):
-  pane-watch.py --check-idle <pane_id> [--kind codex|claude]
-  Код 0 – простой в двух замерах подряд с паузой; код 1 – инженер работает; код 2 – pane закрыт.
-
-Режим одного замера (для tmux-send.sh):
-  pane-watch.py --is-busy <pane_id> [--kind codex|claude]
-  Код 0 – есть признак работы; код 1 – нет; код 2 – pane закрыт.
-
-Регулярки PROFILES – единственный источник признаков работы и вопросов; статус профиля `claude` –
-в references/claude-cli.md.
+Examples:
+    pane-watch.py <метка>=<pane_id>=<отчет>=<описание PR>[=codex|claude] ...
+        Наблюдение для Monitor.
+    pane-watch.py --check-idle <pane_id> [--kind codex|claude]
+        Перед коммитом: 0 - два замера простоя с паузой, 1 - работает, 2 - закрыт.
+    pane-watch.py --is-busy <pane_id> [--kind codex|claude]
+        Для tmux-send.sh: один замер, 0 - работает, 1 - нет, 2 - закрыт.
 """
 
 from __future__ import annotations

@@ -19,7 +19,13 @@ Do not require every rung for every node. Use the whole ladder across the roadma
 
 ## Task contract
 
-Every task states action, constraints, deliverable, allowed assistance, objective or rubric-based checks, and relationship to one or more learning outcomes.
+Every task states:
+
+- action and constraints;
+- deliverable;
+- allowed assistance;
+- objective checks or a grading rubric;
+- the learning outcomes it tests.
 
 ## Assistance policy
 
@@ -46,4 +52,11 @@ project from the capstone brief without inventing the assignment.
 
 ## Quality failures
 
-Reject practice that has no observable output, can be completed by copying the linked tutorial, tests tools rather than the target concept, depends on knowledge not yet introduced, lacks a rubric, or is far larger than the learning value justifies.
+Reject practice when it:
+
+- has no observable output;
+- can be completed by copying the linked tutorial;
+- tests tools instead of the target concept;
+- requires knowledge not yet introduced;
+- lacks a rubric;
+- takes more work than its learning value justifies.

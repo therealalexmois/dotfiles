@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Собирает файл задания инженера из черновика Team Lead, профиля проекта и шаблонов скилла.
+"""Собирает задание из черновика, объединенного профиля и шаблонов assets/.
 
-Использование:
-  compose-task.py --profile <repo>/.agents/team-lead.md --draft <черновик.md> --id <id>
-                  --worktree <путь> --branch <ветка> --scratchpad <каталог> [--closes <строка>]
+Черновик содержит только сведения задачи: разделы `## Контекст`, `## Задача`,
+`## Критерии успеха` и необязательный `## Ограничения`.
+Общие части берутся из парных блоков профиля:
+`<!-- team-lead:<блок> -->` ... `<!-- /team-lead:<блок> -->`.
+Пустой обязательный раздел или блок вызывает ошибку.
+Вывод: путь `<scratchpad>/<id>-task.md`.
 
-Черновик – Markdown с разделами `## Контекст`, `## Задача`, `## Критерии успеха` и необязательным
-`## Ограничения`: только то, что относится к этой задаче. Общие части берутся из блоков профиля
-(`<!-- team-lead:<блок> -->` ... `<!-- /team-lead:<блок> -->`) и из assets/ скилла.
-Результат – `<scratchpad>/<id>-task.md`; путь печатается. Пустой обязательный раздел или блок –
-ошибка: сборщик заодно проверяет полноту задания.
+Examples:
+    compose-task.py [--repo <путь>] --draft <черновик.md> --id <id>
+                   --worktree <путь> --branch <ветка> --scratchpad <каталог> [--closes <строка>]
 """
 
 from __future__ import annotations
@@ -20,11 +21,12 @@ import sys
 from pathlib import Path
 from typing import NoReturn
 
+from profile_model import TASK_BLOCKS, load_profile, split_sections
+
 TEMPLATES = Path(__file__).resolve().parent.parent / 'assets'
 REQUIRED_SECTIONS = ('Контекст', 'Задача', 'Критерии успеха')
 KNOWN_SECTIONS = (*REQUIRED_SECTIONS, 'Ограничения')
 REQUIRED_BLOCKS = ('task-context',)
-OPTIONAL_BLOCKS = ('task-criteria', 'task-constraints', 'report-extra')
 
 
 def fail(message: str) -> NoReturn:
@@ -35,17 +37,10 @@ def fail(message: str) -> NoReturn:
 
 def draft_sections(text: str) -> dict[str, str]:
     """Делит черновик на разделы второго уровня и проверяет их состав."""
-    parts = re.split(r'^## +(.+?)\s*$', text, flags=re.MULTILINE)
+    preamble, sections = split_sections(text, KNOWN_SECTIONS)
 
-    if parts[0].strip():
+    if preamble:
         fail('draft has text before the first `## ` section; move it into a section')
-
-    sections = {title: body.strip() for title, body in zip(parts[1::2], parts[2::2])}
-
-    unknown = [title for title in sections if title not in KNOWN_SECTIONS]
-
-    if unknown:
-        fail(f'unknown draft sections {unknown}; allowed: {list(KNOWN_SECTIONS)}')
 
     missing = [title for title in REQUIRED_SECTIONS if not sections.get(title)]
 
@@ -55,14 +50,10 @@ def draft_sections(text: str) -> dict[str, str]:
     return sections
 
 
-def profile_blocks(text: str) -> dict[str, str]:
-    """Извлекает блоки задания из профиля проекта."""
-    blocks: dict[str, str] = {}
-
-    for name in (*REQUIRED_BLOCKS, *OPTIONAL_BLOCKS):
-        pattern = rf'<!-- team-lead:{re.escape(name)} -->\n(.*?)\n<!-- /team-lead:{re.escape(name)} -->'
-        match = re.search(pattern, text, flags=re.DOTALL)
-        blocks[name] = match.group(1).strip() if match else ''
+def profile_blocks(repo: Path) -> dict[str, str]:
+    """Проверяет обязательные блоки после слияния обоих профилей."""
+    profile = load_profile(repo)
+    blocks = {name: profile.blocks[name].text if name in profile.blocks else '' for name in TASK_BLOCKS}
 
     missing = [name for name in REQUIRED_BLOCKS if not blocks[name]]
 
@@ -75,8 +66,8 @@ def profile_blocks(text: str) -> dict[str, str]:
 def substitute(text: str, values: dict[str, str]) -> str:
     """Подставляет известные плейсхолдеры за один проход.
 
-    Прочие фигурные скобки (например, `{{DUMPS}}` из justfile) остаются как есть, а подставленный
-    текст повторно не разбирается.
+    Прочие скобки, например `{{DUMPS}}` из justfile, сохраняются.
+    Подставленный текст повторно не разбирается.
     """
     return re.sub(r'\{(\w+)\}', lambda match: values.get(match.group(1), match.group(0)), text)
 
@@ -89,7 +80,7 @@ def joined(*parts: str) -> str:
 def main() -> None:
     """Собирает задание и печатает путь к нему."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--profile', type=Path, required=True)
+    parser.add_argument('--repo', type=Path, default=Path.cwd(), help='каталог проекта, по умолчанию текущий')
     parser.add_argument('--draft', type=Path, required=True)
     parser.add_argument('--id', required=True, help='идентификатор задачи, обычно номер issue')
     parser.add_argument('--worktree', required=True)
@@ -101,8 +92,11 @@ def main() -> None:
     if args.closes is None and not args.id.isdigit():
         fail('--closes is required when --id is not an issue number')
 
-    sections = draft_sections(args.draft.read_text(encoding='utf-8'))
-    blocks = profile_blocks(args.profile.read_text(encoding='utf-8'))
+    try:
+        sections = draft_sections(args.draft.read_text(encoding='utf-8'))
+        blocks = profile_blocks(args.repo)
+    except (OSError, ValueError) as error:
+        fail(str(error))
     scratchpad = args.scratchpad.resolve()
 
     values = {

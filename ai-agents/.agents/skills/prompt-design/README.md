@@ -2,7 +2,20 @@
 
 ## What it is
 
-A staff-level prompt-engineering skill that builds a new prompt from a brief: it classifies the task, selects only justified modules, writes a self-contained final prompt, and supplies a testing checklist. It resists trend-chasing and over-engineering.
+Build a reusable prompt from a brief:
+
+1. Classify the task.
+2. Select modules justified by the brief.
+3. Write a self-contained prompt.
+4. Provide a testing checklist.
+
+Exclude techniques and complexity that the task does not need.
+
+For an explicit review request, assess the supplied prompt without changing its purpose.
+Tie findings to verbatim quotes and concrete failure mechanisms.
+Return a verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`.
+For a completed review, include an improved version and changelog.
+For `BLOCKED`, return only the verdict, summary, and missing inputs.
 
 ## When to use
 
@@ -20,8 +33,10 @@ A staff-level prompt-engineering skill that builds a new prompt from a brief: it
 
 - `SKILL.md` — workflow, contracts, and boundaries.
 - `references/module-catalog.md` — prompt classes, complexity levels, the full module catalog with inclusion conditions, platform adaptation notes, and per-class testing items.
+- `references/review-mode.md` — review-mode workflow, input/output contracts, and source-of-truth priority.
+- `references/review-method.md` — evidence rule, analysis axes A–L, problem taxonomy, severity levels, verdict rules, output structure, and the self-consistency check.
 
 ## Notes
 
 - Packaged from the flat `prompt-creator.md` (added frontmatter; lifted platform notes into the catalog reference).
-- Pairs with `prompt-review` (evidence-based review of an existing prompt). Use `create-prompt` for one-off task instructions to capable models or coding agents.
+- The review mode was the separate `prompt-review` skill, packaged from the flat `prompt-improver.md`. Use `create-prompt` for one-off task instructions to capable models or coding agents.

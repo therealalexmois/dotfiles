@@ -1,132 +1,42 @@
-# LLM
+# Библиотека prompts
 
-Эта папка хранит глобальные материалы для AI workflow в редакторе.
+Каталог хранит общие prompts для CodeCompanion в Neovim.
+Правила библиотеки описаны в [PROMPT_POLICY.md](PROMPT_POLICY.md).
 
-## Purpose
+## Структура и границы
 
-Здесь лежит всё, что относится к reusable prompt layer:
+| Путь | Назначение |
+| --- | --- |
+| `~/.dotfiles/llm/prompts/` | Общие prompts и Lua-резолверы переменных |
+| `~/.dotfiles/llm/PROMPT_POLICY.md` | Формат, размещение и правила выполнения |
+| `~/.dotfiles/nvim/` | Настройки плагинов и адаптеров |
+| `<repo>/.prompts/` | Prompts с требованиями конкретного проекта |
 
-- global prompts
-- prompt policy
-- документация по prompt system
+Не храните здесь секреты, адреса прокси, настройки адаптеров и правила проектов.
 
-Эта папка **не** хранит:
-- Neovim plugin config
-- secrets
-- backend credentials
-- project-specific prompts
+## Найти prompt
 
----
+| Задача | Файлы |
+| --- | --- |
+| Git | `commit`, `branch-name`, `branch-from-diff` |
+| Понять и проверить код | `explain`, `lsp`, `review` |
+| Изменить код | `fix`, `refactor` |
+| Документация и тесты | `docstring`, `unit-tests` |
+| Произвольная задача или последовательность | `inline-prompt`, `code-workflow` |
 
-## Structure
+Prompts доступны в палитре CodeCompanion и через настроенные `/alias` в чате.
+Клавиши и профили приведены в [справочнике AI](../nvim/AI.md).
 
-```text
-llm/
-├── README.md
-├── PROMPT_POLICY.md
-└── prompts/
-```
+## Формат файла
 
-### `README.md`
-Краткое описание папки и её назначения.
+Имя файла: короткое `kebab-case`, одно назначение на файл.
+Используйте формат CodeCompanion: YAML frontmatter и секции ролей.
+Пример структуры:
 
-### `PROMPT_POLICY.md`
-Source of truth для правил prompt system:
-- taxonomy
-- metadata contract
-- storage rules
-- precedence rules
-- execution rules
-
-### `prompts/`
-Глобальная библиотека prompts, переиспользуемая между проектами.
-
----
-
-## Relationship with Neovim config
-
-Neovim config использует prompts из этой папки как **global prompt library**.
-
-Ожидаемая связка:
-- `~/.dotfiles/nvim` — plugin config и integration logic
-- `~/.dotfiles/llm/prompts` — reusable prompts
-- `<repo>/.prompts` — project-specific prompts
-
-То есть prompt layer живёт рядом с `nvim`, но отдельно от него.
-
----
-
-## Prompt locations
-
-### Global prompts
-Путь:
-
-```text
-~/.dotfiles/llm/prompts
-```
-
-Сейчас здесь лежат:
-- `commit`, `branch-name`, `branch-from-diff`
-- `explain`, `fix`, `lsp`, `review`, `refactor`
-- `docstring`, `unit-tests`
-- `inline-prompt`, `code-workflow`
-
-### Project prompts
-Путь:
-
-```text
-<repo>/.prompts
-```
-
-Использовать для:
-- `generate-tests`
-- prompts, завязанных на локальные coding rules
-- prompts, завязанных на требования конкретного репозитория
-
----
-
-## Resolution rule
-
-Если есть и global, и project prompt для одного logical purpose:
-
-1. использовать project prompt
-2. если project prompt отсутствует — использовать global prompt
-3. не делать silent fallback на другой semantic prompt
-
----
-
-## Profiles
-
-Система prompts общая для двух профилей:
-
-- `home_local`
-- `work_proxy`
-
-### Important rule
-Profile влияет на backend execution, но не на identity prompt’а.
-
-Правильно:
-- один `commit` prompt
-- разные backend/profile execution paths
-
-Неправильно:
-- `commit-home`
-- `commit-work`
-
----
-
-## Prompt format
-
-Prompts хранятся как markdown-файлы нативного формата CodeCompanion: YAML frontmatter +
-тело с ролями `## system` / `## user`. Переменные `${context.*}` и `${ns.fn}` (резолвер
-`ns.lua` рядом) подставляются при выполнении.
-
-Пример (`prompts/explain.md`):
-
-```yaml
+````markdown
 ---
 name: Explain Code
-description: Explain selected code in a concise and practical way
+description: Explain selected code
 interaction: chat
 opts:
   alias: explain
@@ -136,101 +46,42 @@ opts:
     - v
   stop_context_insertion: true
 ---
-```
 
-```md
 ## system
 
-You are a senior software engineer ...
+Explain only what the provided code supports.
 
 ## user
 
-Please explain the following code:
+Explain this code:
 
 ```${context.filetype}
 ${context.code}
 ```
-```
+````
 
-Полный contract и правила описаны в `PROMPT_POLICY.md`.
+`${context.*}` подставляет контекст CodeCompanion.
+`${ns.fn}` вызывает функцию из соседнего Lua-резолвера `ns.lua`.
+Полный контракт смотрите в [политике](PROMPT_POLICY.md#metadata-contract).
 
----
+## Выбрать место и имя
 
-## Naming convention
+1. Для общего сценария измените или добавьте файл в `prompts/`.
+2. Для требований проекта используйте его `.prompts/`.
+3. Сохраняйте одно имя при смене backend: `commit`, а не `commit-home`.
+4. Для одного назначения политика отдает приоритет проектному prompt.
+   Не заменяйте отсутствующий prompt другим по смыслу без уведомления.
 
-Использовать:
-- kebab-case
-- короткие и стабильные имена
-- одно имя на один logical purpose
+Профили `home_local` и `work_proxy` меняют выполнение, а не имя prompt.
+Подключение проектной библиотеки проверяйте в настройках конкретного проекта.
 
-Примеры (реальные файлы):
-- `commit.md`
-- `branch-name.md`
-- `branch-from-diff.md`
-- `docstring.md`
-- `explain.md`
+## Обновить документацию
 
----
+| Изменение | Что обновить |
+| --- | --- |
+| Назначение каталогов или связь с Neovim | Этот README |
+| Формат, приоритет или правила выполнения | `PROMPT_POLICY.md` |
+| Текст отдельного сценария | Соответствующий файл в `prompts/` |
 
-## What belongs here
-
-Сюда стоит класть:
-- reusable prompts
-- prompts общего назначения
-- prompts, которые нужны в нескольких проектах
-- policy-документы
-
----
-
-## What does not belong here
-
-Сюда не стоит класть:
-- project-specific prompts
-- repo-rules конкретного проекта
-- API keys
-- proxy URLs
-- model-specific secrets
-- plugin-specific Lua config
-
----
-
-## Current prompt pack
-
-Реально существующие global prompts:
-
-- `commit`, `branch-name`, `branch-from-diff`
-- `explain`, `fix`, `lsp`, `review`, `refactor`
-- `docstring`, `unit-tests`
-- `inline-prompt`, `code-workflow`
-
-Запланированные (пока нет): `ask-selected`, `better-name`.
-
-Project-specific (пока нет): `generate-tests`.
-
----
-
-## Change policy
-
-### Update `README.md`, if
-- изменилась структура папки
-- изменилось назначение каталогов
-- изменилась role separation между `nvim`, `llm`, и project `.prompts`
-
-### Update `PROMPT_POLICY.md`, if
-- изменилась taxonomy
-- изменился metadata contract
-- изменились precedence / execution rules
-
-### Update files in `prompts/`, if
-- меняется wording конкретного workflow
-- улучшается output quality prompt’а
-- уточняется reusable behavior prompt’а
-
----
-
-## Notes
-
-- Prompt system должен оставаться маленьким и управляемым.
-- Не нужно плодить prompts только из-за смены backend/profile.
-- Сначала добавлять global prompt, project prompt — только при реальной необходимости.
-``` ````
+`ask-selected`, `better-name` и проектный `generate-tests` пока не входят
+в текущую общую библиотеку.

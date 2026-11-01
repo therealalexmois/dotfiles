@@ -68,6 +68,10 @@ skills-lock.json
 # Claude local/runtime state
 .claude.json
 ai-agents/.claude/history*
+
+# Claude MCP servers that exist only on this machine (merged over mcp-servers.json
+# by scripts/install-ai-cli-dotfiles.sh). The Codex counterpart is ~/.codex/config.local.toml.
+ai-agents/.claude/mcp-servers.local.json
 ai-agents/.claude/cache/
 ai-agents/.claude/projects/
 ai-agents/.claude/sessions/

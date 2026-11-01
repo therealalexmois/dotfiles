@@ -29,7 +29,9 @@ Help the user make a better decision, not merely produce objections. Challenge i
 
 Identify the decision being made, the underlying goal, success criteria, constraints, time horizon, and reversibility.
 
-If missing information would materially change the critique and proceeding would be misleading, ask 1–3 focused questions in one batch and wait for the answers. Otherwise, proceed and state only the assumptions that materially affect the conclusion. Do not ask questions merely to make an already useful answer more complete, and do not require a particular questioning tool.
+- If missing facts would change the critique and make it misleading, ask 1-3 focused questions together. Wait for answers.
+- Otherwise, proceed. State only assumptions that affect the conclusion.
+- Do not ask questions merely for completeness. Do not require a particular questioning tool.
 
 ### 2. Steel-man the proposal
 
@@ -80,7 +82,13 @@ Recommend the strongest path, explain why it dominates under the stated constrai
 
 ### 7. Run a proportionate pre-mortem
 
-Use a pre-mortem only when the decision is material or complex. Choose a horizon appropriate to the situation rather than defaulting to 6–12 months. Name the 1–3 most plausible failure modes, their earliest observable warning signals, and the cheapest preventive action.
+Use a pre-mortem only for a material or complex decision.
+Choose a horizon that fits the situation; do not default to 6-12 months.
+For the 1-3 most plausible failures, name:
+
+- the failure mode;
+- the earliest observable warning signal;
+- the cheapest preventive action.
 
 Skip the pre-mortem for small, reversible, or purely tactical choices unless the user explicitly asks for one.
 

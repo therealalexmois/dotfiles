@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# SessionStart hook. On a CONTINUED session (source: resume or compact) it injects
-# a one-time instruction to open with a short recap of where we left off. Fresh
-# sessions (source: startup or clear) get nothing, so this never fires on a cold
-# start. The recap is produced by Claude from the already-loaded context; this
-# hook only nudges, it does not read the transcript itself.
+# SessionStart hook: request a short recap on resume or compact.
+# startup and clear receive no instruction.
+# Claude uses its loaded context; the hook does not read transcripts.
 #
 # Contract: read JSON on stdin. Output JSON (additionalContext) on stdout, exit 0.
 

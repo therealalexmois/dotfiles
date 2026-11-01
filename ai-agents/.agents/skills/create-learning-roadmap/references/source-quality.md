@@ -35,7 +35,14 @@ Use adaptive counts. A narrow node may need one authoritative source; a conteste
 
 ## Research record
 
-For every selected source preserve title, URL, type, reason, level, language, expected effort, and verification date. Distinguish source fact, inference from multiple sources, and pedagogical recommendation.
+For each selected source, record:
+
+- title, URL, and source type;
+- selection reason and level;
+- language and expected effort;
+- verification date.
+
+Distinguish source facts, inferences across sources, and teaching recommendations.
 
 ## Link verification
 

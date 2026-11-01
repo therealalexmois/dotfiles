@@ -1,5 +1,6 @@
 ---
 name: api-designer
+disable-model-invocation: true
 description: Use when designing REST or GraphQL APIs, creating OpenAPI specifications, or planning API architecture. Invoke for resource modeling, versioning strategies, pagination patterns, error handling standards.
 license: MIT
 metadata:

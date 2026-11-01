@@ -1,17 +1,13 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# Validates the symlink-producing parts of the install flow (README.md's
-# "Install order") against a throwaway fake $HOME, without touching the real
-# $HOME or installing anything via Homebrew/npm/git-clone. Safe to re-run.
+# Check install symlinks in a disposable $HOME. Safe to repeat.
+# Does not touch the real $HOME or install through Homebrew/npm/git-clone.
 #
-# Scope: the three GNU Stow packages (bootstrap, alacritty, ai-agents) plus the
-# hand-symlinked zsh startup files (.zshrc, .zprofile). It intentionally does NOT execute
-# zsh/bootstrap.zsh or scripts/install-ai-cli-dotfiles.sh verbatim, because both
-# hardcode `$HOME/.dotfiles` internally and would need real network access
-# (Oh My Zsh / plugin clones) or a real Codex/Claude install to run for real.
-# See README.md "Verifying the install" for the full-fidelity VM check this
-# script does not replace.
+# Scope: Stow packages bootstrap/alacritty/ai-agents and .zshrc/.zprofile links.
+# Simulate zsh/bootstrap.zsh and scripts/install-ai-cli-dotfiles.sh instead of
+# running them: both hardcode $HOME/.dotfiles and need network or installed CLIs.
+# Full VM verification is separate; see README.md "Verifying the install".
 
 REPO_DIR="${0:A:h:h}"
 KEEP=0
@@ -98,7 +94,7 @@ for skill_dir in "$REPO_DIR"/ai-agents/.agents/skills/*/; do
   [[ -f "${skill_dir}SKILL.md" ]] || { echo "FAIL: $skill_name has no SKILL.md" >&2; fail=1; continue; }
   skill_count=$((skill_count + 1))
 done
-echo "ok: $skill_count skills have a SKILL.md (installer links all to Claude; Codex uses scripts/codex-global-skills.txt)"
+echo "ok: $skill_count skills have a SKILL.md (installer links all but scripts/claude-project-only-skills.txt to ~/.claude/skills; Codex uses scripts/codex-global-skills.txt)"
 echo
 
 if (( fail )); then

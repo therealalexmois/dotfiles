@@ -1,5 +1,8 @@
 # Tier 1 Rules Engine Implementation Plan
 
+План от 2026-07-15. Примеры показывают предложенную реализацию.
+Текущий контракт: [skill writing](../../ai-agents/.agents/skills/writing/SKILL.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development or
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`)
 > syntax for tracking.
@@ -8,16 +11,19 @@
 детерминированный движок правил с общим протоколом, добавить R2 (`—`->`–`) и R4
 (пробелы) и режим `--fix`.
 
-**Architecture:** один самодостаточный CLI-скрипт (`uv run`, PEP 723). Типы правил -
-в коде за протоколом `Rule`; данные - в `banned-terms.toml`. Маскирование кода/URL
-даёт список исключённых span на строку; term/em-dash матчатся по masked, whitespace -
-по raw с фильтром по span. Автофикс применяет замены на raw по офсетам матча
-справа-налево.
+**Архитектура:**
+
+- Один самодостаточный CLI-скрипт: `uv run`, PEP 723.
+- Типы правил находятся в коде за протоколом `Rule`.
+- Данные хранятся в `banned-terms.toml`.
+- Маскирование кода и URL дает исключенные диапазоны строки.
+- term/em-dash проверяют masked. whitespace проверяет raw с фильтром по диапазонам.
+- Автофикс применяет замены к raw по смещениям справа налево.
 
 **Tech Stack:** Python 3.11+, `tomllib` (stdlib), `markdown-it-py`, `pytest` (тесты
 через `uv run --with pytest`).
 
-Полный дизайн: `docs/plans/2026-07-15-writing-tier1-design.md`.
+Полный дизайн: [Tier 1 Rules Engine](2026-07-15-writing-tier1-design.md).
 
 ---
 
@@ -142,7 +148,11 @@ class EmDashRule:
 
 ## Task 5: R4 `WhitespaceRule`
 
-- [ ] **Step 1: Тесты** - внутренний двойной пробел флагается; хвостовые 2 пробела (markdown-перенос) - нет; пробел перед пунктуацией флагается; двойной пробел в inline-коде - нет.
+- [ ] **Step 1: Проверить четыре случая:**
+  - двойной пробел внутри строки дает finding;
+  - два пробела в конце строки сохраняют Markdown-перенос;
+  - пробел перед пунктуацией дает finding;
+  - двойной пробел в inline-коде пропускается.
 
 ```python
 def test_internal_double_space_flagged():
@@ -199,7 +209,12 @@ def test_fix_applies_fixable_leaves_report_only(tmp_path):
     assert any(r.rule_id == "banned-term" for r in remaining)
 ```
 
-- [ ] **Step 2: Реализовать** `fix_line` (замены справа-налево, без пересечений) и `fix_file`; `--fix` в CLI. Exit: 0 если не осталось findings, 1 если остались report-only, 2 ошибка.
+- [ ] **Step 2: Добавить автофикс:**
+  - `fix_line`: замены справа налево без пересечений;
+  - `fix_file`: обработка файла;
+  - `--fix`: параметр CLI.
+
+Коды выхода: `0` - findings нет; `1` - остались report-only; `2` - ошибка.
 
 ## Task 8: CLI, docs, регресс
 

@@ -1,7 +1,7 @@
 ---
 name: tool-design
 disable-model-invocation: true
-description: "Use for the interface contract of one agent-facing tool or a tool catalog: descriptions, schemas, responses, naming, error recovery, and overlap. For a whole MCP server without an OpenAPI contract use mcp-builder; for OpenAPI-first MCP server generation use mcp-server-builder. Route project architecture to project-development and sub-agent topology to multi-agent-patterns."
+description: "Use for the interface contract of one agent-facing tool or a tool catalog: descriptions, schemas, responses, naming, error recovery, and overlap. For a whole MCP server without an OpenAPI contract suggest the manual-only mcp-builder skill; for OpenAPI-first MCP server generation use mcp-server-builder. Route project architecture to project-development and sub-agent topology to multi-agent-patterns."
 metadata:
   origin: derived
   upstream: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/tool-design
@@ -12,7 +12,15 @@ metadata:
 
 Design every tool as a contract between a deterministic system and a non-deterministic agent. Unlike human-facing APIs, agent-facing tools must make the contract unambiguous through the description alone: agents infer intent from descriptions and generate calls that must match expected formats. Every ambiguity becomes a potential failure mode that no amount of prompt engineering can fix.
 
-The unit of work for this skill is an individual agent-facing tool contract or a tool catalog, including tools exposed by an MCP server. Whole-server implementation without an OpenAPI contract belongs to `mcp-builder`; OpenAPI-first MCP server generation belongs to `mcp-server-builder`. Project-shape, pipeline architecture, task-model-fit, and cost-at-the-project-level decisions belong to `project-development`. Deciding whether to introduce sub-agents belongs to `multi-agent-patterns`.
+Work on one agent-facing tool contract or a tool catalog, including MCP tools.
+Route broader work as follows:
+
+| Task | Skill |
+| --- | --- |
+| Whole MCP server without OpenAPI | `mcp-builder` |
+| MCP server generated from OpenAPI | `mcp-server-builder` |
+| Project shape, pipeline architecture, model fit, or project-level cost | `project-development` |
+| Whether to introduce sub-agents | `multi-agent-patterns` |
 
 ## When to Activate
 

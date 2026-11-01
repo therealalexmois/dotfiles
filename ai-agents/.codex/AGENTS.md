@@ -47,8 +47,6 @@
 ## Git and Delivery
 
 - Do not include secrets, credentials, personal data, or local-only values in committed files.
-- Do not run `git add`, `git commit`, `git push`, `git rebase`, `git reset`, `git merge`, or amend commits unless explicitly requested.
-- Treat commit, push, merge, and destructive cleanup as separate permissions; permission to edit or commit does not authorize push or merge.
 - When asked to commit, include only files within the authorized scope.
 - Do not use destructive Git or filesystem operations without explicit authorization and exact target verification.
 

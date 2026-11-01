@@ -5,9 +5,11 @@ description: >-
   relationships, apply styling, and return the source in a plantuml fence that renders in Markdown
   and wikis. Covers class, sequence, activity, state machine, component, use case, deployment,
   object, package, communication, composite structure, interaction overview and profile diagrams,
-  plus a bundled stencil reference for cloud, network and infrastructure icon sets. Use when the
-  user asks to draw, model or diagram a system, requests any of those diagram types by name, or
-  wants a diagram kept as text in a document rather than as an image file.
+  plus a bundled stencil reference for cloud, network and infrastructure icon sets, and rendering
+  to ASCII or Unicode text art with plantuml -txt/-utxt for terminals, READMEs and emails. Use
+  when the user asks to draw, model or diagram a system, requests any of those diagram types by
+  name, wants a diagram kept as text in a document rather than as an image file, or asks for an
+  ASCII, text-based or terminal-friendly diagram.
 metadata:
   version: "1.0"
   origin: first-party
@@ -15,7 +17,7 @@ metadata:
 
 # UML Diagram Generator
 **Quick Start:** Choose diagram type → Write PlantUML text → Define elements and relationships → Wrap in ` ```plantuml ` fence.
-> ⚠️ **IMPORTANT:** Always use ` ```plantuml ` or ` ```puml ` code fence. NEVER use ` ```text ` — it will NOT render as a diagram.
+> ⚠️ **IMPORTANT:** Always use ` ```plantuml ` or ` ```puml ` code fence. NEVER use ` ```text ` - it will NOT render as a diagram.
 
 ## Critical Rules
 
@@ -46,9 +48,19 @@ metadata:
 
 A minimal working diagram for each of these types lives in [references/diagram-examples.md](references/diagram-examples.md) - read it when the type is unfamiliar or the syntax tokens above are not enough.
 
+## ASCII and Unicode Text Output
+
+- When the diagram must read as plain text (a terminal, a README without a PlantUML renderer, an
+  email), write the same PlantUML source and render it with `plantuml -txt` (ASCII) or `plantuml
+  -utxt` (Unicode box drawing), then return the generated text in a ` ```text ` fence.
+- This is the one case where a `text` fence is correct: it holds rendered output, not PlantUML
+  source.
+- Installation, options and layout tips are in
+  [references/ascii-output.md](references/ascii-output.md).
+
 ## Mxgraph Stencil Icons
 
-draw-uml supports 9500+ mxgraph stencil icons (AWS, Azure, Cisco, Kubernetes, etc.) via the `mxgraph.*` syntax. Default colors are applied automatically — you do NOT need to specify `fillColor` or `strokeColor`.
+draw-uml supports 9500+ mxgraph stencil icons (AWS, Azure, Cisco, Kubernetes, etc.) via the `mxgraph.*` syntax. Default colors are applied automatically - you do NOT need to specify `fillColor` or `strokeColor`.
 
 **Full stencil reference:** See [references/README.md](references/README.md).
 
@@ -60,10 +72,10 @@ mxgraph.<namespace>.<icon> "Label" as <alias> #color
 mxgraph.<namespace>.<icon> <alias>
 ```
 
-- `mxgraph.<namespace>.<icon>` — the stencil shape key (e.g. `mxgraph.aws4.lambda`, `mxgraph.kubernetes.pod`)
-- `"Label"` — display text (quoted if contains spaces, unquoted for single word)
-- `as <alias>` — identifier for use in relationships
-- `#color` — optional override color (e.g. `#FF6600`, `#LightBlue`)
+- `mxgraph.<namespace>.<icon>` - the stencil shape key (e.g. `mxgraph.aws4.lambda`, `mxgraph.kubernetes.pod`)
+- `"Label"` - display text (quoted if contains spaces, unquoted for single word)
+- `as <alias>` - identifier for use in relationships
+- `#color` - optional override color (e.g. `#FF6600`, `#LightBlue`)
 
 ### Examples
 

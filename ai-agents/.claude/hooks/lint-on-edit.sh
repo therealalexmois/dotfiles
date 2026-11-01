@@ -5,7 +5,8 @@
 # like ~/.claude/... count). Files in other repositories are ignored.
 #
 #   - nvim/**/*.lua  -> stylua --check  (style drift against nvim/.stylua.toml)
-#   - **/*.sh        -> shellcheck      (shell script issues)
+#   - **/*.sh        -> shellcheck      (shell script issues; sh/bash/dash/ksh)
+#   - **/*.sh (zsh)  -> zsh -n          (syntax only; shellcheck has no zsh support)
 #
 # Out-of-scope files, a missing linter, or a clean result all exit 0 silently.
 # On a lint failure the linter output goes to stderr and the hook exits 2, which
@@ -65,6 +66,14 @@ case "$file" in
     exit 2
     ;;
   *.sh)
+    # A zsh shebang gets a syntax check: ShellCheck rejects zsh outright (SC1071).
+    if head -n 1 "$file" | grep -Eq '^#!.*[/ ]zsh([[:space:]]|$)'; then
+      command -v zsh >/dev/null 2>&1 || exit 0
+      out=$(zsh -n "$file" 2>&1) && exit 0
+      printf 'lint-on-edit: zsh -n reports syntax errors in %s:\n' "$file" >&2
+      printf '%s\n' "$out" >&2
+      exit 2
+    fi
     command -v shellcheck >/dev/null 2>&1 || exit 0
     out=$(shellcheck -f gcc "$file" 2>&1) && exit 0
     printf 'lint-on-edit: shellcheck reports issues in %s:\n' "$file" >&2

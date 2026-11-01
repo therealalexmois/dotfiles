@@ -42,7 +42,12 @@ Existing code includes work present when the current task began, whether committ
 NO NEW BEHAVIOR IN THIS TASK WITHOUT A FAILING TEST FIRST
 ```
 
-If you wrote production code during this task before its test, stop adding behavior. Preserve the work, write a test that exposes the missing behavior or regression, and verify that it fails for the right reason before continuing. If the code already satisfies the behavior, add a characterization test and explain that this slice was not test-first. Do not delete or overwrite user code to recreate a failing test.
+- If you wrote production code during this task before its test, stop adding behavior.
+- Preserve the work, write a test that exposes the missing behavior or regression, and verify
+  that it fails for the right reason before continuing.
+- If the code already satisfies the behavior, add a characterization test and explain that this
+  slice was not test-first.
+- Do not delete or overwrite user code to recreate a failing test.
 
 ## 1. Plan Before the First Test
 
@@ -219,7 +224,13 @@ Confirm:
 
 **Other tests fail?** Fix them now.
 
-**"Other tests" means the project's suite, not just your file.** A green run of the test you wrote is not a green suite. Before you call the change done, run the project's test command (bare `pytest`, `npm test`, `cargo test` - whatever the repo uses) even when your task named only one test file. A scope statement in your task bounds the deliverable, not your verification. Any failure that run shows - including one you did not cause - goes in your report by name; a red test you watched scroll past and did not mention is a report falsified by omission.
+- **"Other tests" means the project's suite, not just your file.** A green run of the test you
+  wrote is not a green suite.
+- Before you call the change done, run the project's test command (bare `pytest`, `npm test`,
+  `cargo test` - whatever the repo uses) even when your task named only one test file.
+- A scope statement in your task bounds the deliverable, not your verification.
+- Any failure that run shows - including one you did not cause - goes in your report by name; a
+  red test you watched scroll past and did not mention is a report falsified by omission.
 
 ### REFACTOR - Clean Up
 
@@ -247,7 +258,11 @@ See [references/refactoring.md](references/refactoring.md) for the candidate lis
 
 Mock at system boundaries only - external APIs, time, randomness, sometimes the database or file system. Do not mock your own classes, internal collaborators, or anything you control. See [references/mocking.md](references/mocking.md).
 
-**Before extending an existing test file, audit it.** Do not inherit its mocking style. Check whether it mocks internal collaborators, asserts on call counts or call arguments, or verifies behavior through anything other than the public interface. If it does, say so and propose the behavioral version instead of adding one more test in the same shape.
+- **Before extending an existing test file, audit it.** Do not inherit its mocking style.
+- Check whether it mocks internal collaborators, asserts on call counts or call arguments, or
+  verifies behavior through anything other than the public interface.
+- If it does, say so and propose the behavioral version instead of adding one more test in the
+  same shape.
 
 When adding mocks or test utilities, read [references/testing-anti-patterns.md](references/testing-anti-patterns.md) to avoid:
 

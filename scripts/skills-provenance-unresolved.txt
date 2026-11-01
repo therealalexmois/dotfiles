@@ -10,7 +10,6 @@
 # against every name-matching candidate. Nothing matched.
 arxiv-doc-builder
 arxiv-search
-caveman-commit
 codebase-onboarding
 find-skills
 github-actions-docs

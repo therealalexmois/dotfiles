@@ -28,6 +28,16 @@
             "statusMessage": "Linting edited file..."
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -50,6 +60,16 @@
             "statusMessage": "Preparing session recap..."
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Loading llm-wiki session context"
+          }
+        ]
       }
     ],
     "WorktreeCreate": [
@@ -69,6 +89,64 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/worktree-remove.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Checking llm-wiki session context"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Capturing llm-wiki pre-compact session context"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5,
+            "statusMessage": "Capturing llm-wiki post-compact session context"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/llm-wiki-session.sh",
+            "timeout": 5
           }
         ]
       }
@@ -123,7 +201,16 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "wiki@llm-wiki": true
+  },
+  "extraKnownMarketplaces": {
+    "llm-wiki": {
+      "source": {
+        "source": "github",
+        "repo": "nvk/llm-wiki"
+      }
+    }
   },
   "language": "russian",
   "effortLevel": "xhigh",
@@ -134,5 +221,19 @@
   "skipWorkflowUsageWarning": true,
   "theme": "light-ansi",
   "editorMode": "vim",
-  "voiceEnabled": false
+  "voiceEnabled": false,
+  "skillOverrides": {
+    "anthropic-skills:adversarial-advisor": "off",
+    "anthropic-skills:create-learning-roadmap": "off",
+    "anthropic-skills:create-prompt": "off",
+    "anthropic-skills:distill-thoughts": "off",
+    "anthropic-skills:draft-in-alex-style": "off",
+    "anthropic-skills:handoff": "off",
+    "anthropic-skills:human-architect-mindset": "off",
+    "anthropic-skills:interactive-interview": "off",
+    "anthropic-skills:select-reasoning-effort": "off",
+    "anthropic-skills:six-thinking-hats": "off",
+    "anthropic-skills:teach-through-dialogue": "off",
+    "anthropic-skills:writing": "off"
+  }
 }

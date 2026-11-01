@@ -20,7 +20,8 @@ Create exactly one commit for the in-scope change, following the repo rules belo
 
 ### Message format
 
-- One line: `<type>(<scope>): <description>`. A body only when the subject genuinely cannot explain the change.
+- Subject: `<type>(<scope>): <description>`.
+  Add a body only when the subject cannot explain the change.
 - Allowed types only: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci`, `chore`.
 - Pick the type by the **main meaning** of the diff, not by secondary files.
 - Scope: the narrowest useful top-level area, usually a directory (`nvim`, `zsh`, `tmux`, `claude`, `codex`, `scripts`, `docs`, ...). Add it only when obvious from the paths; omit otherwise.
@@ -36,7 +37,12 @@ Create exactly one commit for the in-scope change, following the repo rules belo
 
 ### Skip-worktree files (settings.json, *.config.toml)
 
-`ai-agents/.claude/settings.json` and `ai-agents/.codex/*.config.toml` are held with `git update-index --skip-worktree`, so their edits stay hidden from `git status`. If the change to commit includes one of them:
+These files use `git update-index --skip-worktree`, which hides edits from `git status`:
+
+- `ai-agents/.claude/settings.json`;
+- `ai-agents/.codex/*.config.toml`.
+
+If the commit includes one of them:
 
 1. `git update-index --no-skip-worktree <file>`
 2. Review `git diff <file>` and confirm it contains only the intended change, not runtime churn (model, theme, voice, project trust). Drop unintended hunks before staging.

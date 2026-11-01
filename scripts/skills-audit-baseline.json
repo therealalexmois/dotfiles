@@ -30,16 +30,6 @@
   }
  },
  {
-  "skill": "agent-workflow-designer",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "analytics-tracking",
   "verdict": "PASS",
   "counts": {
@@ -87,26 +77,6 @@
    "high": 0,
    "info": 0,
    "total": 0
-  }
- },
- {
-  "skill": "arxiv-doc-builder",
-  "verdict": "WARN",
-  "counts": {
-   "critical": 0,
-   "high": 2,
-   "info": 0,
-   "total": 2
-  }
- },
- {
-  "skill": "arxiv-search",
-  "verdict": "WARN",
-  "counts": {
-   "critical": 0,
-   "high": 2,
-   "info": 0,
-   "total": 2
   }
  },
  {
@@ -160,7 +130,7 @@
   }
  },
  {
-  "skill": "call-tracer",
+  "skill": "build-engineering-self-presentation",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -170,7 +140,7 @@
   }
  },
  {
-  "skill": "caveman-commit",
+  "skill": "call-tracer",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -231,16 +201,6 @@
  },
  {
   "skill": "cli-developer",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "close-my-day",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -350,57 +310,7 @@
   }
  },
  {
-  "skill": "data-visualization",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "database-designer",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "database-schema-designer",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "decision-cartesian-square",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "define-goal",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "defuddle",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -630,16 +540,6 @@
   }
  },
  {
-  "skill": "karpathy-coder",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "latent-briefing",
   "verdict": "PASS",
   "counts": {
@@ -720,16 +620,6 @@
   }
  },
  {
-  "skill": "morning-briefing",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "multi-agent-patterns",
   "verdict": "PASS",
   "counts": {
@@ -760,37 +650,7 @@
   }
  },
  {
-  "skill": "plantuml-ascii",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "postgres-engineer",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "prd",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "productivity-coach",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -811,16 +671,6 @@
  },
  {
   "skill": "prompt-design",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "prompt-review",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -1010,16 +860,6 @@
   }
  },
  {
-  "skill": "secrets-vault-manager",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "security-guidance",
   "verdict": "PASS",
   "counts": {
@@ -1040,16 +880,6 @@
   }
  },
  {
-  "skill": "self-eval",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "seo",
   "verdict": "PASS",
   "counts": {
@@ -1061,16 +891,6 @@
  },
  {
   "skill": "seo-audit",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "ship-gate",
   "verdict": "PASS",
   "counts": {
    "critical": 0,
@@ -1127,16 +947,6 @@
    "high": 0,
    "info": 0,
    "total": 13
-  }
- },
- {
-  "skill": "slo-architect",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
   }
  },
  {
@@ -1230,16 +1040,6 @@
   }
  },
  {
-  "skill": "whats-my-day",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "workflow-builder",
   "verdict": "PASS",
   "counts": {
@@ -1270,16 +1070,6 @@
   }
  },
  {
-  "skill": "writing-prd-draft",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "writing-technical-documentation",
   "verdict": "PASS",
   "counts": {
@@ -1300,16 +1090,6 @@
   }
  },
  {
-  "skill": "xlsx",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
   "skill": "yandex-metrica",
   "verdict": "WARN",
   "counts": {
@@ -1317,26 +1097,6 @@
    "high": 2,
    "info": 0,
    "total": 2
-  }
- },
- {
-  "skill": "zotero-obsidian-bridge",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
-  }
- },
- {
-  "skill": "zotero-paper-reader",
-  "verdict": "PASS",
-  "counts": {
-   "critical": 0,
-   "high": 0,
-   "info": 0,
-   "total": 0
   }
  }
 ]

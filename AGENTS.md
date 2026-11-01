@@ -1,95 +1,91 @@
 # Project Overview
 
-This repository is an XDG-oriented macOS dotfiles workspace for terminal, shell, editor,
-and developer tooling configuration. It centralizes Neovim/AstroNvim setup, reusable AI
-prompt workflows, AI CLI agent configuration (Codex and Claude), tmux, Starship, Zsh
-bootstrap files, terminal emulator configs, package bootstrap lists, and selected CLI tool
-settings so one laptop can reproduce a consistent interactive development environment.
+macOS dotfiles for terminal, shell, editor, and developer tools.
+The workspace uses XDG paths, GNU Stow, AstroNvim, Codex, and Claude Code.
 
 ## Repository Structure
 
-Stow-managed (see README.md "The role of GNU Stow"):
+### Stow packages
 
-- `ai-agents/` - Stow package for AI CLI agents. Holds `.codex/` (Codex `AGENTS.md`,
-  `config.shared.toml` including `[mcp_servers.*]`, `config.local.toml.example`, and
-  `*.config.toml` reasoning/mode profiles), `.claude/` (`CLAUDE.md`, `settings.json`,
-  `statusline.sh`, `mcp-servers.json` (declares user-scope MCP servers synced by
-  `scripts/install-ai-cli-dotfiles.sh`), and `agents/` tracked Claude Code subagents), and
-  `.agents/skills/` (shared agent skills, the source of truth for both CLIs). Runtime state,
-  secrets, and the rendered `config.toml` are git-ignored. Also stows a legacy top-level
-  `ai-agents/rules/` (empty) to `~/rules`.
-- `alacritty/` - Alacritty terminal configuration, key bindings, color script, and themes.
-- `bootstrap/` - Stow package for home-level bootstrap files that redirect shell startup
-  into repo config, plus `install-alacritty.sh` (separate `stow` invocation for the
-  `alacritty` package, since Alacritty is a GUI app and never sees `$XDG_CONFIG_HOME`).
+See README.md, "The role of GNU Stow".
 
-Picked up via `$XDG_CONFIG_HOME=$HOME/.dotfiles` (no symlink; see `zsh/.zshenv`):
+| Package | Contents and loading |
+| --- | --- |
+| `ai-agents/` | Codex and Claude instructions, settings, profiles, MCP declarations, hooks, subagents, and shared skills. Secrets, runtime state, and rendered `config.toml` are ignored. |
+| `alacritty/` | Terminal config, key bindings, color script, and themes. Run `bootstrap/install-alacritty.sh` separately because GUI apps do not inherit shell XDG variables. |
+| `bootstrap/` | Home-level shell startup redirect and the Alacritty installer. |
 
-- `atuin/` - Only `config.toml` is tracked; shell-history sync runtime state lives under
-  `$XDG_DATA_HOME/atuin` and is git-ignored.
-- `git/` - `ignore`, the global git excludes file. git identity (`user.name`/`email`) is
-  deliberately not tracked anywhere in this repo.
-- `lazydocker/` - lazydocker configuration (`config.yml`, tracked).
-- `mise/` - `config.toml`, Node (and other runtime) version pins plus the global npm CLIs
-  installed through mise's `npm:` backend, so they survive a Node version bump (tracked).
-- `nvim/` - AstroNvim user configuration, plugin specs, Lua helpers, and lockfile. No
-  symlink at `~/.config/nvim`; a launcher that doesn't inherit the shell's
-  `XDG_CONFIG_HOME` (e.g. a non-terminal GUI wrapper) falls back to an empty directory.
-- `tmux/` - tmux configuration (tmux 3.1+ XDG support); plugin checkouts (TPM-managed) are
-  intentionally ignored.
-- `zsh/` - `.zshrc`/`.zprofile`/`.zshenv`/`bootstrap.zsh` are tracked; `bootstrap.zsh`
-  additionally hand-symlinks `.zshrc`/`.zprofile` into `$HOME` (not via Stow) because
-  `ZDOTDIR` alone doesn't satisfy tools (like Oh My Zsh) that expect a literal `~/.zshrc`.
-- `starship.toml` (repo root) - Starship prompt configuration, loaded through
-  `$STARSHIP_CONFIG` rather than a default path.
+AI CLI source paths:
 
-Local-only, not part of a reproducible install (present on this machine, but excluded from
-git by the committed `.gitignore`, so a fresh clone won't reproduce them):
+- `.codex/`: `AGENTS.md`, `config.shared.toml` with `[mcp_servers.*]`,
+  `config.local.toml.example`, and `*.config.toml` reasoning/mode profiles.
+- `.claude/`: `CLAUDE.md`, `settings.json`, `statusline.sh`, `mcp-servers.json`,
+  tracked `agents/`, and `hooks/` wired from `settings.json`.
+- `.agents/skills/`: shared source of truth for both CLIs.
+- `ai-agents/rules/`: empty legacy directory stowed to `~/rules`.
 
-- `gh/`, `glab-cli/` - CLI auth state; `gh/hosts.yml` and `glab-cli/config.yml` hold
-  tokens, so they must never be tracked.
-- `homebrew/`, `htop/`, `k9s/`, `lazygit/`, `openspec/config.json` - excluded as pure
-  runtime/telemetry/preference state.
-- `goose/` - empty; the tool isn't in `mac-setup/Brewfile` and has no documented install
-  step yet.
+### XDG configuration
 
-Everything else:
+`zsh/.zshenv` sets `XDG_CONFIG_HOME=$HOME/.dotfiles`.
+These tools read the repository directly:
 
-- `docs/` - Design/plan notes for repo-internal work (e.g. `docs/plans/`); not runtime
-  config.
-- `llm/` - Global AI prompt library and prompt-system policy used by Neovim. Read from a
-  hardcoded `~/.dotfiles/llm/prompts/` path (`nvim/lua/plugins/ai/codecompanion.lua`), so
-  the repo must live at exactly `~/.dotfiles`.
-- `mac-setup/` - Homebrew `Brewfile` for macOS package bootstrap.
-- `scripts/` - Repo tooling: `install-ai-cli-dotfiles.sh` (Stow + skill/profile symlinks),
-  `render-codex-config.py` (merge shared + local Codex TOML into `~/.codex/config.toml`),
-  `render-codex-agents.py` (build untracked `~/.codex/AGENTS.override.md` from the tracked
-  global `AGENTS.md` plus untracked `~/Workspace/AGENTS.md` work rules; Codex reads only
-  the override, so rerun it after editing either file; `--check` reports a stale override),
-  `check-ai-cli.sh` (lint/smoke for the AI CLI tooling), `check-skills.sh` (validates
-  the skill invariants: SKILL.md presence, directory name equal to the frontmatter
-  `name`, supported Codex skill products, no stray nested SKILL.md, no dangling links
-  in the three installed layers),
-  `test-prune-stray-skill-links.sh` (unit test for the installer's link pruning),
-  `skills-provenance-unresolved.txt` (allowlist of skills whose upstream is not
-  established yet),
-  `audit-skills.sh` (security
-  audit of all skills via skill-security-auditor; compares with the committed
-  `skills-audit-baseline.json`), `skill-usage-report.py` (counts real skill activations
-  in Claude Code transcripts and Codex sessions by path: slash, named, auto, nested,
-  subagent; flags candidates for `disable-model-invocation` and Claude/Codex policy
-  mismatches), `mcp-call-report.py` (MCP call failures by class and schema state, tool
-  search usage in Claude Code transcripts and Codex sessions), and `dry-run-install.sh` (validates Stow-package and zsh
-  startup symlinks against a throwaway fake `$HOME`; see README.md "Verifying the
-  install").
-- `.gitignore` - Ignore rules for machine state, plugin caches, and local-only tools.
-- `README.md` - Reproducible install guide: install order, Homebrew vs other install
-  methods, GNU Stow's role, and per-tool setup/theme notes.
+| Path | Contract |
+| --- | --- |
+| `atuin/config.toml` | Tracked config only. Ignored history-sync state lives under `$XDG_DATA_HOME/atuin`. |
+| `git/ignore` | Global excludes. Git identity (`user.name`/`email`) is not tracked. |
+| `lazydocker/config.yml` | Tracked lazydocker config. |
+| `mise/config.toml` | Runtime pins and global `npm:` CLIs, preserved across Node upgrades. |
+| `nvim/` | AstroNvim specs, Lua helpers, and lockfile. No `~/.config/nvim` symlink. A launcher without shell XDG variables falls back to an empty directory. |
+| `tmux/` | Config loaded through tmux 3.1+ XDG support. TPM checkouts are ignored. |
+| `zsh/` | Tracked `.zshrc`, `.zprofile`, `.zshenv`, and `bootstrap.zsh`. Bootstrap also links `.zshrc`/`.zprofile` into `$HOME` for tools such as Oh My Zsh that require literal home paths. |
+| `starship.toml` | Loaded through `$STARSHIP_CONFIG`. |
+
+### Local-only state
+
+A fresh clone does not reproduce these ignored paths:
+
+- `gh/`, `glab-cli/`: auth state. Never track `gh/hosts.yml` or `glab-cli/config.yml` tokens.
+- `homebrew/`, `htop/`, `k9s/`, `lazygit/`, `openspec/config.json`: runtime,
+  telemetry, or preferences.
+- `goose/`: empty. No Brewfile entry or documented install step exists.
+
+### Documentation and tooling
+
+| Path | Purpose |
+| --- | --- |
+| `docs/` | Internal design and plan notes, not runtime config. |
+| `llm/` | Global prompt library and policy. `nvim/lua/plugins/ai/codecompanion.lua` hardcodes `~/.dotfiles/llm/prompts/`, so the checkout must be `~/.dotfiles`. |
+| `mac-setup/Brewfile` | Homebrew package bootstrap. |
+| `.gitignore` | Machine-state, plugin-cache, and local-tool exclusions. |
+| `README.md` | Install order, package methods, Stow, and tool setup. |
+
+Scripts and registries under `scripts/`:
+
+| File | Purpose |
+| --- | --- |
+| `install-ai-cli-dotfiles.sh` | Stow setup and skill/profile links. |
+| `render-codex-config.py` | Merge shared and local TOML into `~/.codex/config.toml`. |
+| `render-codex-agents.py` | Build untracked `~/.codex/AGENTS.override.md` from the tracked global `AGENTS.md` plus untracked `~/Workspace/AGENTS.md` work rules. Codex reads only the override, so rerun it after editing either file; `--check` reports a stale override. |
+| `check-ai-cli.sh` | AI CLI lint and smoke checks. |
+| `check-skills.sh` | Check `SKILL.md` presence, matching names, supported Codex products, nested skills, and links in all four installed layers. |
+| `claude-project-only-skills.txt` | Exclude names globally and link them into this repo's `.claude/skills/`. |
+| `claude-external-project-skills.txt` | Exclude names globally for per-machine linking into another repo. |
+| `link-project-skill.sh` | Add or `--remove` one external repo's `.claude/skills/` and `.agents/skills/` links and local `.git/info/exclude` entries. No machine path is tracked here. |
+| `test-prune-stray-skill-links.sh` | Test installer link pruning. |
+| `test-codex-skill-scope.sh` | Test the Codex global selection. |
+| `test-claude-project-only-skills.sh` | Test Claude project-only selection. |
+| `test-link-project-skill.sh` | Test the external-repo link helper. |
+| `skills-provenance-unresolved.txt` | Allowlist skills with no established upstream. |
+| `audit-skills.sh` | Run `skill-security-auditor` and compare with `skills-audit-baseline.json`. |
+| `skill-usage-report.py` | Count slash, named, auto, nested, and subagent activations in Claude/Codex sessions. Flag manual-only candidates and policy mismatches. |
+| `mcp-call-report.py` | Count MCP call failures by class and schema state, and tool-search usage, in Claude Code transcripts and Codex sessions. |
+| `dry-run-install.sh` | Check Stow and Zsh links in a fake `$HOME`. See README.md, "Verifying the install". |
 
 ## Build & Development Commands
 
-There is no root package manifest, task runner, CI file, or documented test suite. Use
-tool-native commands and keep missing workflows behind TODOs.
+There is no root package manifest, task runner, or CI file.
+Use tool-native commands. Script tests are listed under [Testing Strategy](#testing-strategy).
+Keep missing workflows as TODOs.
 
 Install or bootstrap:
 
@@ -108,8 +104,8 @@ zsh zsh/bootstrap.zsh
 bootstrap/install-alacritty.sh
 
 # Install AI CLI agent dotfiles: backup, Stow `bootstrap`+`ai-agents` (folds
-# ~/.claude/agents), render Codex config, and link all skills to Claude plus the curated
-# global set to Codex. --skills-only changes skill links without syncing MCP or config.
+# ~/.claude/agents), render Codex config, and link all skills to Claude plus the same set to Codex (minus
+# project-only and external-project names). --skills-only changes skill links without syncing MCP or config.
 # Idempotent; moves real-file conflicts to a timestamped backup and never touches
 # ~/.codex/skills/.system.
 scripts/install-ai-cli-dotfiles.sh
@@ -211,51 +207,105 @@ Neovim: init.lua → lazy_setup.lua → AstroNvim + community.lua + plugins/
                                ├→ CodeCompanion  (NVIM_AI_PROFILE: home | work | claude)
                                └→ claudecode.nvim (claude CLI over IDE protocol, no nvim wiring)
 
-AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all skills)
-                                  └→ ~/.agents/skills/ (Codex global selection)
+AI CLI: ai-agents/.agents/skills/ → ~/.claude/skills/ (all except claude-project-only and claude-external-project lists)
+                                  ├→ ~/.agents/skills/ (Codex global selection)
+                                  └→ .claude/skills/ (this repo only; claude-project-only-skills.txt)
         ~/.codex/skills/.system remains untouched
         ai-agents/.claude/agents/ (Stow fold)  → ~/.claude/agents/
         ai-agents/.codex/*.config.toml          → ~/.codex/ (child links)
 ```
 
-- `render-codex-config.py` merges `config.shared.toml` + `~/.codex/config.local.toml` into `~/.codex/config.toml` (local values win, 0600), including Codex MCP servers declared under `[mcp_servers.*]` in `config.shared.toml`.
-- `scripts/install-ai-cli-dotfiles.sh` syncs Claude Code's user-scope MCP servers from `ai-agents/.claude/mcp-servers.json` via `claude mcp remove`/`claude mcp add-json -s user` (idempotent; Claude has no declarative config file for MCP servers, so this JSON is the tracked source of truth). Restart `claude`/`codex` after adding or changing an MCP server for the new server to load.
-- `ai-agents/.claude/settings.json` and the tracked `ai-agents/.codex/*.config.toml` profiles use `--skip-worktree`, so runtime rewrites (model, theme, effort, project trust, TUI NUX) do not churn the tracked defaults; to edit them, temporarily `--no-skip-worktree`.
-- CodeCompanion `claude` profile requires the `claude-code-acp` bridge; `claudecode.nvim` needs only the `claude` CLI.
-- `~/.codex/skills/.system` is never replaced by the install script.
+### Codex config
+
+- `render-codex-config.py` merges `config.shared.toml` and `~/.codex/config.local.toml`.
+- Local values win, including `[mcp_servers.*]` values.
+- Output: `~/.codex/config.toml`, mode `0600`.
+- Tracked `ai-agents/.codex/*.config.toml` profiles and
+  `ai-agents/.claude/settings.json` use `--skip-worktree` to hide runtime rewrites.
+  Temporarily use `--no-skip-worktree` when editing defaults.
+- The installer never replaces `~/.codex/skills/.system`.
+
+### MCP sync
+
+`scripts/install-ai-cli-dotfiles.sh` syncs Claude user-scope servers with
+`claude mcp remove` and `claude mcp add-json -s user`. Sync is idempotent.
+Claude has no declarative MCP config file; this JSON is the tracked source.
+
+| Scope | Claude source | Codex source |
+| --- | --- | --- |
+| Shared | `ai-agents/.claude/mcp-servers.json` | `[mcp_servers.*]` in `config.shared.toml` |
+| Machine-only | Ignored `ai-agents/.claude/mcp-servers.local.json`, same format, synced last | `[mcp_servers.*]` in `~/.codex/config.local.toml` |
+
+Restart `claude` or `codex` after adding or changing an MCP server.
+
+### Claude in Neovim
+
+- CodeCompanion's `claude` profile requires `claude-code-acp`.
+- `claudecode.nvim` requires only the `claude` CLI.
 
 ## Agent Skills: Naming and Layout
 
-Claude gets every source skill. Codex gets only the curated global selection;
-repository-local skills remain available from each project's `.agents/skills/`.
+| Selection | Source | Installed location |
+| --- | --- | --- |
+| Claude global | All source skills except the two Claude exclusion lists | `~/.claude/skills/` |
+| Claude, this repo only | `scripts/claude-project-only-skills.txt` | `.claude/skills/` |
+| Another repo, per machine | `scripts/claude-external-project-skills.txt` and `link-project-skill.sh` | That repo's `.claude/skills/` and `.agents/skills/` |
+| Codex global | `scripts/codex-global-skills.txt`, excluding project-only and external-project names | `~/.agents/skills/` |
+
+- Claude loads project skills for sessions started inside that repository.
+- Excluding a name globally hides it from other projects while keeping it available here.
+- Do not rely on a project skill to override a personal skill with the same name.
+  Claude gives the personal `~/.claude/skills/` copy precedence.
+- Codex also reads repository-local `.agents/skills/`.
 
 ```
 ai-agents/.agents/skills/<name>/SKILL.md  ← source of truth
 
 scripts/install-ai-cli-dotfiles.sh creates:
-~/.claude/skills/<name> → .dotfiles/ai-agents/.agents/skills/<name>  (all)
-~/.agents/skills/<name> → .dotfiles/ai-agents/.agents/skills/<name>  (Codex global)
+~/.claude/skills/<name>  → .dotfiles/ai-agents/.agents/skills/<name>  (all except project-only and external-project)
+~/.agents/skills/<name>  → .dotfiles/ai-agents/.agents/skills/<name>  (Codex global)
+.claude/skills/<name>    → ai-agents/.agents/skills/<name>            (this repo; claude-project-only-skills.txt)
 ```
 
-The Codex selection is in `scripts/codex-global-skills.txt`. The installer removes
-old repository-managed links under `~/.codex/skills/`, preserving `.system` and
-unrelated live links. Restart Claude Code and Codex after changing skill links.
+After changing skill links:
 
-Keep domain-specific source skills in the relevant project's `.agents/skills/`
-when Codex needs them (`arxiv-doc-builder` and `arxiv-search` are the exception:
-they are in the global Codex selection so every repository under `~/Workspace` sees them). The current placement decisions are:
+1. Run the installer to update the links.
+2. Restart Claude Code and Codex.
 
-| Project | Skills from this repository to make project-local when needed |
+The installer prunes old repository-managed `~/.codex/skills/` links.
+It preserves `.system` and unrelated live links.
+This repo's `.claude/skills/` is ignored by `/.claude/`, so installed links do not dirty Git.
+
+To scope a skill into another repo, run this on each machine where that repo exists:
+
+```sh
+scripts/link-project-skill.sh <skill-name> <path-to-repo>
+```
+
+- Add the name to `scripts/claude-external-project-skills.txt` to stop global linking.
+- The helper links directly from the source into the target repo's two skill directories.
+- Targets are absolute paths into this checkout. The helper excludes links locally through
+  the target repo's `.git/info/exclude`; no machine-specific repo path is tracked here.
+- Use `--remove` to delete the links and their exclude entries.
+- `claude-project-only-skills.txt` applies only to `~/.dotfiles`, whose path is fixed.
+
+`arxiv-doc-builder` and `arxiv-search` are the exception to project-local placement:
+they stay here, in the global Codex selection, so every repository under `~/Workspace` sees them.
+
+Current placement decisions:
+
+| Project | Placement |
 | --- | --- |
-| `.dotfiles` | `agent-instruction`, `audit-repository-documentation`, `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester` |
-| `life-os` | `close-my-day`, `morning-briefing`, `whats-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` |
-| `knowledge-base` | `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` |
-| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `writing-technical-marketing-content`, `yandex-metrica` |
-| `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python`; add database or spreadsheet skills only where the workflow uses them |
+| `.dotfiles` | `claude-automation-recommender`, `skill-param-auditor`, `skill-quality-reviewer`, `skill-security-auditor`, `skill-tester`; enforced for Claude by `scripts/claude-project-only-skills.txt`, not available to Codex here |
+| `life-os` | `close-my-day`, `productivity-coach`, `define-goal`, `decision-cartesian-square` moved into that repo's `.agents/skills/`; no longer managed here |
+| `knowledge-base` | `defuddle`, `zotero-obsidian-bridge`, `zotero-paper-reader` moved into that repo's `.agents/skills/`; no longer managed here |
+| `markova.studio` | `analytics-tracking`, `customer-research`, `seo`, `seo-audit`, `yandex-metrica`; listed in `scripts/claude-external-project-skills.txt`, linked per machine with `link-project-skill.sh` |
+| work repository (work machine only) | `build-engineering-self-presentation`; listed in `scripts/claude-external-project-skills.txt`, linked there with `link-project-skill.sh` |
+| `finsight` and `finance-copilot` | `api-designer`, `api-design-reviewer`, `api-test-suite-builder`, `fastapi-python` stay global and manual-only, since both repos and any FastAPI project use them |
 
-This table selects scope; it does not install links in those other repositories.
-Other specialized skills remain in the source catalog and can be linked into a
-project when a concrete workflow calls for them.
+Run `link-project-skill.sh` for the `markova.studio` and work-repository rows on
+each machine where that repository exists. Other specialized skills remain in the source catalog
+and can be linked into a project when a concrete workflow calls for them.
 
 Layout follows the [Agent Skills specification](https://agentskills.io/specification):
 
@@ -268,22 +318,29 @@ Layout follows the [Agent Skills specification](https://agentskills.io/specifica
 └── README.md, LICENSE   # package-level files stay at the root
 ```
 
-Frontmatter carries only the spec fields - `name` (must equal the directory name,
-lowercase letters, digits and single hyphens), `description` (max 1024 characters),
-and optionally `license`, `compatibility` (max 500), `metadata` (string values only)
-and `allowed-tools` (space-separated). Everything else belongs under `metadata`. The
-exception is the client-specific keys Claude Code actually reads, which stay at the
-top level: `disable-model-invocation`, `argument-hint`, `user-invocable`.
+### Frontmatter and invocation
 
-Codex ignores `disable-model-invocation`; its equivalent is
-`policy.allow_implicit_invocation: false` in the skill's `agents/openai.yaml`, which
-also removes the skill from Codex's skill list. Keep the two in sync: every skill with
-`disable-model-invocation: true` carries that policy and vice versa.
-`scripts/skill-usage-report.py` reports a mismatch as `mismatch`.
+| Field | Constraint |
+| --- | --- |
+| `name` | Match the directory. Use lowercase letters, digits, and single hyphens. |
+| `description` | At most 1024 characters. |
+| `license` | Optional. |
+| `compatibility` | Optional, at most 500 characters. |
+| `metadata` | Optional, string values only. Put non-spec fields here. |
+| `allowed-tools` | Optional, space-separated. |
 
-Link bundled files with paths relative to the skill root (`references/tests.md`), one
-level deep. A file sitting next to `SKILL.md` instead of in `references/` is invisible
-to `tessl review`, which reports every such link as missing.
+Keep Claude's supported client fields at the top level:
+`disable-model-invocation`, `argument-hint`, and `user-invocable`.
+
+Keep the manual-only policies in sync:
+
+- Claude: `disable-model-invocation: true` in `SKILL.md`.
+- Codex: `policy.allow_implicit_invocation: false` in `agents/openai.yaml`.
+  Codex ignores the Claude field. Its policy also removes the skill from its skill list.
+- `scripts/skill-usage-report.py` labels disagreement as `mismatch`.
+
+Link bundled files relative to the skill root, one level deep: `references/tests.md`.
+`tessl review` cannot see a reference placed next to `SKILL.md`; it reports that link missing.
 
 Naming convention for first-party skills: the directory name and the `name:` field in
 `SKILL.md` frontmatter must carry a domain prefix:
@@ -291,7 +348,7 @@ Naming convention for first-party skills: the directory name and the `name:` fie
 | Prefix | Domain |
 | --- | --- |
 | `work-` | planning, reflection, and work processes |
-| `writing` / `writing-` | Russian writing, text editing, and long-form documents (technical documentation, marketing content, plans, PRD) |
+| `writing` / `writing-` | Russian writing, text editing, and long-form documents (technical documentation, marketing content, plans) |
 | `anthropic-` | skills imported from or based on Anthropic workflows |
 | `python-` | Python coding conventions |
 | `jira-` | Jira workflows |
@@ -319,7 +376,6 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | write in Alex's style when explicitly requested, alongside the task-specific skill | `draft-in-alex-style` | yes |
 | distill raw thoughts or a voice-to-text transcript into clear text | `distill-thoughts` | yes |
 | write a plan or design document | `writing-plans` | yes |
-| write PRD | `writing-prd-draft` | manual |
 | Python code, docstrings, tests | `python-code-style` | yes |
 | compare Python idioms or consult worked examples, explicitly | `python-patterns` | manual |
 | plan a broad Python testing strategy, explicitly | `python-testing-patterns` | manual |
@@ -330,18 +386,16 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | review skill for predictability/quality (failure modes) | `skill-quality-reviewer` | manual |
 | run bundled skill package/script validators or tier scoring | `skill-tester` | manual |
 | 2+ independent tasks to parallelize | `dispatching-parallel-agents` | yes |
-| design a multi-agent workflow | `agent-workflow-designer` | yes |
 | build a Workflow script | `workflow-builder` | manual |
 | lead a series of issues as Team Lead: delegate to Codex or Claude executors, review, merge | `team-lead` | yes |
-| design a REST/GraphQL API, OpenAPI spec | `api-designer` | yes |
+| design a REST/GraphQL API, OpenAPI spec | `api-designer` | manual |
 | review API design | `api-design-reviewer` | manual |
 | CI/CD pipeline setup | `ci-cd-pipeline-builder` | manual |
-| relational schema design, ERD, table relationships | `database-schema-designer` | manual |
 | SQL queries, schema exploration, ORM integration | `sql-database-assistant` | manual |
 | PostgreSQL-specific design, diagnosis, or optimization | `postgres-engineer` | manual |
 | high-risk database, system, or infrastructure migration and rollback | `migration-architect` | manual |
-| cross-database architecture, SQL versus NoSQL, or multi-engine physical design | `database-designer` | manual |
-| build an MCP server without an OpenAPI contract | `mcp-builder` | yes |
+| relational schema or ERD, cross-database architecture, SQL versus NoSQL, or multi-engine physical design | `database-designer` | manual |
+| build an MCP server without an OpenAPI contract | `mcp-builder` | manual |
 | generate an MCP server from an existing OpenAPI contract | `mcp-server-builder` | manual |
 | design one agent tool's schema, description, or error contract | `tool-design` | manual |
 | observability, SLO, metrics | `observability-designer` | manual |
@@ -359,12 +413,11 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | formulate, verify, or re-assess hypotheses and report on them (reviews, RFC, experiment plans, goals) | `hypothesis` | yes |
 | create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
 | design a reusable, system, or production-model prompt | `prompt-design` | yes |
-| review an existing prompt with findings and a verdict | `prompt-review` | yes |
+| review an existing prompt with findings and a verdict, on explicit request | `prompt-design` (review mode) | yes |
 | build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | manual |
 | learn a concept through Socratic dialogue, graduated hints, or guided discovery | `teach-through-dialogue` | manual |
 | save a topic to study later, list, review, update, or export learning-backlog entries | `learning-backlog` | yes |
-| generate ASCII/text diagrams via PlantUML | `plantuml-ascii` | yes |
-| create UML diagrams (class, sequence, activity, etc.) via PlantUML | `uml` | yes |
+| create UML diagrams (class, sequence, activity, etc.) via PlantUML, including ASCII/text output | `uml` | yes |
 | draw a diagram on the ExcalidrawZ canvas, or any `create_view` call of the excalidrawz MCP | `excalidraw-diagram` | yes |
 | changelog or release notes | `changelog-generator` | manual |
 | Yandex Metrica API: stats, goals, counters, log export | `yandex-metrica` | manual |
@@ -372,23 +425,21 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | TDD, test-first development, red-green-refactor | `test-driven-development` | yes |
 | design a complex or materially uncertain change before implementation | `brainstorming` | yes |
 | structured brainstorm | `six-thinking-hats` | manual |
-| productivity coaching | `productivity-coach` | manual |
 | execute a step-by-step plan | `executing-plans` | yes |
 | execute a plan task-by-task via subagents | `subagent-driven-development` | yes |
-| onboard to a codebase | `codebase-onboarding` | yes |
+| onboard to a codebase | `codebase-onboarding` | manual |
 
-The `skill-reviewer` subagent (`ai-agents/.claude/agents/skill-reviewer.md`, Claude-only)
-runs `skill-quality-reviewer` in a clean isolated context: it reads the skill's
-`SKILL.md` + `references/GLOSSARY.md` and applies them, so the doctrine stays a single source of
-truth in the skill. Use the skill directly (`/skill-quality-reviewer`, also from Codex)
-for an inline review; dispatch `@skill-reviewer` when you want fresh-eyes review off the
-current context.
+Choose the skill-review route:
+
+- Inline: invoke `/skill-quality-reviewer`, also available from Codex.
+- Isolated context: dispatch the Claude-only `@skill-reviewer` declared in
+  `ai-agents/.claude/agents/skill-reviewer.md`. It reads the review skill's `SKILL.md`
+  and `references/GLOSSARY.md`. The doctrine remains in that skill.
 
 Vault skills (`~/Workspace/vault/.claude/skills/`) are not listed here; they have their own routing in the vault's CLAUDE.md.
 
 > TODO: Rename the unprefixed first-party skills to follow the convention: `wiki`,
-> `daas-k8s-debug`, `incident-triage`, `time-messenger`. (`to-prd` renamed to
-> `writing-prd-draft`.)
+> `daas-k8s-debug`, `incident-triage`, `time-messenger`.
 
 ### Skill Provenance
 
@@ -418,7 +469,10 @@ Rename checklist (every step is required, the link layers break silently):
 
 1. Rename the directory under `ai-agents/.agents/skills/`.
 2. Update `name:` in the skill's `SKILL.md` frontmatter.
-3. Update `scripts/codex-global-skills.txt` if the skill is in Codex's global set.
+3. Update `scripts/codex-global-skills.txt` if the skill is in Codex's global set,
+   `scripts/claude-project-only-skills.txt` if it is project-only for Claude, and
+   `scripts/claude-external-project-skills.txt` if it is linked into another repo
+   (then relink it there with `link-project-skill.sh`).
 4. Rerun `scripts/install-ai-cli-dotfiles.sh --skills-only` to update Claude and
    Codex links.
 5. Update cross-references to the old name in other `SKILL.md` files.
@@ -428,8 +482,12 @@ Rename checklist (every step is required, the link layers break silently):
 ## Testing Strategy
 
 - Unit tests: `scripts/test-prune-stray-skill-links.sh` covers the installer's link
-  pruning (sourcing the installer does not run it; `main` is guarded). No other
-  first-party unit test suite is documented.
+  pruning (sourcing the installer does not run it; `main` is guarded),
+  `scripts/test-codex-skill-scope.sh` the Codex global selection,
+  `scripts/test-claude-project-only-skills.sh` the Claude project-only and
+  external-project selections and their migration, and `scripts/test-link-project-skill.sh` the external-repo link
+  helper. `scripts/check-ai-cli.sh` runs all four. No other first-party unit test
+  suite is documented.
   > TODO: Add tests for `nvim/lua/config/ai/docstring/extractor.lua` if its behavior
   > becomes shared or regression-prone.
 - Integration checks: run `stylua --check nvim`, `(cd nvim && selene .)`, `zsh -n ...`, and
@@ -458,6 +516,15 @@ Rename checklist (every step is required, the link layers break silently):
 - Treat `.pyenv/`, `tmux/plugins/*`, ignored Zsh plugin checkouts, shell history, htop
   config, and local-only CLI configs as machine state unless the user explicitly asks to
   version them.
+- The `wiki@llm-wiki` Claude plugin (marketplace `nvk/llm-wiki`, enabled in
+  `ai-agents/.claude/settings.json`) replaces the former vendored `llm-wiki` skill.
+  Its 0.25.0 Claude build ships no hooks, so `ai-agents/.claude/hooks/llm-wiki-session.sh`
+  runs the helper from the plugin cache on the same events as the plugin's Codex
+  `hooks.json`. The helper records redacted events from every Claude Code session,
+  in every project, into `<HUB>/.sessions/` (HUB from `~/.config/llm-wiki/config.json`)
+  and may inject digests from that store as context. Turn capture off with the
+  helper's `disable` command and per-prompt rehydration with
+  `rehydrate.user_prompt` in `<HUB>/.sessions/config.json`; neither lives in this repo.
 - `ai-agents/.claude/rules/local/` is gitignored and holds machine- or workspace-specific
   Claude rules, such as a symlink to a rule file that lives in another private repo.
   `~/.claude/rules` is a whole-directory Stow link to `ai-agents/.claude/rules/`, so
@@ -554,12 +621,15 @@ fix(nvim): correct treesitter ensure_installed in astrocore
 | --- | --- | --- |
 | Reusable AI prompt | `llm/prompts/<name>.md` | Project overrides in `<repo>/.prompts` |
 | Agent skill | `ai-agents/.agents/skills/<name>/SKILL.md` | See "Agent Skills" section |
-| Codex global skill selection | `scripts/codex-global-skills.txt` | Claude receives all source skills |
+| Codex global skill selection | `scripts/codex-global-skills.txt` | Claude receives all source skills except project-only and external-project ones |
+| Claude project-only skill selection | `scripts/claude-project-only-skills.txt` | Linked instead into this repo's own `.claude/skills/` |
+| Skill scoped into another project repo | `scripts/claude-external-project-skills.txt` + `scripts/link-project-skill.sh <skill> <path>` | The list is tracked; the link is machine-local |
 | Claude subagent | `ai-agents/.claude/agents/<name>.md` | Stow-folded to `~/.claude/agents/` |
 | Codex reasoning profile | `ai-agents/.codex/<name>.config.toml` | Symlinked to `~/.codex/` |
 | Codex shared settings | `ai-agents/.codex/config.shared.toml` | Machine-local values in `config.local.toml` |
 | Codex MCP server | `ai-agents/.codex/config.shared.toml` `[mcp_servers.<name>]` | Rendered by `render-codex-config.py` |
 | Claude MCP server | `ai-agents/.claude/mcp-servers.json` | Synced to user scope by `scripts/install-ai-cli-dotfiles.sh` |
+| Machine-local MCP server | `ai-agents/.claude/mcp-servers.local.json` (Claude), `~/.codex/config.local.toml` (Codex) | Gitignored / outside the repo; not present on other machines |
 | CodeCompanion AI profile | `nvim/lua/config/ai/codecompanion_profiles.lua` | |
 | Neovim plugin | `nvim/lua/plugins/` domain subdir | AstroCommunity in `community.lua` |
 | tmux plugin | `tmux/tmux.conf` | `set -g @plugin ...` |

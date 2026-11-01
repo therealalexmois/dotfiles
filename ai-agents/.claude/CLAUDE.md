@@ -26,7 +26,8 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 - Keep implementations simple; add abstractions only when they reduce real duplication or clarify a contract.
 - Prefer explicit errors over hidden failures, empty fallback results, or warning-only output.
 - Do not add retries around side-effecting operations unless an idempotency contract is clear.
-- Spawn subagents and run parallel sessions deliberately, not by default: each subagent and each session consumes its own token budget against the shared limit. Prefer one focused session, smaller fan-out, and a cheaper model for simple subagents.
+- Delegate deliberately. Each subagent or parallel session uses its own budget against the shared limit.
+  Prefer one focused session, limited fan-out, and a cheaper model for simple tasks.
 
 ## Code Quality
 
@@ -34,11 +35,22 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 - Avoid bare collection annotations when element types are known.
 - Do not suppress lint or type-check violations without a narrow reason.
 - Add or update tests for behavior changes and important failure cases.
-- Separate logical blocks inside a function or method body with a single blank line; do not pack statements wall-to-wall. Blank lines mark paragraphs of intent (setup, the core step, the result) and make code scannable. Linters do not enforce this, so apply it by hand. See the `python-code-style` skill (vertical spacing) for rationale and examples.
+- Separate logical blocks inside functions and methods with one blank line.
+  Group setup, the main step, and the result. Linters do not enforce these boundaries.
+  See `python-code-style`, vertical spacing, for examples.
 
 ## Python code style, docstrings, and tests
 
-When writing or editing Python code, docstrings, or tests, use the `python-code-style` skill. It is the single source of truth for generic conventions: naming, imports, type annotations, formatting, vertical spacing, Google-style docstrings (English section headers; docstring language follows the project), and all test-writing rules (structure, assertions, fixtures, test doubles, async, parameterization, typing, observability). It carries the generic principles; project `AGENTS.md`/`CLAUDE.md` and `pyproject.toml` supply the specifics (documentation language, config values, test marker policy) and override its defaults. Do not duplicate those rules here.
+When writing or editing Python code, docstrings, or tests, use `python-code-style`.
+It owns the generic rules:
+
+- naming, imports, annotations, formatting, and vertical spacing;
+- Google-style docstrings with English section headers;
+- test structure, assertions, fixtures, doubles, async behavior, typing, and observability.
+
+Project `AGENTS.md`/`CLAUDE.md` and `pyproject.toml` override these defaults.
+They specify documentation language, configuration values, and test markers.
+Do not duplicate the skill's rules here.
 
 Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
 

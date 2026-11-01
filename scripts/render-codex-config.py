@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["tomli-w"]
 # ///
-"""Render Codex config from shared and local TOML fragments."""
+"""Собирает конфигурацию Codex из общего и локального TOML."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ TomlTable = dict[str, Any]
 
 
 def load_toml(path: Path, *, required: bool) -> TomlTable:
-    """Загружает TOML-файл и явно сообщает об отсутствующем обязательном входе."""
+    """Читает TOML; для отсутствующего обязательного файла вызывает FileNotFoundError."""
     if not path.exists():
         if required:
             raise FileNotFoundError(f"required config not found: {path}")
@@ -41,7 +41,7 @@ def load_toml(path: Path, *, required: bool) -> TomlTable:
 
 
 def merge_tables(base: TomlTable, override: TomlTable) -> TomlTable:
-    """Рекурсивно объединяет таблицы, оставляя приоритет локального фрагмента."""
+    """Рекурсивно объединяет таблицы с приоритетом override."""
     result: TomlTable = dict(base)
     for key, value in override.items():
         current = result.get(key)
@@ -53,7 +53,7 @@ def merge_tables(base: TomlTable, override: TomlTable) -> TomlTable:
 
 
 def extract_projects(config: TomlTable) -> TomlTable:
-    """Возвращает только локальные project trust entries из существующего конфига."""
+    """Извлекает непустую таблицу projects с настройками доверия."""
     projects = config.get("projects")
     if not isinstance(projects, dict) or not projects:
         return {}
@@ -61,7 +61,11 @@ def extract_projects(config: TomlTable) -> TomlTable:
 
 
 def init_local_from_current(local_path: Path, output_path: Path) -> bool:
-    """Создает локальный фрагмент из текущего config.toml, если он еще отсутствует."""
+    """Сохраняет projects из текущей конфигурации, если локального файла еще нет.
+
+    Returns:
+        True, если файл создан; False, если перенос не нужен или projects пуст.
+    """
     if local_path.exists() or not output_path.exists():
         return False
     current = load_toml(output_path, required=True)
@@ -73,7 +77,7 @@ def init_local_from_current(local_path: Path, output_path: Path) -> bool:
 
 
 def write_toml(path: Path, data: TomlTable, *, mode: int) -> None:
-    """Атомарно записывает TOML и проверяет, что результат читается tomllib."""
+    """Проверяет TOML и атомарно записывает файл с правами mode."""
     content = tomli_w.dumps(data)
     tomllib.loads(content)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -95,7 +99,7 @@ def write_toml(path: Path, data: TomlTable, *, mode: int) -> None:
 
 
 def main() -> int:
-    """Точка входа CLI."""
+    """Проверяет, переносит или собирает конфигурацию по параметрам CLI."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--init-local-from-current",

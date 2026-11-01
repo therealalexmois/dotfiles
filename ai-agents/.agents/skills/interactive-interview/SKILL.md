@@ -14,9 +14,24 @@ An interview is worth running only while the answers change the result. Treat th
 
 ## Set up
 
-Extract from the request and context: purpose and topic, question budget, expected deliverable, and facts already known. Known facts come from the request, the conversation, and any memory or project context available to you. Never ask for them again.
+Extract the following from the request and context:
 
-If no count is given, choose a budget from the purpose (roughly 5–7 for a narrow decision, 10–15 for discovery) and show it in the first progress line; the user can change it. Do not spend a setup question on depth. Ask a setup question only when the topic or the deliverable is genuinely unclear; it does not count toward the budget.
+- purpose and topic;
+- question budget;
+- expected deliverable;
+- known facts.
+
+Use facts from the request, conversation, available memory, and project context.
+Do not ask for facts already known.
+
+If no count is given, choose a budget:
+
+- narrow decision: roughly 5-7 questions;
+- discovery: roughly 10-15 questions.
+
+Show the budget in the first progress line. The user can change it.
+Do not ask a setup question about depth.
+Ask one only if the topic or deliverable is unclear; exclude it from the budget.
 
 ## Choose the channel
 
@@ -28,7 +43,15 @@ Use the structured-question tool the environment exposes and follow its actual s
 | Claude Code | `AskUserQuestion` | 1–4 questions per call, 2–4 options, short `header`; an "Other" free-text answer is added automatically; unavailable in subagents |
 | Codex | `request_user_input` | Plan mode only as of early 2026; per-question free text; unavailable in `codex exec` |
 
-If no such tool is available (ChatGPT, Codex outside Plan mode, raw API), switch to text mode without asking for permission and say so once at the start: «Интерактивного виджета здесь нет, веду интервью текстом.» In text mode, keep the same batches and rules: numbered questions, lettered options, and one line on how to answer («Ответ: 1б, 2ав, 3 — свой вариант»).
+If no structured-question tool is available, switch to text mode without asking permission.
+This may apply in ChatGPT, Codex outside Plan mode, or a raw API session.
+Say once: «Интерактивного виджета здесь нет, веду интервью текстом.»
+
+Keep the same batches and rules. Use:
+
+- numbered questions;
+- lettered options;
+- one answer instruction: «Ответ: 1б, 2ав, 3 - свой вариант».
 
 Never print tool-call JSON, pseudo-calls, or instructions for someone else to invoke a tool, and never claim a widget was shown when it was not.
 
@@ -39,12 +62,20 @@ If a tool call returns empty answers the user never saw (a known Claude Code iss
 ## Run the interview
 
 1. Track the budget, questions asked, answers, covered dimensions, and open information.
-2. Build each batch only from questions that do not depend on each other, at most three per call even if the tool accepts more. A question whose wording or options depend on an answer you have not received goes to the next batch, even if the current batch ends up with one question. Adapting to answers is the reason the interview runs in batches.
+2. Ask at most three independent questions per call, even if the tool accepts more.
+   Defer questions whose wording or options depend on an unanswered question.
+   A batch may contain only one question.
 3. Before each batch, write one progress line: «Вопросы 4–6 из 15» (or «из ~10» when you chose the budget).
 4. End the turn right after the batch, with no analysis after it.
 5. On the next turn, incorporate the answers, update the state, and present the next batch.
 
-Do not interpret answers mid-way, with one exception: add a single line «Понял так: …» before the batch when an answer contradicts an earlier one, or when the next questions rely on your interpretation rather than on a direct answer. Otherwise a misreading of question 2 silently shapes everything after it.
+Do not interpret answers during the interview except when:
+
+- an answer contradicts an earlier one;
+- the next questions depend on your interpretation rather than a direct answer.
+
+In either case, add one line «Понял так: …» before the batch.
+This lets the user correct an interpretation before it shapes later questions.
 
 Stop when one of these happens:
 

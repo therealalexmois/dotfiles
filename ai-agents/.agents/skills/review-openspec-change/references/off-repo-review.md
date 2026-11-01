@@ -1,6 +1,10 @@
 # Review вне репозитория
 
-Использовать этот режим, только если scope требует полного review, capability decision или base contract, а review-агент не может сам читать project worktree. Не применять его к отдельному proposal, design, tasks или diff, если запрошенный verdict не зависит от project inventory. Это evidence-policy skill, а не требование OpenSpec.
+- Использовать этот режим, только если scope требует полного review, capability decision или
+  base contract, а review-агент не может сам читать project worktree.
+- Не применять его к отдельному proposal, design, tasks или diff, если запрошенный verdict не
+  зависит от project inventory.
+- Это evidence-policy skill, а не требование OpenSpec.
 
 ## Выбрать источник evidence
 
@@ -21,7 +25,11 @@
 - релевантные active changes и их delta paths;
 - фактические project schema, config, rules и change-local metadata.
 
-Пока необходимое evidence отсутствует, вернуть `BLOCKED` с одним следующим действием. Если нужен repo-wide поиск, этим действием должен быть запуск готового evidence prompt. Разрешено дать provisional findings по доступным артефактам, но нельзя выдавать `PASS`, утверждать отсутствие подходящей capability или фиксировать статус `existing` / `new` / `migration`.
+- Пока необходимое evidence отсутствует, вернуть `BLOCKED` с одним следующим действием.
+- Если нужен repo-wide поиск, этим действием должен быть запуск готового evidence prompt.
+- Разрешено дать provisional findings по доступным артефактам, но нельзя выдавать `PASS`,
+  утверждать отсутствие подходящей capability или фиксировать статус `existing` / `new` /
+  `migration`.
 
 Использовать archived changes только как историческое evidence. Они не заменяют permanent specs и active deltas как источники текущего контракта.
 

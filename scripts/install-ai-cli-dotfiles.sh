@@ -17,12 +17,41 @@ for skill_dir in "${repo_dir}/ai-agents/.agents/skills/"*/(N); do
 done
 
 # Keep Codex's user-level discovery small. Claude links every source skill
-# directly, so pruning ~/.agents/skills does not remove Claude capabilities.
+# directly except the project-only and external-project ones below, so pruning
+# ~/.agents/skills does not remove Claude capabilities.
 codex_global_skills=()
 while IFS= read -r skill || [[ -n "$skill" ]]; do
   [[ -z "$skill" || "$skill" == \#* ]] && continue
   codex_global_skills+=("$skill")
 done < "${repo_dir}/scripts/codex-global-skills.txt"
+
+# Skills excluded from ~/.claude/skills (global) and linked instead only into
+# this repo's own project-scoped .claude/skills/, per
+# scripts/claude-project-only-skills.txt.
+claude_project_only_skills=()
+while IFS= read -r skill || [[ -n "$skill" ]]; do
+  [[ -z "$skill" || "$skill" == \#* ]] && continue
+  claude_project_only_skills+=("$skill")
+done < "${repo_dir}/scripts/claude-project-only-skills.txt"
+
+# Skills excluded from ~/.claude/skills and linked per machine into another
+# project repo by scripts/link-project-skill.sh, per
+# scripts/claude-external-project-skills.txt. The installer never links them.
+claude_external_skills=()
+while IFS= read -r skill || [[ -n "$skill" ]]; do
+  [[ -z "$skill" || "$skill" == \#* ]] && continue
+  claude_external_skills+=("$skill")
+done < "${repo_dir}/scripts/claude-external-project-skills.txt"
+
+claude_global_skills=()
+typeset -A not_global_lookup=()
+for skill in "${claude_project_only_skills[@]}" "${claude_external_skills[@]}"; do
+  not_global_lookup[$skill]=1
+done
+for skill in "${skills[@]}"; do
+  [[ -n "${not_global_lookup[$skill]:-}" ]] && continue
+  claude_global_skills+=("$skill")
+done
 
 # Codex reasoning-effort / mode profiles, symlinked into ~/.codex alongside config.toml.
 codex_profiles=()
@@ -120,8 +149,9 @@ ensure_correct_skill_link() {
 # resolve cannot be anyone's working skill. Live symlinks outside the managed
 # namespace belong to another tool and are left alone, as are real files and the
 # Codex `.system` directory. `target_prefix` differs per namespace: `~/.codex`
-# and `~/.claude` links point at `../../.agents/skills/`, while `~/.agents/skills`
-# links point at `../../.dotfiles/ai-agents/.agents/skills/`.
+# and legacy `~/.claude` links point at `../../.agents/skills/`, `~/.claude/skills`
+# and `~/.agents/skills` links point at `../../.dotfiles/ai-agents/.agents/skills/`,
+# and this repo's own `.claude/skills` links point at `../../ai-agents/.agents/skills/`.
 prune_stray_skill_links() {
   local skills_dir="$1"
   local target_prefix="$2"
@@ -174,19 +204,23 @@ ensure_correct_profile_link() {
 }
 
 sync_claude_mcp_servers() {
-  local mcp_file="${repo_dir}/ai-agents/.claude/mcp-servers.json"
-  [[ -f "$mcp_file" ]] || return 0
+  local mcp_dir="${repo_dir}/ai-agents/.claude"
   command -v claude >/dev/null 2>&1 || {
     echo "claude CLI not found; skipping MCP server sync" >&2
     return 0
   }
 
-  local name desired
-  for name in $(jq -r 'keys[]' "$mcp_file"); do
-    desired="$(jq -c --arg n "$name" '.[$n]' "$mcp_file")"
-    claude mcp remove "$name" -s user >/dev/null 2>&1 || true
-    claude mcp add-json "$name" "$desired" -s user >/dev/null
-    echo "synced Claude MCP server: $name"
+  # The local file is gitignored and holds servers for this machine only; it is
+  # synced after the tracked one, so a same-named local entry wins.
+  local mcp_file name desired
+  for mcp_file in "${mcp_dir}/mcp-servers.json" "${mcp_dir}/mcp-servers.local.json"; do
+    [[ -f "$mcp_file" ]] || continue
+    for name in $(jq -r 'keys[]' "$mcp_file"); do
+      desired="$(jq -c --arg n "$name" '.[$n]' "$mcp_file")"
+      claude mcp remove "$name" -s user >/dev/null 2>&1 || true
+      claude mcp add-json "$name" "$desired" -s user >/dev/null
+      echo "synced Claude MCP server: $name (${mcp_file##*/})"
+    done
   done
 }
 
@@ -217,6 +251,34 @@ validate_sources() {
     echo "missing Codex system skills directory" >&2
     exit 1
   fi
+  local -A project_only_selected=()
+  for skill in "${claude_project_only_skills[@]}"; do
+    if [[ ! "$skill" =~ '^[a-z0-9]+(-[a-z0-9]+)*$' || -n "${project_only_selected[$skill]:-}" ]]; then
+      echo "invalid or duplicate Claude project-only skill: ${skill}" >&2
+      exit 1
+    fi
+    project_only_selected[$skill]=1
+    if [[ ! -f "${repo_dir}/ai-agents/.agents/skills/${skill}/SKILL.md" ]]; then
+      echo "missing Claude project-only skill source: ${skill}" >&2
+      exit 1
+    fi
+  done
+  local -A external_selected=()
+  for skill in "${claude_external_skills[@]}"; do
+    if [[ ! "$skill" =~ '^[a-z0-9]+(-[a-z0-9]+)*$' || -n "${external_selected[$skill]:-}" ]]; then
+      echo "invalid or duplicate Claude external-project skill: ${skill}" >&2
+      exit 1
+    fi
+    if [[ -n "${project_only_selected[$skill]:-}" ]]; then
+      echo "Claude external-project skill is also project-only: ${skill}" >&2
+      exit 1
+    fi
+    external_selected[$skill]=1
+    if [[ ! -f "${repo_dir}/ai-agents/.agents/skills/${skill}/SKILL.md" ]]; then
+      echo "missing Claude external-project skill source: ${skill}" >&2
+      exit 1
+    fi
+  done
 }
 
 backup_skill_links() {
@@ -225,20 +287,30 @@ backup_skill_links() {
     backup_item "${HOME}/.codex/skills/${skill}" "codex-skills/${skill}"
     backup_item "${HOME}/.claude/skills/${skill}" "claude-skills/${skill}"
   done
+  for skill in "${claude_project_only_skills[@]}"; do
+    backup_item "${repo_dir}/.claude/skills/${skill}" "dotfiles-claude-skills/${skill}"
+  done
 }
 
 install_skill_links() {
-  for skill in "${skills[@]}"; do
+  for skill in "${claude_global_skills[@]}"; do
     ensure_correct_skill_link "${HOME}/.claude" "$skill" "../../.dotfiles/ai-agents/.agents/skills/${skill}"
   done
   for skill in "${codex_global_skills[@]}"; do
     ensure_correct_skill_link "${HOME}/.agents" "$skill" "../../.dotfiles/ai-agents/.agents/skills/${skill}"
   done
+  # Project-scoped: visible only when Claude Code runs inside this repo, not
+  # linked into ~/.claude/skills. The target is relative like the other layers,
+  # so it resolves the same through a worktree's `.claude` link to this repo.
+  for skill in "${claude_project_only_skills[@]}"; do
+    ensure_correct_skill_link "${repo_dir}/.claude" "$skill" "../../ai-agents/.agents/skills/${skill}"
+  done
 
   prune_stray_skill_links "${HOME}/.codex/skills" "../../.agents/skills/"
-  prune_stray_skill_links "${HOME}/.claude/skills" "../../.agents/skills/" "${skills[@]}"
-  prune_stray_skill_links "${HOME}/.claude/skills" "../../.dotfiles/ai-agents/.agents/skills/" "${skills[@]}"
+  prune_stray_skill_links "${HOME}/.claude/skills" "../../.agents/skills/" "${claude_global_skills[@]}"
+  prune_stray_skill_links "${HOME}/.claude/skills" "../../.dotfiles/ai-agents/.agents/skills/" "${claude_global_skills[@]}"
   prune_stray_skill_links "${HOME}/.agents/skills" "../../.dotfiles/ai-agents/.agents/skills/" "${codex_global_skills[@]}"
+  prune_stray_skill_links "${repo_dir}/.claude/skills" "../../ai-agents/.agents/skills/" "${claude_project_only_skills[@]}"
 }
 
 main() {
@@ -256,7 +328,7 @@ main() {
 
   if [[ "$mode" == "--skills-only" ]]; then
     install_skill_links
-    echo "installed ${#codex_global_skills[@]} global Codex skills and ${#skills[@]} Claude skills"
+    echo "installed ${#codex_global_skills[@]} global Codex skills, ${#claude_global_skills[@]} global Claude skills, and ${#claude_project_only_skills[@]} project-only Claude skills (${#claude_external_skills[@]} external-project skills are linked per machine by link-project-skill.sh)"
     return 0
   fi
 
@@ -311,6 +383,7 @@ main() {
   find "${HOME}/.codex/skills" -maxdepth 1 -type l -print | sort
   find "${HOME}/.claude/skills" -maxdepth 1 -type l -print | sort
   find "${HOME}/.codex" -maxdepth 1 -name '*.config.toml' -type l -print | sort
+  find "${repo_dir}/.claude/skills" -maxdepth 1 -type l -print | sort
 }
 
 # Run the installer only when executed directly; sourcing the script exposes its

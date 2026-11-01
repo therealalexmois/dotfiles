@@ -17,11 +17,13 @@ mcp_servers: none
 You generate exactly one Git branch name from the current git changes.
 
 Output rules:
+
 - Return exactly one Markdown fenced code block with `text` as the language.
 - Inside the code block, output exactly one line: `<type>/<description>`.
 - Return nothing except that single code block.
 
 Branch rules:
+
 - Use the format `<type>/<description>`.
 - The description must be kebab-case.
 - Use only lowercase letters, numbers, and hyphens.
@@ -32,35 +34,25 @@ Branch rules:
 - Do not invent ticket numbers or IDs.
 - Include a ticket number only if it is explicitly present in the input.
 
-Allowed types:
-- feat
-- fix
-- hotfix
-- release
-- chore
-- refactor
-- docs
-- test
-- perf
-- build
-- ci
-- style
+Allowed types and purposes:
 
-Type selection:
-- feat -> new functionality
-- fix -> bug fix
-- hotfix -> urgent production fix
-- release -> release preparation
-- chore -> maintenance or non-feature work
-- refactor -> restructuring without behavior change
-- docs -> documentation-only changes
-- test -> tests-only changes
-- perf -> performance improvements
-- build -> build system or dependency changes
-- ci -> CI/CD changes
-- style -> formatting-only or stylistic non-functional changes
+| Type | Purpose |
+| --- | --- |
+| `feat` | New functionality |
+| `fix` | Bug fix |
+| `hotfix` | Urgent production fix |
+| `release` | Release preparation |
+| `chore` | Maintenance or non-feature work |
+| `refactor` | Restructuring without behavior change |
+| `docs` | Documentation-only changes |
+| `test` | Tests-only changes |
+| `perf` | Performance improvements |
+| `build` | Build system or dependencies |
+| `ci` | CI/CD |
+| `style` | Formatting or other non-functional style changes |
 
 Decision rules:
+
 - Infer the dominant purpose of the change set.
 - Use git status, changed files, diff summary, and patch preview together.
 - Prefer the strongest technical signal over generic file names.
@@ -70,6 +62,7 @@ Decision rules:
 - Prefer a conceptual description over mechanically copying file names.
 
 Good examples:
+
 - `feat/minerva-chat-integration`
 - `fix/mcp-timeout-handling`
 - `ci/disable-eval-jobs-on-tags`

@@ -20,11 +20,11 @@ metadata:
 
 # Skill Parameterization Auditor
 
-Find mutable runtime data that has leaked into a skill's instructions, explain why
-it makes the skill brittle, and propose the simplest way to move it out. A skill
-should encode a stable workflow that survives infra changes; the moment a bot ID,
-namespace, URL, or token is baked into `SKILL.md`, the skill silently rots the next
-time that value changes.
+- Find mutable runtime data that has leaked into a skill's instructions, explain why it makes
+  the skill brittle, and propose the simplest way to move it out.
+- A skill should encode a stable workflow that survives infra changes; the moment a bot ID,
+  namespace, URL, or token is baked into `SKILL.md`, the skill silently rots the next time that
+  value changes.
 
 Use this skill for parameterization findings, not general instruction quality or
 security review. Route those intents to `skill-quality-reviewer` and
@@ -78,10 +78,11 @@ python3 scripts/find_hardcoded_values.py <target-path>        # human-readable
 python3 scripts/find_hardcoded_values.py <target-path> --json  # machine-readable
 ```
 
-Treat its output as candidates only. Regex over-flags (every URL, every `/abs/path`)
-and under-flags (a bare numeric thread ID looks like any integer). You still have to
-judge each candidate against the stable-vs-mutable test below. Never report a
-pre-scanner hit verbatim as a finding without that judgment.
+- Treat its output as candidates only.
+- Regex over-flags (every URL, every `/abs/path`) and under-flags (a bare numeric thread ID
+  looks like any integer).
+- You still have to judge each candidate against the stable-vs-mutable test below.
+- Never report a pre-scanner hit verbatim as a finding without that judgment.
 
 ### 4. Classify each candidate: stable contract or mutable runtime data
 

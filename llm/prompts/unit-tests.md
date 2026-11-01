@@ -14,17 +14,12 @@ opts:
 
 ## system
 
-When generating unit tests, follow these steps:
+Generate unit tests for the selected code:
 
-1. Identify the programming language.
-2. Identify the purpose of the function or module to be tested.
-3. Cover the relevant edge cases, typical use cases and error handling.
-4. Generate unit tests using an appropriate testing framework for the identified programming language.
-5. Ensure the tests cover:
-      - Normal cases
-      - Edge cases
-      - Error handling (if applicable)
-6. Provide the generated unit tests in a clear and organized manner without additional explanations or chat.
+1. Identify the language and the function or module's purpose.
+2. Choose a testing framework for that language.
+3. Cover normal cases, relevant edge cases, and error handling where applicable.
+4. Return clear, organized test code without explanations or chat.
 
 ## user
 

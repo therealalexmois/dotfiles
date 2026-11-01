@@ -1,8 +1,8 @@
 ---
 name: python-code-style
-description: Generic Python conventions - naming, imports, type annotations, formatting, vertical spacing, comments, control flow, common idioms, Google-style docstrings, and pytest test-writing rules. Use whenever writing, editing, or reviewing Python code, adding or improving docstrings, or writing, modifying, or reviewing Python tests, even if the user does not mention conventions explicitly. Do not use for architecture, packaging, configuration, resilience, or async design, which have focused python-* skills. Project AGENTS.md/CLAUDE.md and pyproject.toml override these defaults.
+description: Generic Python conventions - naming, imports, type annotations, enums, data class invariants and Pydantic constrained types, duplication, formatting, vertical spacing, comments, control flow, common idioms, Google-style docstrings, and pytest test-writing rules. Use whenever writing, editing, or reviewing Python code, adding or improving docstrings, or writing, modifying, or reviewing Python tests, even if the user does not mention conventions explicitly. Do not use for architecture, packaging, configuration, resilience, or async design, which have focused python-* skills. Project AGENTS.md/CLAUDE.md and pyproject.toml override these defaults.
 metadata:
-  version: "2.0"
+  version: "2.1"
   origin: first-party
 ---
 
@@ -14,7 +14,7 @@ Apply these rules to the code you write or change. Do not restyle untouched code
 
 ## Precedence
 
-These are project-independent defaults. Anything project-specific wins over them, in this order:
+Follow project-specific conventions in this order:
 
 1. The project's `AGENTS.md` / `CLAUDE.md` / styleguide (conventions, documentation language, test marker policy).
 2. The project's `pyproject.toml` (line length, target version, lint rule selection, type-checker strictness).
@@ -96,6 +96,21 @@ Use modern, precise syntax: `str | None`, `list[str]`, `dict[str, Any]`, `tuple[
 - Avoid `Any` and `cast` unless they are necessary and localized.
 - Put an import used only in annotations under `if TYPE_CHECKING:` when it breaks an import cycle and nothing evaluates the annotation at runtime.
 - In existing code, add or change annotations only when the type is obvious and the change is safe, or when explicitly requested. Do not change runtime behavior for the sake of typing.
+
+## Enums, data classes, and models
+
+- Decorate every `Enum` subclass (including `StrEnum`, `IntEnum`, `Flag`) with `@enum.unique`. An intentional alias is the rare exception and needs a comment.
+- A data class that carries domain meaning enforces its invariants in `__post_init__` and raises a precise error: amounts that cannot be negative, non-empty identifiers, ordered date ranges, values from a closed set. Derive each invariant from how the data is produced, not from wishful thinking: a quantity that can be negative (a short position) gets no "positive" check. Plain transport records without rules need no checks.
+- Pydantic fields use the built-in constrained types instead of bare primitives plus manual validators: `PositiveInt`, `NonNegativeInt`, `PositiveFloat`, `NonNegativeFloat`, `conint`/`Field(gt=..., le=...)`, `constr`/`Field(min_length=...)`, `AnyUrl`/`HttpUrl`, `SecretStr`, `FilePath`/`DirectoryPath`. Tightening a field of a public schema changes its contract, so treat it as an API change.
+- Every invariant and every constrained field has a test for the rejected value at the boundary.
+
+## Duplication
+
+- Keep each concept in one module. Avoid duplicate helpers, constants, mappings, and calculations.
+- Search before adding a helper.
+- If two copies exist, keep the lower-layer copy and import it.
+- Keep one module's responsibility together.
+- Move repeated test helpers to the nearest shared `conftest.py` or test support module.
 
 ## Formatting and line length
 
@@ -304,7 +319,10 @@ Add or update docstrings for code you add and for code whose contract you change
 - Keep section headers in English: `Args`, `Returns`, `Raises`, `Yields`, `Attributes`, `Examples`.
 - Write docstring content in the project's documentation language (declared in its `AGENTS.md`/`CLAUDE.md`); match the surrounding code when it is not declared. Do not impose a language the project does not use.
 - Within that scope, add module, class, function, and method docstrings when they are missing or weak.
-- Keep docstrings concise: explain purpose, contract, important constraints, and non-obvious behavior. Do not restate the name or obvious implementation details.
+- Follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings).
+- Start with a one-line summary within the line limit, ending with a period.
+- Add a blank line and details only for useful contract, constraints, or non-obvious behavior.
+- Keep docstrings concise: explain purpose, contract, important constraints, and non-obvious behavior. Do not restate the name, signature, or obvious implementation details. Recheck a docstring longer than its code for unnecessary text.
 - Add `Attributes` for dataclasses, Pydantic models, DTOs, and classes with meaningful public fields.
 - Add `Args`, `Returns`, and `Raises` only when they add useful information. Do not document exceptions that are not visible from the code or an explicit contract.
 - Preserve technical identifiers, API names, field names, enum values, and established project terms.
