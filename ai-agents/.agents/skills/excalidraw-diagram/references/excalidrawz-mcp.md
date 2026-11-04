@@ -31,6 +31,12 @@ checkpoint «Before MCP update», «Restore from history». Срок хране�
 `restoreCheckpoint` в `create_view` возвращает только к `checkpointId` из ответов
 `create_view` этой сессии. Состояние до первого вызова он не вернет.
 
+## Ошибки записи
+
+| Ответ `create_view` | Причина | Что делать |
+| --- | --- | --- |
+| `The file “<имя>.excalidraw” couldn’t be opened because there is no such file.` | Активный файл переименовали или перенесли после открытия, приложение держит старый путь | Не повторять вызов, попросить переоткрыть файл и подтвердить (наблюдалось 2 ноября 2026 года) |
+
 ## Ограничения Basic
 
 - Шрифт: конвертер ставит всем `text` и меткам `fontFamily: 5` (Excalifont, рукописный),
