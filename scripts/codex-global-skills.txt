@@ -36,6 +36,7 @@ draft-in-alex-style
 env-secrets-manager
 error-handling-patterns
 evaluation
+excalidraw-diagram
 executing-plans
 failure-handling-patterns
 fastapi-python
