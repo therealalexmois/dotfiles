@@ -174,6 +174,57 @@ if grep -Fqx '/.worktrees/' "${explicit_checkout}/.gitignore"; then
   fail "explicit path changed .gitignore"
 fi
 
+# git-crypt keeps its key in the shared git dir, so a plain `git worktree add`
+# cannot decrypt files. The wrapper must create the worktree without checkout,
+# link the key, and roll back its own work when the checkout still fails.
+if command -v git-crypt >/dev/null 2>&1; then
+  crypt_origin="${test_root}/crypt-origin.git"
+  crypt_seed="${test_root}/crypt-seed"
+  crypt_key="${test_root}/crypt.key"
+  git init --quiet --bare "$crypt_origin"
+  git init --quiet --initial-branch=main "$crypt_seed"
+  git -C "$crypt_seed" config user.name "Worktree Test"
+  git -C "$crypt_seed" config user.email "worktree-test@example.invalid"
+  (cd "$crypt_seed" && git-crypt init >/dev/null 2>&1 && git-crypt export-key "$crypt_key")
+  printf 'secret.txt filter=git-crypt diff=git-crypt\n' >"${crypt_seed}/.gitattributes"
+  printf 'classified\n' >"${crypt_seed}/secret.txt"
+  git -C "$crypt_seed" add .gitattributes secret.txt
+  git -C "$crypt_seed" commit --quiet -m "initial"
+  git -C "$crypt_seed" remote add origin "$crypt_origin"
+  git -C "$crypt_seed" push --quiet --set-upstream origin main
+  git --git-dir="$crypt_origin" symbolic-ref HEAD refs/heads/main
+
+  crypt_checkout="${test_root}/crypt-checkout"
+  git clone --quiet "$crypt_origin" "$crypt_checkout"
+  (cd "$crypt_checkout" && git-crypt unlock "$crypt_key")
+  crypt_checkout="$(git -C "$crypt_checkout" rev-parse --show-toplevel)"
+  grep -qx 'classified' "${crypt_checkout}/secret.txt" || fail "git-crypt fixture was not unlocked"
+
+  crypt_path="$(
+    XDG_STATE_HOME="${test_root}/state" \
+      "$wrapper" --name 'Crypt Task' --cwd "$crypt_checkout" --ignore-mode info-exclude
+  )"
+  assert_equal "${crypt_checkout}/.worktrees/feat-crypt-task" "$crypt_path" "git-crypt worktree path"
+  grep -qx 'classified' "${crypt_path}/secret.txt" || fail "git-crypt worktree file was not decrypted"
+  assert_equal "" "$(git -C "$crypt_path" status --porcelain)" "git-crypt worktree status"
+
+  if GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=filter.git-crypt.smudge GIT_CONFIG_VALUE_0=false \
+    XDG_STATE_HOME="${test_root}/state" \
+    "$wrapper" --name 'Crypt Broken' --cwd "$crypt_checkout" >/dev/null 2>&1; then
+    fail "git-crypt checkout failure was not reported"
+  fi
+  assert_absent "${crypt_checkout}/.worktrees/feat-crypt-broken"
+  if git -C "$crypt_checkout" show-ref --verify --quiet refs/heads/feat/crypt-broken; then
+    fail "failed git-crypt checkout left the task branch"
+  fi
+
+  git -C "$crypt_checkout" worktree remove "$crypt_path"
+  [[ -r "${crypt_checkout}/.git/git-crypt/keys/default" ]] \
+    || fail "removing the worktree deleted the shared git-crypt key"
+else
+  printf 'SKIP: git-crypt is not installed, skipping the git-crypt worktree case\n'
+fi
+
 grep -Fq "$expected_delegate" "$claude_hook" \
   || fail "Claude hook does not delegate to the shared wrapper"
 grep -Fq '[scripts/create-worktree](scripts/create-worktree)' "$skill_file" \

@@ -191,17 +191,46 @@ fi
 base_ref=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
 [[ -n "$base_ref" ]] || base_ref=HEAD
 
+# git-crypt looks for its key in <git-dir>/git-crypt, but a worktree's git dir is
+# .git/worktrees/<name>, so the checkout inside `git worktree add` cannot decrypt
+# files ("Unable to open key file"). In a repository that holds git-crypt keys,
+# create the worktree without checkout, link the shared key directory, and check
+# the files out afterwards. Other repositories keep the plain `git worktree add`.
+git_crypt_keys=""
+common_dir=$(git -C "$repo_root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || common_dir=""
+if [[ -n "$common_dir" && -d "$common_dir/git-crypt/keys" ]]; then
+  git_crypt_keys="$common_dir/git-crypt/keys"
+fi
+add_flags=()
+[[ -z "$git_crypt_keys" ]] || add_flags=(--no-checkout)
+
 # Git writes progress to stderr so stdout remains machine-readable for callers.
 if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
   branch_created=false
-  git -C "$repo_root" worktree add "$path" "$branch" >&2
+  git -C "$repo_root" worktree add ${add_flags[@]+"${add_flags[@]}"} "$path" "$branch" >&2
   rc=$?
 else
   branch_created=true
-  git -C "$repo_root" worktree add "$path" -b "$branch" "$base_ref" >&2
+  git -C "$repo_root" worktree add ${add_flags[@]+"${add_flags[@]}"} "$path" -b "$branch" "$base_ref" >&2
   rc=$?
 fi
 [[ "$rc" -eq 0 ]] || { err "git worktree add failed (rc=$rc)"; exit 1; }
+
+if [[ -n "$git_crypt_keys" ]]; then
+  worktree_git_dir=$(git -C "$path" rev-parse --absolute-git-dir 2>/dev/null) || worktree_git_dir=""
+  if [[ -z "$worktree_git_dir" ]] \
+    || ! mkdir -p "$worktree_git_dir/git-crypt" \
+    || ! ln -s "$git_crypt_keys" "$worktree_git_dir/git-crypt/keys" \
+    || ! git -C "$path" checkout HEAD -- . >&2; then
+    # Only the worktree and branch created above are removed.
+    err "git-crypt checkout failed; removing the new worktree"
+    git -C "$repo_root" worktree remove --force "$path" >&2
+    if [[ "$branch_created" == true ]]; then
+      git -C "$repo_root" branch -D "$branch" >&2
+    fi
+    exit 1
+  fi
+fi
 
 # Copy listed ignored local files without duplicating tracked content. Invalid
 # paths and virtual environments are skipped after creation, with a warning.
