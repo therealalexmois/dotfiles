@@ -1,5 +1,6 @@
 ---
 name: noslop
+disable-model-invocation: true
 description: >-
   Makes or fixes Claude artifacts (updates, briefs, memos, dashboards, guides, pitches,
   tools) so someone with zero context gets them in 5 seconds: always HTML, the form picked
