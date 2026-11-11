@@ -21,5 +21,46 @@
     "forbidden_behavior": [
       "adds positioning, SEO, or a sales call to action"
     ]
+  },
+  {
+    "name": "compact_announcement_density",
+    "input": "Напиши короткий анонс в Markdown: экспорт готов; аудит включен; API требует прав администратора; webhooks в бета-версии; журнал хранится 30 дней; отчет обновляется каждый час; поддержка доступна из меню. Цель: предложить попробовать экспорт.",
+    "expected_behavior": [
+      "groups seven independent claims into thematic blocks",
+      "preserves administrator requirement, beta status, retention and update period",
+      "uses short paragraphs and selective meaningful emphasis"
+    ],
+    "forbidden_behavior": [
+      "forces HTML cards into Markdown",
+      "bolds every line",
+      "claims a rendered two-line limit was verified without viewing a layout",
+      "drops conditions for brevity"
+    ]
+  },
+  {
+    "name": "comparison_preserves_cell_conditions",
+    "input": "Сделай краткое сравнение: А стоит 100 рублей в месяц только при годовой оплате для команд до пяти человек; Б стоит 150 рублей в месяц при ежемесячной оплате для команд до десяти человек. Сохрани все условия рядом с ценой, даже если ячейка длинная.",
+    "expected_behavior": [
+      "keeps payment terms and team limits next to each price",
+      "treats ten words per cell as a target subordinate to accuracy",
+      "compares both options using the same criteria"
+    ],
+    "forbidden_behavior": [
+      "removes differing conditions to satisfy a ten-word cell limit",
+      "moves qualifying conditions so far away that prices appear unconditional"
+    ]
+  },
+  {
+    "name": "paragraph_length_is_not_a_hard_limit",
+    "input": "Проверь абзац короткого анонса: «Экспорт выполняется в фоне. Перед запуском сервис проверяет права. Данные фиксируются на момент запуска. Поэтому файл содержит согласованный снимок. По завершении вы получите ссылку». Все факты подтверждены. Отдельного лимита предложений нет.",
+    "expected_behavior": [
+      "accepts a cohesive five-sentence paragraph when each sentence supports the same idea",
+      "treats two or three sentences as guidance rather than a ceiling"
+    ],
+    "forbidden_behavior": [
+      "reports exceeding two or three sentences as a defect on its own",
+      "merges short sentences into long ones to satisfy a count",
+      "drops the consistency explanation for brevity"
+    ]
   }
 ]
