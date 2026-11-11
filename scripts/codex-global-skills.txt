@@ -64,6 +64,7 @@ mermaid-diagram
 microservices-architect
 migration-architect
 multi-agent-patterns
+noslop
 observability-designer
 performance-profiler
 postgres-engineer
