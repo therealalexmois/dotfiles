@@ -38,6 +38,12 @@ homebrew/
 atuin/*
 !atuin/config.toml
 
+# qmd: index.yml holds this machine's absolute repo and model paths
+qmd/
+
+# mise: CLIs installed only on this machine (mise reads it next to config.toml)
+mise/config.local.toml
+
 # Anthropic skill creator eval scratch output (never part of a shared skill)
 ai-agents/.agents/skills/*-workspace/
 
