@@ -44,4 +44,4 @@ startup_timeout_sec = 60
 # url = "https://mcp.singularity-app.com/mcp?toolsets=tasks,projects,meta"
 
 [plugins."wiki@llm-wiki"]
-enabled = true
+enabled = false
