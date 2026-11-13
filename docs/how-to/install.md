@@ -146,6 +146,24 @@ scripts/install-ai-cli-dotfiles.sh --skills-only
 
 See [skill placement](../reference/tools.md#ai-cli-skills-and-config).
 
+### Install the TypeScript language server for Claude Code
+
+The `typescript-lsp` Claude plugin needs `typescript-language-server` on `PATH`.
+The server resolves `typescript` from its own `lib/node_modules`, so install both
+packages into the same global npm prefix:
+
+```sh
+npm install -g typescript-language-server typescript@6
+```
+
+Do not use `npm:` entries in `mise/config.toml` for these two packages.
+Mise installs each package into a separate directory, and the server then fails
+with `Could not find a valid TypeScript installation`.
+Keep `typescript` on major version 6. TypeScript 7 has no `tsserver.js`.
+
+The prefix belongs to the active Node version. Repeat the command after
+a Node upgrade, then restart Claude.
+
 ## 7. Start Neovim and tmux
 
 Start Neovim from the configured shell:
