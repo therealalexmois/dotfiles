@@ -66,7 +66,3 @@ When the user provides a `git diff` and asks for a commit message:
 - Do not edit while a blocking ambiguity remains. If required information cannot be discovered and no safe assumption exists, request direction.
 - State non-blocking assumptions and continue.
 - Use a plan-first workflow for complex or materially unclear tasks.
-
-# Agent Rules <!-- tessl-managed -->
-
-@../.tessl/RULES.md follow the [instructions](../.tessl/RULES.md)

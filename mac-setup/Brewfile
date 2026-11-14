@@ -1,5 +1,7 @@
 # Formulae installed on request.
 brew "atuin"
+# tmux-sessionx uses associative arrays, unavailable in macOS Bash 3.2.
+brew "bash"
 brew "bat"
 brew "bottom"
 brew "choose-rust"
@@ -46,11 +48,7 @@ brew "yq"
 brew "zoxide"
 
 # Applications and fonts.
-# alacritty cask is adhoc-signed + deprecated (fails Gatekeeper, slated to be
-# disabled 2026-09-01). Homebrew tags the .app with com.apple.quarantine, so macOS
-# removes it on first launch. After every install/upgrade, strip the attribute:
-#   xattr -dr com.apple.quarantine /Applications/Alacritty.app
-cask "alacritty"
+# Alacritty is installed from source; see alacritty/README.md.
 # Nerd Fonts: only the family the terminal actually uses (alacritty.toml pins
 # "JetBrainsMono Nerd Font").
 cask "font-jetbrains-mono-nerd-font"
