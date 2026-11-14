@@ -43,5 +43,6 @@ startup_timeout_sec = 60
 # [mcp_servers.singularity]
 # url = "https://mcp.singularity-app.com/mcp?toolsets=tasks,projects,meta"
 
+# Enable llm-wiki only in the target project's .codex/config.toml.
 [plugins."wiki@llm-wiki"]
 enabled = false

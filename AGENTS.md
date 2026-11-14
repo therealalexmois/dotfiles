@@ -516,13 +516,15 @@ Rename checklist (every step is required, the link layers break silently):
 - Treat `.pyenv/`, `tmux/plugins/*`, ignored Zsh plugin checkouts, shell history, htop
   config, and local-only CLI configs as machine state unless the user explicitly asks to
   version them.
-- The `wiki@llm-wiki` Claude plugin (marketplace `nvk/llm-wiki`, enabled in
-  `ai-agents/.claude/settings.json`) replaces the former vendored `llm-wiki` skill.
-  Its 0.25.0 Claude build ships no hooks, so `ai-agents/.claude/hooks/llm-wiki-session.sh`
-  runs the helper from the plugin cache on the same events as the plugin's Codex
-  `hooks.json`. The helper records redacted events from every Claude Code session,
-  in every project, into `<HUB>/.sessions/` (HUB from `~/.config/llm-wiki/config.json`)
-  and may inject digests from that store as context. Turn capture off with the
+- Keep `wiki@llm-wiki` (marketplace `nvk/llm-wiki`) disabled globally in Claude
+  and Codex. Enable it only in `~/Projects/llm-wiki/.claude/settings.local.json`
+  and `~/Projects/llm-wiki/.codex/config.toml`.
+  Its 0.25.0 Claude build ships no hooks, so the target project's local Claude
+  settings wire `ai-agents/.claude/hooks/llm-wiki-session.sh` on the same events
+  as the plugin's Codex `hooks.json`. Keep this wiring out of global settings.
+  The helper records redacted events into `<HUB>/.sessions/` (HUB from
+  `~/.config/llm-wiki/config.json`) and may inject digests as context.
+  Turn capture off with the
   helper's `disable` command and per-prompt rehydration with
   `rehydrate.user_prompt` in `<HUB>/.sessions/config.json`; neither lives in this repo.
 - `ai-agents/.claude/rules/local/` is gitignored and holds machine- or workspace-specific

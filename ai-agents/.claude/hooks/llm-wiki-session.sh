@@ -5,8 +5,9 @@
 #
 # Plugin 0.25.0 ships the helper only in its Codex build.
 # Use the highest cached version; Claude wins a version tie.
-# settings.json mirrors the plugin's Codex hooks.json. Remove this wiring when
-# Claude ships its own hooks, to avoid duplicate capture.
+# The target project's .claude/settings.local.json mirrors the plugin's Codex
+# hooks.json. Do not wire this hook globally. Remove this wiring when Claude
+# ships its own hooks, to avoid duplicate capture.
 # Disable capture: `python3 <helper> disable` (honored via --if-enabled).
 # Per-prompt rehydration: rehydrate.user_prompt in <HUB>/.sessions/config.json.
 #
