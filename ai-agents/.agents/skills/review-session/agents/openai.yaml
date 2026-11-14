@@ -1,0 +1,12 @@
+interface:
+  display_name: Разбор сессии
+  short_description: Проверенные проблемы по итогам сессии
+  default_prompt: Используй $review-session, чтобы разобрать текущую рабочую сессию.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - atlas
+  allow_implicit_invocation: false

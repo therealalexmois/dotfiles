@@ -414,6 +414,7 @@ skill's `disable-model-invocation` frontmatter; neither value guarantees runtime
 | create or quickly refine a one-off task prompt for a capable model | `create-prompt` | yes |
 | design a reusable, system, or production-model prompt | `prompt-design` | yes |
 | review an existing prompt with findings and a verdict, on explicit request | `prompt-design` (review mode) | yes |
+| review the current session for confirmed problems and remaining improvements, explicitly | `review-session` | manual |
 | build, personalize, or research a learning roadmap, study plan, or curriculum | `create-learning-roadmap` | manual |
 | learn a concept through Socratic dialogue, graduated hints, or guided discovery | `teach-through-dialogue` | manual |
 | save a topic to study later, list, review, update, or export learning-backlog entries | `learning-backlog` | yes |

@@ -86,6 +86,7 @@ python-testing-patterns
 python-type-safety
 redis-best-practices
 review-openspec-change
+review-session
 rfc-authoring
 runbook-generator
 security-guidance
