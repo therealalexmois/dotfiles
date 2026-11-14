@@ -48,8 +48,10 @@ Dirty task-worktree или известные local-only commits блокиру�
    - если worktree dirty или branch diverged, пропустить sync без изменения ее состояния.
 3. Удалить exact task-worktree через `git worktree remove <exact-path>` без `--force`.
 4. Удалить exact local task branch через `git branch -d <branch>`. После squash- или rebase-merge `-d`
-   отказывает всегда: коммиты ветки не становятся предками base. Это ожидаемо и не означает, что merge
-   не состоялся.
+   может отказать: коммиты ветки могут не быть предками base. При настроенном и доступном upstream
+   Git проверяет достижимость в нем, поэтому `-d` может успешно удалить ветку, даже если ее HEAD
+   не является предком base. Успех `-d` сам по себе не подтверждает merge PR/MR.
+   См. [git-branch: --delete](https://git-scm.com/docs/git-branch#Documentation/git-branch.txt--d).
 5. Если `-d` отклоняет ветку из-за ancestry, использовать `git branch -D <branch>` только когда:
    - пользователь явно подтвердил merge;
    - удалена именно выбранная clean task-worktree;
