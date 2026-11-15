@@ -28,6 +28,8 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 - Do not add retries around side-effecting operations unless an idempotency contract is clear.
 - Delegate deliberately. Each subagent or parallel session uses its own budget against the shared limit.
   Prefer one focused session, limited fan-out, and a cheaper model for simple tasks.
+- When manual work repeats, look for the root cause and check it against real data. Do not explain it away by the contract.
+- Check a proposal against the data before repeating or re-running it.
 
 ## Code Quality
 
@@ -53,6 +55,12 @@ They specify documentation language, configuration values, and test markers.
 Do not duplicate the skill's rules here.
 
 Do not write or modify tests unless the user explicitly asks for test-writing help or the requested implementation requires tests as part of the task.
+
+## Environment
+
+- Bash tool output merges stdout and stderr: a log line seen in the output is not proof that it went to stdout. Check the streams separately.
+- zsh does not word-split unquoted variables. A test list kept in a variable can expand to nothing and run the whole suite. Pass paths literally or use arrays, and pass env vars inline (`VAR=x cmd`), not via `env $E`.
+- `github.com:22` is blocked on this machine; SSH goes through port 443 (configured in `~/.ssh/config`). Run a hanging `git push` under `timeout`.
 
 ## Delivery
 
