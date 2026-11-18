@@ -6,12 +6,12 @@ license: MIT
 metadata:
   origin: first-party
   author: ClawFu (multi-agent rewrite)
-  version: 2.0.0
+  version: 2.0.1
 ---
 
 # Six Thinking Hats
 
-> Apply Edward de Bono's parallel thinking framework (1985). Six independent agents each analyze the problem through a single lens, then Blue Hat synthesizes.
+> Apply Edward de Bono's parallel thinking framework (1985). Five independent agents each analyze the problem through a single lens, then the parent session synthesizes as Blue Hat.
 
 ## Core principle
 
@@ -32,7 +32,16 @@ Context: [2-3 sentences of background if needed]
 
 ### Step 2 - Spawn five hat agents in parallel
 
-Use the Agent tool to spawn all five agents **in the same message** (parallel execution). Each agent receives:
+Set the model and effort in every spawn tool call. Use these skill-specific defaults unless the user explicitly requests different settings:
+
+| Client | Tool | Model | Effort | Context |
+|--------|------|-------|--------|---------|
+| Claude Code | `Agent` | `model: "sonnet"` | `effort: "low"` | `subagent_type: "general-purpose"` |
+| Codex | `spawn_agent` | `model: "gpt-6.2-sol"` | `reasoning_effort: "low"` | `fork_context: false` or `fork_turns: "none"`, according to the tool schema |
+
+Use low effort for the bounded, single-perspective analyses. Check the active tool schema before spawning. If the tool cannot explicitly set both model and effort, use the sequential workflow below.
+
+Launch all five agents before waiting for their results. Each agent receives:
 - The problem statement from Step 1
 - Its hat-specific instructions (read the file below before spawning)
 
@@ -44,22 +53,22 @@ Use the Agent tool to spawn all five agents **in the same message** (parallel ex
 | Yellow Hat | `references/yellow-hat.md` | Benefits, value, reasons for optimism |
 | Green Hat | `references/green-hat.md` | Alternatives, creative approaches |
 
-Read each agent's instructions file before composing its prompt so you pass them accurately.
+Include the contents of each hat's instructions file directly in its prompt so the agent can start without resolving a file path.
 
 Agent prompt template:
 
 ```
-Read and follow the instructions in [references/<hat>.md].
+[contents of the corresponding hat instructions file]
 
 Problem to analyze:
 [problem statement from Step 1]
 ```
 
-When an agent comes back empty or fails, respawn that one hat once with the same prompt. If the second attempt also fails, continue with the hats you have and open the synthesis by naming the missing perspective - a verdict built on four hats must say which lens is absent.
+When an agent comes back empty or fails, respawn that hat once with the same prompt, model, effort, and context settings. If the runtime rejects the chosen model or effort, treat the hat as missing immediately. Continue with the hats you have and open the synthesis by naming any missing perspectives. If no hat returns an analysis, report the failure and omit the verdict.
 
 ### Step 3 - Blue Hat synthesis
 
-Once all five agents complete, synthesize their outputs. Your job as Blue Hat:
+Once all hat runs are resolved, synthesize the available outputs in the parent session. Your job as Blue Hat:
 
 1. Present each hat's output in a consistent format (hat name as header, output below)
 2. Identify the key tension - usually the sharpest Black Hat risk vs. the strongest Yellow Hat benefit
@@ -97,4 +106,4 @@ Once all five agents complete, synthesize their outputs. Your job as Blue Hat:
 
 ## When agents are not available
 
-If the Agent tool is not available, run each hat sequentially in the same context. Explicitly label each hat section and avoid letting one hat's output influence the next while writing it. The parallel isolation is lost, but the structured coverage is preserved.
+If the client has no spawn tool with both model and effort controls, run each hat sequentially in the parent session. State that the analysis ran sequentially in a shared context. Label each hat section and base it on the original problem and its own instructions.
