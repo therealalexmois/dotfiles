@@ -6,7 +6,7 @@ license: MIT
 metadata:
   origin: first-party
   author: ClawFu (multi-agent rewrite)
-  version: 2.0.1
+  version: 2.0.2
 ---
 
 # Six Thinking Hats
@@ -36,10 +36,10 @@ Set the model and effort in every spawn tool call. Use these skill-specific defa
 
 | Client | Tool | Model | Effort | Context |
 |--------|------|-------|--------|---------|
-| Claude Code | `Agent` | `model: "sonnet"` | `effort: "low"` | `subagent_type: "general-purpose"` |
-| Codex | `spawn_agent` | `model: "gpt-6.2-sol"` | `reasoning_effort: "low"` | `fork_context: false` or `fork_turns: "none"`, according to the tool schema |
+| Claude Code | `Agent` | `model: "sonnet"` | `effort: "medium"` | `subagent_type: "general-purpose"` |
+| Codex | `spawn_agent` | `model: "gpt-6.2-sol"` | `reasoning_effort: "medium"` | `fork_context: false` or `fork_turns: "none"`, according to the tool schema |
 
-Use low effort for the bounded, single-perspective analyses. Check the active tool schema before spawning. If the tool cannot explicitly set both model and effort, use the sequential workflow below.
+Check the active tool schema before spawning. If the tool cannot explicitly set both model and effort, use the sequential workflow below.
 
 Launch all five agents before waiting for their results. Each agent receives:
 - The problem statement from Step 1
