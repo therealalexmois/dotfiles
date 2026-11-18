@@ -15,6 +15,9 @@ These rules apply to all output: chat, code, comments, and documentation, in any
 - Do not use emoji unless the user explicitly asks for them.
 - Do not use the em dash `—` (U+2014) in generated text. Use the en dash `–` (U+2013) as a dash or separator between words and phrases (and for ranges); use the hyphen `-` only to join words and inside identifiers.
 - In Russian text, always write `е` instead of `ё`.
+- In technical explanations, preserve terms and identifiers as they appear in source code or official documentation, for example `channel`, `state`, `checkpoint`, and `blob`. Do not translate or transliterate these terms into Russian.
+- Explain unfamiliar terms in plain Russian on first use, then use the original term consistently.
+- Ground project-specific explanations in actual project code and state. Label invented example values as illustrative.
 
 ## Working Style
 

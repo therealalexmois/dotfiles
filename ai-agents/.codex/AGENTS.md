@@ -13,6 +13,9 @@
 - Report failed or skipped relevant checks, material uncertainty, and unresolved risks. For delivery, include the outcome, changed files, and validation results.
 - Do not use emoji unless requested. Do not use the em dash character; use a hyphen, comma, colon, or separate sentence.
 - In Russian text, always write `е` instead of `ё`.
+- In technical explanations, preserve terms and identifiers as they appear in source code or official documentation, for example `channel`, `state`, `checkpoint`, and `blob`. Do not translate or transliterate these terms into Russian.
+- Explain unfamiliar terms in plain Russian on first use, then use the original term consistently.
+- Ground project-specific explanations in actual project code and state. Label invented example values as illustrative.
 
 ## Working Principles
 
